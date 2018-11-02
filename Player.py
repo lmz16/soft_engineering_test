@@ -5,6 +5,7 @@
 from define import *
 import extern
 import pygame
+import Game
 from pygame.locals import *
 
 class Player():
@@ -20,6 +21,7 @@ class Player():
         self.direction='人物朝向'
         self.signal='接收到的信号'
         self.size='人物的大小'
+        self.game='当前游戏指针'
         self.load()
 
 # 根据人物类型与位置的贴图函数
