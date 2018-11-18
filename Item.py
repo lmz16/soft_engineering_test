@@ -21,7 +21,7 @@ class Item():
 # 敌人类
 class Enemy(Item):
     def __init__(self):
-        super(Enemy,self).__init__(self)
+        super(Enemy,self).__init__()
         self.life_value='生命值'
         self.signal='接收到的信号'
         self.load()
@@ -37,7 +37,7 @@ class Enemy(Item):
 # 障碍物类
 class Obstacle(Item):
     def __init__(self):
-        super(Obstacle,self).__init__(self)
+        super(Obstacle,self).__init__()
         self.life_value='生命值'
         self.signal='接收到的信号'
         self.load()
@@ -53,14 +53,15 @@ class Obstacle(Item):
 # 技能类
 class Skill(Item):
     def __init__(self):
-        super(Skill,self).__init__(self)
+        super(Skill,self).__init__()
         self.damage='伤害值'
         self.duration='技能持续时间'
         self.inittime='初始化时间'
         self.signal='接收到的信号'
         self.caster='技能释放者'
+        self.last='击中后是否消失'
         self.load()
 
     # 技能类的状态更新
     def update(self):
-            pass
+        pass
