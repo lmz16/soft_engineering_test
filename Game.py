@@ -40,6 +40,11 @@ class Single_player_game():
             extern.singleplayer_enemy_pic_static=pygame.transform.smoothscale(
                 pygame.image.load(checkpoint1[1][0]).convert(),checkpoint1[3])
             extern.singleplayer_enemysize=checkpoint1[3]
+            extern.skill_1_pic=pygame.transform.smoothscale(
+                pygame.image.load(checkpoint1[5]).convert_alpha(),checkpoint1[6])
+            extern.skill_1_size=checkpoint1[6]
+            extern.skill_1_duration=checkpoint1[7]
+            extern.skill_1_velocity=checkpoint1[8]
             for location in checkpoint1[4]:
                 tempenemy=Item.Enemy()
                 tempenemy.site=location
@@ -52,11 +57,17 @@ class Single_player_game():
                 pygame.image.load(playerinfo[0][1]).convert_alpha(),playerinfo[1])
             extern.singleplayer_player_pic_move2=pygame.transform.smoothscale(
                 pygame.image.load(playerinfo[0][2]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_player_pic_attack1=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][3]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_player_pic_attack2=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][4]).convert_alpha(),playerinfo[1])    
             extern.singleplayer_playersize=playerinfo[1]
             extern.singleplayer_player_velocity=playerinfo[3]
             self.single_player=Player.Player()
             self.single_player.site=playerinfo[2][0]
-            self.game=self
+            self.single_player.game=self
+            self.single_player.skill1time=0
+            self.single_player.skill1_cd=playerinfo[4]
         self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
@@ -192,18 +203,19 @@ class Single_player_game():
         move_switch = [None,3,2,None,1,7,6,None,0,5,4,None,None,None,None,None]
         #if (not move_switch[move_state] is None):
         tempsignal=Signal(move_switch[move_state],self.single_player)
-        self.signal_list.append(tempsignal)
-        # skill_state = self.keyboardevent[K_j]<<2 | self.keyboardevent[K_k]<<1 | self.keyboardevent[K_l]
-        # skill_switch = [None,10,9,None,8,None,None,None]
-        # #J      SKILL1=8
+        self.single_player.skill_direction=move_switch[move_state]
+        skill_state = self.keyboardevent[K_j]<<2 | self.keyboardevent[K_k]<<1 | self.keyboardevent[K_l]
+        skill_switch = [None,10,9,None,8,None,None,None]
+        #J      SKILL1=8
         # #K      SKILL2=9
         # #L      SKILL3=10
         # #可改变skill_switch定义组合技
-        # if (not skill_switch[skill_state] is None):
-        #     self.single_player.signal=skill_switch[skill_state]
-        #先考虑移动
         self.move_judge(tempsignal)
-        #在考虑攻击判定，这样被打到就会取消之前的移动信号
+        if (not skill_switch[skill_state] is None):
+            if ((extern.last_fresh_time-self.single_player.skill1time)>self.single_player.skill1_cd):
+                tempsignal=Signal(skill_switch[skill_state],self.single_player)
+        self.signal_list.append(tempsignal)
+        #再考虑攻击判定，这样被打到就会取消之前的移动信号
         #attack_judge()
         for signal in self.signal_list:
             signal.receiver.signal=signal.type
@@ -222,10 +234,12 @@ class Single_player_game():
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
         self.single_player.update()
-        extern.screen.blit(extern.singleplayer_background_pic_temp,(0,0))
-        # for skill in skill_list:
-        #     if ():#skill寿命到了的话
-        #         del skill
+        for skill in self.skill_list:
+            if (skill.delflag):#skill寿命到了的话
+                del skill
+            else:
+                skill.update()
+        extern.screen.blit(extern.singleplayer_background_pic_temp,self.blit_startpoint())
         # for enemy in enemylist:
         #     if (enemy.state==ENEMYDEAD):
         #         del enemy
@@ -239,6 +253,15 @@ class Single_player_game():
             enemy.item_blit()
         extern.screen.blit(extern.gameinterface,(0,0))
         extern.screen.blit(extern.singleplayer_background_pic,(0,0))
+
+    def blit_startpoint(self):
+        sx=0
+        if ((self.single_player.site[0]>mainwindow_size[0]/2) &
+        (self.single_player.site[0]<(extern.singleplayer_background_size[0]-mainwindow_size[0]/2))):
+            sx=self.single_player.site[0]-mainwindow_size[0]/2
+        elif self.single_player.site[0]>=(extern.singleplayer_background_size[0]-mainwindow_size[0]/2):
+            sx=extern.singleplayer_background_size[0]-mainwindow_size[0]
+        return (-sx,0)
 
 # 信号类
 class Signal():

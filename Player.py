@@ -7,6 +7,7 @@ import extern
 import pygame
 from pygame.locals import *
 from math import pow
+import Item
 
 class Player():
     def __init__(self):
@@ -23,12 +24,10 @@ class Player():
         self.size='人物的大小'
         self.game='当前游戏指针'
         self.count='小状态计数器'
+        self.skill1time='技能一上次发动的时间'
+        self.skill1_cd='技能一冷却时间'
+        self.skill_direction='技能方向'
         self.load()
-
-# 根据人物类型与位置的贴图函数
-    def player_blit(self):
-        extern.singleplayer_background_pic.blit(extern.singleplayer_player_pic_static,
-        (int(self.site[0][0]+self.size[0]/2),int(self.site[0][1]+self.size[1]/2)))
     
     def player_update_blit(self,n):
         if n==0:
@@ -54,26 +53,55 @@ class Player():
 # 状态更新,有限状态机,每个不同角色单独实现
     def update(self):
         if self.state==PLAYERSTATIC:
-            self.player_update_blit(0)
             if self.signal == None:
                 pass
             elif ((self.signal<8) & (self.signal>-1)):
+                self.direction=self.signal
                 self.state=PLAYERMOVE
                 self.count=0
             elif self.signal==ATTACKED:
                 self.state=PLAYERATTACKED
                 self.count=0
+            elif self.signal==SKILL1:
+                self.state=PLAYERSKILL1
+                self.count=0
+            self.player_update_blit(0)
         elif self.state==PLAYERMOVE:
             if self.signal==None:
                 self.state=PLAYERSTATIC
-                self.player_update_blit(0)
             elif ((self.signal<8) & (self.signal>-1)):
+                self.direction=self.signal
                 self.count=(self.count+1) % 6
                 self.move()
-                self.player_update_blit((self.count>2)+1)
             elif self.signal==ATTACKED:
                 self.state=PLAYERATTACKED
                 self.count=0
+            elif self.signal==SKILL1:
+                self.state=PLAYERSKILL1
+                self.count=0
+            self.player_update_blit((self.count>2)+1)
+        elif self.state==PLAYERSKILL1:
+            if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
+                if self.count==0:
+                    tempskill=Item.Skill()
+                    tempskill.kind=1
+                    tempskill.inittime=extern.last_fresh_time
+                    tempskill.caster=self
+                    tempskill.direction=self.skill_direction
+                    tempskill.site=self.site[:]
+                    self.game.skill_list.append(tempskill)
+                    self.player_update_blit(3)
+                elif self.count==10:
+                    self.count=0
+                    self.state=PLAYERSTATIC
+                    self.skill1time=extern.last_fresh_time-10/fps
+                    self.player_update_blit(4)
+                else:
+                    self.player_update_blit((self.count>5)+3)
+                self.count=self.count+1
+            else:
+                self.player_update_blit(0)
+
 
 
 # 事实上的构造函数,init里面只是声明一下变量,之所以不赋值,是因为这些值
@@ -82,20 +110,19 @@ class Player():
         self.size=extern.singleplayer_playersize
         self.count=0
         self.velocity=extern.singleplayer_player_velocity
-        self.movex=[0,0,-1,1,-1,1,-1,1]
-        self.movex=[self.velocity[0]*x for x in self.movex]
-        self.movey=[-1,1,0,0,-1,-1,1,1]
-        self.movey=[self.velocity[1]*y for y in self.movey]
+        self.movex=[self.velocity[0]*x for x in movex]
+        self.movey=[self.velocity[1]*y for y in movey]
+        self.direction=MOVERIGHT
 
     def move(self):
         if self.movable:
             self.site[0]=self.site[0]+self.movex[self.signal]
-            if self.site[0]>extern.singleplayer_background_size[0]-int(self.size[0]/2):
+            if self.site[0]>(extern.singleplayer_background_size[0]-int(self.size[0]/2)):
                 self.site[0]=extern.singleplayer_background_size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
             self.site[1]=self.site[1]+self.movey[self.signal]
-            if self.site[1]>extern.singleplayer_background_size[1]-int(self.size[1]/2):
+            if self.site[1]>(extern.singleplayer_background_size[1]-int(self.size[1]/2)):
                 self.site[1]=extern.singleplayer_background_size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
                 self.site[1]=int(self.size[1]/2)

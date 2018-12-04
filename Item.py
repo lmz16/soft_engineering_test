@@ -68,8 +68,41 @@ class Skill(Item):
         self.signal='接收到的信号'
         self.caster='技能释放者'
         self.last='击中后是否消失'
+        self.delflag='技能是否应该被删除'
+        self.kind='技能类型'
+        self.velocity='技能速度'
         self.load()
 
     # 技能类的状态更新
     def update(self):
-        pass
+        if extern.last_fresh_time-self.inittime>self.duration:
+            self.delflag=True
+        else:
+            self.skill_move()
+            self.item_blit()
+    
+    def skill_move(self):
+        self.site[0]=self.site[0]+self.movex[self.direction]
+        if self.site[0]>(extern.singleplayer_background_size[0]-int(self.size[0]/2)):
+            self.delflag=True
+        if self.site[0]<int(self.size[0]/2):
+            self.delflag=True
+        self.site[1]=self.site[1]+self.movey[self.direction]
+        if self.site[1]>(extern.singleplayer_background_size[1]-int(self.size[1]/2)):
+            self.delflag=True
+        if self.site[1]<int(self.size[1]/2):
+            self.delflag=True
+        print(self)
+
+    def load(self):
+        self.delflag=0
+        self.duration=extern.skill_1_duration
+        self.velocity=extern.skill_1_velocity
+        self.movex=[self.velocity*x for x in movex]
+        self.movey=[self.velocity*y for y in movey]
+        self.size=extern.skill_1_size
+
+    def item_blit(self):
+        print('item_blit')
+        extern.singleplayer_background_pic_temp.blit(extern.skill_1_pic,
+        (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
