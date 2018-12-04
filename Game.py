@@ -217,7 +217,7 @@ class Single_player_game():
             # extern.singleplayer_background_size)
         #copy.deepcopy(extern.singleplayer_background_pic)
         for enemy in self.enemy_list:
-            enemy.item_blit()
+            enemy.update()
         extern.screen.blit(extern.gameinterface,(0,0))
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
@@ -236,7 +236,7 @@ class Single_player_game():
 
     def interface_update(self):
         for enemy in self.enemy_list:
-            enemy.item_blit()
+            enemy.update()
         extern.screen.blit(extern.gameinterface,(0,0))
         extern.screen.blit(extern.singleplayer_background_pic,(0,0))
 

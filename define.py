@@ -59,6 +59,17 @@ PLAYERATTACK=-2
 #   被攻击状态
 PLAYERATTACKED=-3
 
+#   敌人状态
+#   静止状态
+ENEMYSTATIC=-1
+#   移动状态
+ENEMYMOVE=0
+#   攻击状态
+ENEMYATTACK=-2
+#   被攻击状态
+ENEMYATTACKED=-3
+
+
 #上      
 MOVEUP=0
 #下      
