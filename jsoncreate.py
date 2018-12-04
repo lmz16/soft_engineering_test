@@ -11,7 +11,7 @@ singleplayer_player_pic_move2='tmg/move1.png'
 singleplayer_player_pic_attack1='tmg/attack0.png'
 singleplayer_player_pic_attack2='tmg/attack1.png'
 singleplayer_player_pic_attacked='单人游戏人物被攻击图片帧'
-singleplayer_player_velocity=(5,5)
+singleplayer_player_velocity=(10,10)
 
 singleplayer_background_pic='background1.jpg'
 
