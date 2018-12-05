@@ -56,6 +56,8 @@ PLAYERSTATIC=-1
 PLAYERMOVE=0
 #   攻击状态
 PLAYERATTACK=-2
+#   技能一状态
+PLAYERSKILL1=-4
 #   被攻击状态
 PLAYERATTACKED=-3
 
@@ -94,3 +96,7 @@ SKILL2=9
 SKILL3=10
 #被攻击信号
 ATTACKED=11
+
+#   移动序列
+movex=[0,0,-1,1,-1,1,-1,1]
+movey=[-1,1,0,0,-1,-1,1,1]

@@ -15,7 +15,7 @@ class Item():
         self.size='物体大小'
         self.movable='可否移动'
         self.direction='朝向'
-        self.game='当前游戏指针'
+        self.game='游戏指针'
         self.state='状态'
     
     def item_blit(self):
@@ -23,29 +23,56 @@ class Item():
 
 # 敌人类
 class Enemy(Item):
-    def __init__(self):
+    def __init__(self, game):
         super(Enemy,self).__init__()
         self.life_value='生命值'
         self.signal='接收到的信号'
-        self.speedx=10
-        self.speedy=10
+        self.target='攻击目标的site'
+        self.game=game
+        self.speedx=2
+        self.speedy=2
         self.load()
 
     def move(self):
+        self.move_direction()
+        print(self.site[0])
+        print(self.direction)
+        print(self.movex)
+        print(self.movex[self.direction])
         if self.movable:
-            self.site[0]=self.site[0]+self.speedx
+            self.site[0]=self.site[0]+self.movex[self.direction]
             if self.site[0]>extern.singleplayer_background_size[0]-int(self.size[0]/2):
                 self.site[0]=extern.singleplayer_background_size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
-            self.site[1]=self.site[1]+self.speedy
+            self.site[1]=self.site[1]+self.movey[self.direction]
             if self.site[1]>extern.singleplayer_background_size[1]-int(self.size[1]/2):
                 self.site[1]=extern.singleplayer_background_size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
                 self.site[1]=int(self.size[1]/2)
 
+    def move_direction(self):
+        self.direction = MOVELEFT
+        if(self.target[0] == self.site[0] and self.target[1] < self.site[1]):
+            self.direction = MOVEUP
+        elif(self.target[0] == self.site[0] and self.target[1] > self.site[1]):
+            self.direction = MOVEDOWN
+        elif(self.target[0] > self.site[0] and self.target[1] == self.site[1]):
+            self.direction = MOVERIGHT
+        elif(self.target[0] < self.site[0] and self.target[1] == self.site[1]):
+            self.direction = MOVELEFT
+        elif(self.target[0] > self.site[0] and self.target[1] > self.site[1]):
+            self.direction = MOVEDOWNRIGHT
+        elif(self.target[0] > self.site[0] and self.target[1] < self.site[1]):
+            self.direction = MOVEUPRIGHT
+        elif(self.target[0] < self.site[0] and self.target[1] > self.site[1]):
+            self.direction = MOVEDOWNLEFT
+        elif(self.target[0] < self.site[0] and self.target[1] < self.site[1]):
+            self.direction = MOVEUPLEFT
+
 # 敌人类的状态更新
     def update(self):
+        self.target=self.game.single_player.site
         if self.state==ENEMYSTATIC:
             self.enemy_update_blit(0)
     
@@ -58,6 +85,9 @@ class Enemy(Item):
         self.size=extern.singleplayer_enemysize
         self.state=ENEMYMOVE
         self.movable=True
+        self.velocity=extern.enemy_1_velocity
+        self.movex=[self.velocity*x for x in movex]
+        self.movey=[self.velocity*y for y in movey]
 
 # 敌人的贴图函数
     def enemy_update_blit(self,n):
@@ -106,8 +136,41 @@ class Skill(Item):
         self.signal='接收到的信号'
         self.caster='技能释放者'
         self.last='击中后是否消失'
+        self.delflag='技能是否应该被删除'
+        self.kind='技能类型'
+        self.velocity='技能速度'
         self.load()
 
     # 技能类的状态更新
     def update(self):
-        pass
+        if extern.last_fresh_time-self.inittime>self.duration:
+            self.delflag=True
+        else:
+            self.skill_move()
+            self.item_blit()
+    
+    def skill_move(self):
+        self.site[0]=self.site[0]+self.movex[self.direction]
+        if self.site[0]>(extern.singleplayer_background_size[0]-int(self.size[0]/2)):
+            self.delflag=True
+        if self.site[0]<int(self.size[0]/2):
+            self.delflag=True
+        self.site[1]=self.site[1]+self.movey[self.direction]
+        if self.site[1]>(extern.singleplayer_background_size[1]-int(self.size[1]/2)):
+            self.delflag=True
+        if self.site[1]<int(self.size[1]/2):
+            self.delflag=True
+        print(self)
+
+    def load(self):
+        self.delflag=0
+        self.duration=extern.skill_1_duration
+        self.velocity=extern.skill_1_velocity
+        self.movex=[self.velocity*x for x in movex]
+        self.movey=[self.velocity*y for y in movey]
+        self.size=extern.skill_1_size
+
+    def item_blit(self):
+        print('item_blit')
+        extern.singleplayer_background_pic_temp.blit(extern.skill_1_pic,
+        (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))

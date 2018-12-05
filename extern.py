@@ -40,3 +40,10 @@ singleplayergame='单人游戏对象'
 singleplayer_playersize='单人游戏人物大小'
 singleplayer_enemysize='单人敌人人物大小'
 gameinterface='游戏界面'
+
+skill_1_pic='技能一的图片'
+skill_1_size='技能一的图片大小'
+skill_1_duration='技能一的持续时间'
+skill_1_velocity='技能一的速度'
+
+enemy_1_velocity=2
