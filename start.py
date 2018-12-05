@@ -75,3 +75,7 @@ def mouseclick_respond(event):
             extern.game_state=GAMEHELP2
         if(event.button==1 & (extern.game_state == GAMEINIT1)):
             extern.game_state=GAMEINIT
+
+    if pygame.key.get_pressed()[K_ESCAPE]:
+        pygame.quit()
+        sys.exit()

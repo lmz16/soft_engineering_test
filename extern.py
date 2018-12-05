@@ -45,5 +45,6 @@ skill_1_pic='技能一的图片'
 skill_1_size='技能一的图片大小'
 skill_1_duration='技能一的持续时间'
 skill_1_velocity='技能一的速度'
+skill_1_damage='技能一的伤害'
 
 enemy_1_velocity=2

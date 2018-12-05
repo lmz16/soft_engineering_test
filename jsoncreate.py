@@ -26,6 +26,7 @@ fire_ball_pic='item/fire_ball.png'
 fire_ball_pic_size=(61,56)
 fire_ball_duration=5
 fire_ball_velocity=20
+fire_ball_damage=100
 skill1_cd=2
 
 info=[singleplayer_background_pic,
@@ -44,10 +45,12 @@ info=[singleplayer_background_pic,
     (2160,600),#(58,58),
     (195,138),
     [(700,250),[1000,250]],
+    [300,300],
     fire_ball_pic,
     fire_ball_pic_size,
     fire_ball_duration,
-    fire_ball_velocity
+    fire_ball_velocity,
+    fire_ball_damage
 ]
 with open('gametest','w') as checkpointinfo:
     temp=json.dump(info,checkpointinfo)

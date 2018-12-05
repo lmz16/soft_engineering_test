@@ -10,6 +10,7 @@ import copy
 
 import pygame
 import json
+import time
 from pygame.locals import *
 
 class Single_player_game():
@@ -41,13 +42,15 @@ class Single_player_game():
                 pygame.image.load(checkpoint1[1][0]).convert(),checkpoint1[3])
             extern.singleplayer_enemysize=checkpoint1[3]
             extern.skill_1_pic=pygame.transform.smoothscale(
-                pygame.image.load(checkpoint1[5]).convert_alpha(),checkpoint1[6])
-            extern.skill_1_size=checkpoint1[6]
-            extern.skill_1_duration=checkpoint1[7]
-            extern.skill_1_velocity=checkpoint1[8]
-            for location in checkpoint1[4]:
+                pygame.image.load(checkpoint1[6]).convert_alpha(),checkpoint1[7])
+            extern.skill_1_size=checkpoint1[7]
+            extern.skill_1_duration=checkpoint1[8]
+            extern.skill_1_velocity=checkpoint1[9]
+            extern.skill_1_damage=checkpoint1[10]
+            for index,location in enumerate(checkpoint1[4]):
                 tempenemy=Item.Enemy(self)
                 tempenemy.site=location
+                tempenemy.life_value=checkpoint1[5][index]
                 self.enemy_list.append(tempenemy)
         with open (playerinfojson,'r') as jpx:
             playerinfo=json.load(jpx)
@@ -73,13 +76,20 @@ class Single_player_game():
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
     def attack_judge(self):
-        tempplayerskill=[]
+        for enemy in self.enemy_list:
+            enemy.signal=None
         if (len(self.skill_list)==0):
             pass
         else:
-            for skill in self.skill_list:
+            for inx,skill in enumerate(self.skill_list):
                 if (skill.caster==self.single_player):
-                    tempplayerskill.append(skill)
+                    for enemy in self.enemy_list:
+                        if (skill.attack_judge(enemy)):
+                            enemy.signal=ATTACKED
+                            enemy.life_value=enemy.life_value-skill.damage
+                            if (not skill.last):
+                                del self.skill_list[inx]
+                                break
                 else:
                     # 技能打到了人物而且人物之前没有被这个技能打到
                     if (skill.attack_judge(self.single_player) & \
@@ -91,16 +101,6 @@ class Single_player_game():
                         else:
                             #被哪些技能攻击到的列表
                             self.single_player.attacked_skill_list.append(skill)
-            if (len(tempplayerskill)==0):
-                pass
-            else:
-                for skill in tempplayerskill:
-                    for enemy in self.enemylist:
-                        if (skill.attack_judge(enemy)):
-                            enemy.signal=SIGNALATTACKED
-                            enemy.life_value=enemy.life_value-skill.damage
-                            if (skill.last==0):
-                                del skill
 
 # 移动判定方法,判定对象是否可以移动,将结果写入成员对象的movable属性
     def move_judge(self,tempsignal):
@@ -218,33 +218,39 @@ class Single_player_game():
                 tempsignal=Signal(skill_switch[skill_state],self.single_player)
         self.signal_list.append(tempsignal)
         #再考虑攻击判定，这样被打到就会取消之前的移动信号
-        #attack_judge()
+        self.attack_judge()
         for signal in self.signal_list:
             signal.receiver.signal=signal.type
             del signal
+        if self.keyboardevent[K_ESCAPE]:
+            extern.game_state=GAMEINIT
+            for inx,signal in enumerate(self.signal_list):
+                del self.signal_list[inx]
+            for index,enemy in enumerate(self.enemy_list):
+                del self.enemy_list[index]
+            del self.single_player
+            self.gameover=True
+            time.sleep(1)
 
 # 游戏画面与状态更新
     def game_update(self):
         extern.singleplayer_background_pic_temp=extern.singleplayer_background_pic.copy()
-        #=pygame.transform.smoothscale(
-            # pygame.image.load(extern.singleplayer_background_pic_filename).convert(),
-            # extern.singleplayer_background_size)
-        #copy.deepcopy(extern.singleplayer_background_pic)
         for enemy in self.enemy_list:
             enemy.update()
         extern.screen.blit(extern.gameinterface,(0,0))
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
-        self.single_player.update()
-        for skill in self.skill_list:
-            if (skill.delflag):#skill寿命到了的话
-                del skill
-            else:
-                skill.update()
-        extern.screen.blit(extern.singleplayer_background_pic_temp,self.blit_startpoint())
-        # for enemy in enemylist:
-        #     if (enemy.state==ENEMYDEAD):
-        #         del enemy
+        if not self.gameover:
+            self.single_player.update()
+            for inx,skill in enumerate(self.skill_list):
+                if (skill.delflag):#skill寿命到了的话
+                    del self.skill_list[inx]
+                else:
+                    skill.update()
+            extern.screen.blit(extern.singleplayer_background_pic_temp,self.blit_startpoint())
+            for index,enemy in enumerate(self.enemy_list):
+                if (enemy.state==ENEMYDEAD):
+                    del self.enemy_list[index]
         # if (self.single_player.state==PLAYERDEAD):
         #     self.gameover=1
         # if (len(self.enemylist)==0):

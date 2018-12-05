@@ -70,6 +70,8 @@ ENEMYMOVE=0
 ENEMYATTACK=-2
 #   被攻击状态
 ENEMYATTACKED=-3
+#   死亡状态
+ENEMYDEAD=-4
 
 
 #上      

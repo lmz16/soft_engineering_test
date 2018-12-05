@@ -89,6 +89,8 @@ class Player():
                     tempskill.caster=self
                     tempskill.direction=self.skill_direction
                     tempskill.site=self.site[:]
+                    tempskill.size=extern.skill_1_size
+                    tempskill.damage=extern.skill_1_damage
                     self.game.skill_list.append(tempskill)
                     self.player_update_blit(3)
                 elif self.count==10:
