@@ -6,21 +6,18 @@ from define import *
 import extern
 import Player
 import Item
+import copy
 
 import pygame
 import json
+import time
 from pygame.locals import *
 
 class Single_player_game():
     def __init__(self):
-        self.single_player=Player.Player()
+        self.single_player='人物'
     # 调用初始化函数,加载关卡信息,敌人数量与类型,地图资源
         self.enemy_list=[]
-        self.background="背景地图的图片对象"
-        self.enemypic='敌人的图片'
-        self.playerpic='人物的图片'
-        self.world='整个游戏地图'
-        self.worldsize='整个游戏地图大小'
         self.gameover='游戏是否结束'
         self.load_from_json()
     # 技能列表
@@ -32,168 +29,250 @@ class Single_player_game():
 
 # 初始化函数,从json文件读入信息
     def load_from_json(self):
+        extern.gameinterface=pygame.image.load(gameinterface_filename).convert()
+        playerinfojson='jpx'
+        gametestjson='gametest'
         with open (gametestjson,'r') as checkpointinfo:
             checkpoint1=json.load(checkpointinfo)
-            for enemysite in checkpoint1[6]:
-                self.enemy_list.append(Item.Enemy())
-            for count in list(range(1,len(self.enemy_list)+1)):
-                self.enemy_list[count].site=checkpoint1[6][count]
-                self.enemy_list[count].size=checkpoint1[4]
-            self.worldsize=checkpoint1[1]
-            self.playerpic=pygame.image.load(checkpoint1[3]).convert()
-            self.enemypic=pygame.image.load(checkpoint1[5]).convert()
-            self.background=pygame.image.load(checkpoint1[0]).convert()
-            self.single_player.size=checkpoint1[2]
-            self.gameover=0
-
+            extern.singleplayer_background_pic_filename=checkpoint1[0]
+            extern.singleplayer_background_pic=pygame.transform.smoothscale(
+            pygame.image.load(checkpoint1[0]).convert(),checkpoint1[2])
+            extern.singleplayer_background_size=checkpoint1[2]
+            extern.singleplayer_enemy_pic_static=pygame.transform.smoothscale(
+                pygame.image.load(checkpoint1[1][0]).convert(),checkpoint1[3])
+            extern.singleplayer_enemysize=checkpoint1[3]
+            extern.skill_1_pic=pygame.transform.smoothscale(
+                pygame.image.load(checkpoint1[6]).convert_alpha(),checkpoint1[7])
+            extern.skill_1_size=checkpoint1[7]
+            extern.skill_1_duration=checkpoint1[8]
+            extern.skill_1_velocity=checkpoint1[9]
+            extern.skill_1_damage=checkpoint1[10]
+            for index,location in enumerate(checkpoint1[4]):
+                tempenemy=Item.Enemy(self)
+                tempenemy.site=location
+                tempenemy.life_value=checkpoint1[5][index]
+                self.enemy_list.append(tempenemy)
+        with open (playerinfojson,'r') as jpx:
+            playerinfo=json.load(jpx)
+            extern.singleplayer_player_pic_static=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][0]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_player_pic_move1=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][1]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_player_pic_move2=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][2]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_player_pic_attack1=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][3]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_player_pic_attack2=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][4]).convert_alpha(),playerinfo[1])
+            extern.singleplayer_playersize=playerinfo[1]
+            extern.singleplayer_player_velocity=playerinfo[3]
+            self.single_player=Player.Player()
+            self.single_player.site=playerinfo[2][0]
+            self.single_player.game=self
+            self.single_player.skill1time=0
+            self.single_player.skill1_cd=playerinfo[4]
+            self.single_player.skill_direction=MOVERIGHT
+        self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
     def attack_judge(self):
-        tempplayerskill=[]
+        for enemy in self.enemy_list:
+            enemy.signal=None
         if (len(self.skill_list)==0):
             pass
         else:
-            for skill in self.skill_list:
+            for inx,skill in enumerate(self.skill_list):
                 if (skill.caster==self.single_player):
-                    tempplayerskill.append(skill)
+                    for enemy in self.enemy_list:
+                        if (skill.attack_judge(enemy)):
+                            enemy.signal=ATTACKED
+                            enemy.life_value=enemy.life_value-skill.damage
+                            if (not skill.last):
+                                del self.skill_list[inx]
+                                break
                 else:
-                    if (skill.attack_judge(self.single_player)):
+                    # 技能打到了人物而且人物之前没有被这个技能打到
+                    if (skill.attack_judge(self.single_player) & \
+                    (skill not in self.single_player.attacked_skill_list)):
                         self.single_player.signal=SIGNALATTACKED
                         self.single_player.life_value=self.single_player.life_value-skill.damage
                         if (skill.last==0):
                             del skill
-            if (len(tempplayerskill)==0):
-                pass
-            else:
-                for skill in tempplayerskill:
-                    for enemy in self.enemylist:
-                        if (skill.attack_judge(enemy)):
-                            enemy.signal=SIGNALATTACKED
-                            enemy.life_value=enemy.life_value-skill.damage
-                            if (skill.last==0):
-                                del skill
+                        else:
+                            #被哪些技能攻击到的列表
+                            self.single_player.attacked_skill_list.append(skill)
 
 # 移动判定方法,判定对象是否可以移动,将结果写入成员对象的movable属性
     def move_judge(self,tempsignal):
         tempsite=tempsignal.receiver.site
         tempsize=tempsignal.receiver.size
         tempsignal.receiver.movable=True
-        tempsignal.receiver.signal=SIGNALMOVE
         tempmoveflag=[True,True]
         for enemy in self.enemy_list:
+            umovable=((abs(-enemy.site[1]+tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
+                    (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2))
+            dmovable=((abs(enemy.site[1]-tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
+                    (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2))
+            lmovable=((abs(-enemy.site[0]+tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
+                    (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2))
+            rmovable=((abs(enemy.site[0]-tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
+                    (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2))
             if (tempsignal.type==MOVEUP):
-                if ((abs(enemy.site[1]-tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2)):
+                if (umovable):
                     tempsignal.receiver.movable=False
+                    tempmoveflag=[False,False]
                     break
-            elif (tempsignal.receiver.type==MOVEDOWN):
-                if ((abs(-enemy.site[1]+tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2)):
+            elif (tempsignal.type==MOVEDOWN):
+                if (dmovable):
                     tempsignal.receiver.movable=False
+                    tempmoveflag=[False,False]
                     break
-            elif (tempsignal.receiver.type==MOVELEFT):
-                if ((abs(enemy.site[0]-tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2)):
+            elif (tempsignal.type==MOVELEFT):
+                if (lmovable):
                     tempsignal.receiver.movable=False
+                    tempmoveflag=[False,False]
                     break
-            elif (tempsignal.receiver.type==MOVERIGHT):
-                if ((abs(-enemy.site[0]+tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2)):
+            elif (tempsignal.type==MOVERIGHT):
+                if (rmovable):
                     tempsignal.receiver.movable=False
+                    tempmoveflag=[False,False]
                     break
-            elif (tempsignal.receiver.type==MOVEUPLEFT):
-                if ((abs(enemy.site[1]-tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2)):
+            elif (tempsignal.type==MOVEUPLEFT):
+                if (umovable):
                     tempmoveflag[1]=False
-                if ((abs(enemy.site[0]-tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2)):
+                if (lmovable):
                     tempmoveflag[0]=False
-                if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                     break
-            elif (tempsignal.receiver.type==MOVEUPRIGHT):
-                if ((abs(enemy.site[1]-tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2)):
+            elif (tempsignal.type==MOVEUPRIGHT):
+                if (umovable):
                     tempmoveflag[1]=False
-                if ((abs(-enemy.site[0]+tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2)):
+                if (rmovable):
                     tempmoveflag[0]=False
-                if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                     break
-            elif (tempsignal.receiver.type==MOVEDOWNLEFT):
-                if ((abs(-enemy.site[1]+tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2)):
+            elif (tempsignal.type==MOVEDOWNLEFT):
+                if (dmovable):
                     tempmoveflag[1]=False
-                if ((abs(enemy.site[0]-tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2)):
+                if (lmovable):
                     tempmoveflag[0]=False
-                if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                     break
-            elif (tempsignal.receiver.type==MOVEDOWNRIGHT):
-                if ((abs(-enemy.site[1]+tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2)):
+            elif (tempsignal.type==MOVEDOWNRIGHT):
+                if (dmovable):
                     tempmoveflag[1]=False
-                if ((abs(-enemy.site[0]+tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2)):
+                if (rmovable):
                     tempmoveflag[0]=False
-                if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                     break
-        if (tempsignal.receiver.type==MOVEUPLEFT):
-            if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+        if (tempsignal.type==MOVEUPLEFT):
+            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                 tempsignal.receiver.movable=False
             elif (tempmoveflag[1]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVELEFT
+                tempsignal.type=MOVELEFT
             elif (tempmoveflag[0]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVEUP
-        elif (tempsignal.receiver.type==MOVEUPRIGHT):
-            if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                tempsignal.type=MOVEUP
+        elif (tempsignal.type==MOVEUPRIGHT):
+            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                 tempsignal.receiver.movable=False
             elif (tempmoveflag[1]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVERIGHT
+                tempsignal.type=MOVERIGHT
             elif (tempmoveflag[0]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVEUP
-        elif (tempsignal.receiver.type==MOVEDOWNLEFT):
-            if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                tempsignal.type=MOVEUP
+        elif (tempsignal.type==MOVEDOWNLEFT):
+            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                 tempsignal.receiver.movable=False
             elif (tempmoveflag[1]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVELEFT
+                tempsignal.type=MOVELEFT
             elif (tempmoveflag[0]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVEDOWN
-        elif (tempsignal.receiver.type==MOVEDOWNRIGHT):
-            if (tempmoveflag[1]==False & tempmoveflag[0]==False):
+                tempsignal.type=MOVEDOWN
+        elif (tempsignal.type==MOVEDOWNRIGHT):
+            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
                 tempsignal.receiver.movable=False
             elif (tempmoveflag[1]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVERIGHT
+                tempsignal.type=MOVERIGHT
             elif (tempmoveflag[0]==False):
-                tempsignal.receiver.movable=True
-                tempsignal.receiver.type==MOVEDOWN
+                tempsignal.type=MOVEDOWN
+        if ((tempmoveflag[1]==True) | (tempmoveflag[0]==True)):
+            tempsignal.receiver.movable=True
 
 
 # 信号处理函数,解决信号冲突,向每个对象发送信号
     def message_translate(self):
-        pass
+        move_state = self.keyboardevent[K_w]<<3 | self.keyboardevent[K_s]<<2 | \
+                    self.keyboardevent[K_a]<<1 | self.keyboardevent[K_d]
+        move_switch = [None,3,2,None,1,7,6,None,0,5,4,None,None,None,None,None]
+        #if (not move_switch[move_state] is None):
+        tempsignal=Signal(move_switch[move_state],self.single_player)
+        if move_switch[move_state] is not None:
+            self.single_player.skill_direction=move_switch[move_state]
+        skill_state = self.keyboardevent[K_j]<<2 | self.keyboardevent[K_k]<<1 | self.keyboardevent[K_l]
+        skill_switch = [None,10,9,None,8,None,None,None]
+        #J      SKILL1=8
+        # #K      SKILL2=9
+        # #L      SKILL3=10
+        # #可改变skill_switch定义组合技
+        self.move_judge(tempsignal)
+        if (not skill_switch[skill_state] is None):
+            if ((extern.last_fresh_time-self.single_player.skill1time)>self.single_player.skill1_cd):
+                tempsignal=Signal(skill_switch[skill_state],self.single_player)
+        self.signal_list.append(tempsignal)
+        #再考虑攻击判定，这样被打到就会取消之前的移动信号
+        self.attack_judge()
+        for signal in self.signal_list:
+            signal.receiver.signal=signal.type
+            del signal
+        if self.keyboardevent[K_ESCAPE]:
+            extern.game_state=GAMEINIT
+            for inx,signal in enumerate(self.signal_list):
+                del self.signal_list[inx]
+            for index,enemy in enumerate(self.enemy_list):
+                del self.enemy_list[index]
+            del self.single_player
+            self.gameover=True
+            time.sleep(1)
 
 # 游戏画面与状态更新
     def game_update(self):
-        for skill in skill_list:
-            if ():#skill寿命到了的话
-                del skill
-        for enemy in enemylist:
-            if (enemy.state==ENEMYDEAD):
-                del enemy
-        if (self.single_player.state==PLAYERDEAD):
-            self.gameover=1
-        if (len(self.enemylist)==0)
-            self.gameover=1
+        extern.singleplayer_background_pic_temp=extern.singleplayer_background_pic.copy()
+        for enemy in self.enemy_list:
+            enemy.update()
+        extern.screen.blit(extern.gameinterface,(0,0))
+        self.keyboardevent=pygame.key.get_pressed()
+        self.message_translate()
+        if not self.gameover:
+            self.single_player.update()
+            for inx,skill in enumerate(self.skill_list):
+                if (skill.delflag):#skill寿命到了的话
+                    del self.skill_list[inx]
+                else:
+                    skill.update()
+            extern.screen.blit(extern.singleplayer_background_pic_temp,self.blit_startpoint())
+            for index,enemy in enumerate(self.enemy_list):
+                if (enemy.state==ENEMYDEAD):
+                    del self.enemy_list[index]
+        # if (self.single_player.state==PLAYERDEAD):
+        #     self.gameover=1
+        # if (len(self.enemylist)==0):
+        #     self.gameover=1
+
+    def interface_update(self):
+        for enemy in self.enemy_list:
+            enemy.update()
+        extern.screen.blit(extern.gameinterface,(0,0))
+        extern.screen.blit(extern.singleplayer_background_pic,(0,0))
+
+    def blit_startpoint(self):
+        sx=0
+        if ((self.single_player.site[0]>mainwindow_size[0]/2) &
+        (self.single_player.site[0]<(extern.singleplayer_background_size[0]-mainwindow_size[0]/2))):
+            sx=self.single_player.site[0]-mainwindow_size[0]/2
+        elif self.single_player.site[0]>=(extern.singleplayer_background_size[0]-mainwindow_size[0]/2):
+            sx=extern.singleplayer_background_size[0]-mainwindow_size[0]
+        return (-sx,0)
 
 # 信号类
 class Signal():
-    def __init__(type,receiver):
+    def __init__(self,type,receiver):
         self.type=type
         self.receiver=receiver
