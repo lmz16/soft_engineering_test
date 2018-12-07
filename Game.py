@@ -7,6 +7,7 @@ import extern
 import Player
 import Item
 import copy
+import Resource 
 
 import pygame
 import json
@@ -30,48 +31,21 @@ class Single_player_game():
 # 初始化函数,从json文件读入信息
     def load_from_json(self):
         extern.gameinterface=pygame.image.load(gameinterface_filename).convert()
-        playerinfojson='jpx'
-        gametestjson='gametest'
-        with open (gametestjson,'r') as checkpointinfo:
-            checkpoint1=json.load(checkpointinfo)
-            extern.singleplayer_background_pic_filename=checkpoint1[0]
-            extern.singleplayer_background_pic=pygame.transform.smoothscale(
-            pygame.image.load(checkpoint1[0]).convert(),checkpoint1[2])
-            extern.singleplayer_background_size=checkpoint1[2]
-            extern.singleplayer_enemy_pic_static=pygame.transform.smoothscale(
-                pygame.image.load(checkpoint1[1][0]).convert(),checkpoint1[3])
-            extern.singleplayer_enemysize=checkpoint1[3]
-            extern.skill_1_pic=pygame.transform.smoothscale(
-                pygame.image.load(checkpoint1[6]).convert_alpha(),checkpoint1[7])
-            extern.skill_1_size=checkpoint1[7]
-            extern.skill_1_duration=checkpoint1[8]
-            extern.skill_1_velocity=checkpoint1[9]
-            extern.skill_1_damage=checkpoint1[10]
-            for index,location in enumerate(checkpoint1[4]):
-                tempenemy=Item.Enemy(self)
-                tempenemy.site=location
-                tempenemy.life_value=checkpoint1[5][index]
-                self.enemy_list.append(tempenemy)
-        with open (playerinfojson,'r') as jpx:
-            playerinfo=json.load(jpx)
-            extern.singleplayer_player_pic_static=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][0]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_move1=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][1]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_move2=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][2]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_attack1=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][3]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_attack2=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][4]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_playersize=playerinfo[1]
-            extern.singleplayer_player_velocity=playerinfo[3]
-            self.single_player=Player.Player()
-            self.single_player.site=playerinfo[2][0]
-            self.single_player.game=self
-            self.single_player.skill1time=0
-            self.single_player.skill1_cd=playerinfo[4]
-            self.single_player.skill_direction=MOVERIGHT
+        extern.singleplayergame_resource=Resource.RSingleplayergame('Resource/json/singlegame1')
+        extern.character_resource=Resource.RCharacter('Resource/json/jpx')
+        extern.enemy_resource=Resource.REnemy('Resource/json/enemy1')
+        extern.skill_resource=Resource.RSkill('Resource/json/skill1')
+        for index,location in enumerate(extern.singleplayergame_resource.enemysite):
+            tempenemy=Item.Enemy(self)
+            tempenemy.site=location
+            tempenemy.life_value=extern.enemy_resource.life[index]
+            self.enemy_list.append(tempenemy)
+        self.single_player=Player.Player()
+        self.single_player.site=extern.character_resource.site
+        self.single_player.game=self
+        self.single_player.skill1time=0
+        self.single_player.skill1_cd=extern.character_resource.skill1_cd
+        self.single_player.skill_direction=MOVERIGHT
         self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
@@ -234,10 +208,10 @@ class Single_player_game():
 
 # 游戏画面与状态更新
     def game_update(self):
-        extern.singleplayer_background_pic_temp=extern.singleplayer_background_pic.copy()
+        extern.singleplayergame_resource.pic_temp=extern.singleplayergame_resource.pic.copy()
         for enemy in self.enemy_list:
             enemy.update()
-        extern.screen.blit(extern.gameinterface,(0,0))
+        extern.interface_resource.screen.blit(extern.gameinterface,(0,0))
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
         if not self.gameover:
@@ -247,7 +221,10 @@ class Single_player_game():
                     del self.skill_list[inx]
                 else:
                     skill.update()
-            extern.screen.blit(extern.singleplayer_background_pic_temp,self.blit_startpoint())
+            extern.interface_resource.screen.blit(
+                extern.singleplayergame_resource.pic_temp,
+                self.blit_startpoint()
+                )
             for index,enemy in enumerate(self.enemy_list):
                 if (enemy.state==ENEMYDEAD):
                     del self.enemy_list[index]
@@ -259,16 +236,16 @@ class Single_player_game():
     def interface_update(self):
         for enemy in self.enemy_list:
             enemy.update()
-        extern.screen.blit(extern.gameinterface,(0,0))
-        extern.screen.blit(extern.singleplayer_background_pic,(0,0))
+        extern.interface_resource.screen.blit(extern.gameinterface,(0,0))
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.pic,(0,0))
 
     def blit_startpoint(self):
         sx=0
         if ((self.single_player.site[0]>mainwindow_size[0]/2) &
-        (self.single_player.site[0]<(extern.singleplayer_background_size[0]-mainwindow_size[0]/2))):
+        (self.single_player.site[0]<(extern.singleplayergame_resource.size[0]-mainwindow_size[0]/2))):
             sx=self.single_player.site[0]-mainwindow_size[0]/2
-        elif self.single_player.site[0]>=(extern.singleplayer_background_size[0]-mainwindow_size[0]/2):
-            sx=extern.singleplayer_background_size[0]-mainwindow_size[0]
+        elif self.single_player.site[0]>=(extern.singleplayergame_resource.size[0]-mainwindow_size[0]/2):
+            sx=extern.singleplayergame_resource.size[0]-mainwindow_size[0]
         return (-sx,0)
 
 # 信号类

@@ -31,22 +31,22 @@ class Player():
     
     def player_update_blit(self,n):
         if n==0:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_static,
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_static,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==1:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_move1,
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_move1,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==2:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_move2,
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_move2,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==3:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_attack1,
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_attack1,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))  
         elif n==4:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_attack2,
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_attack2,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2))) 
         elif n==5:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_attacked,
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_attacked,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
               
 
@@ -89,8 +89,8 @@ class Player():
                     tempskill.caster=self
                     tempskill.direction=self.skill_direction
                     tempskill.site=self.site[:]
-                    tempskill.size=extern.skill_1_size
-                    tempskill.damage=extern.skill_1_damage
+                    tempskill.size=extern.skill_resource.size
+                    tempskill.damage=extern.skill_resource.damage
                     self.game.skill_list.append(tempskill)
                     self.player_update_blit(3)
                 elif self.count==10:
@@ -109,9 +109,9 @@ class Player():
 # 事实上的构造函数,init里面只是声明一下变量,之所以不赋值,是因为这些值
 # 可能要从文件里读取或者是根据游戏设置而定
     def load(self):
-        self.size=extern.singleplayer_playersize
+        self.size=extern.character_resource.size
         self.count=0
-        self.velocity=extern.singleplayer_player_velocity
+        self.velocity=extern.character_resource.velocity
         self.movex=[self.velocity[0]*x for x in movex]
         self.movey=[self.velocity[1]*y for y in movey]
         self.direction=MOVERIGHT
@@ -119,13 +119,13 @@ class Player():
     def move(self):
         if self.movable:
             self.site[0]=self.site[0]+self.movex[self.signal]
-            if self.site[0]>(extern.singleplayer_background_size[0]-int(self.size[0]/2)):
-                self.site[0]=extern.singleplayer_background_size[0]-int(self.size[0]/2)
+            if self.site[0]>(extern.singleplayergame_resource.size[0]-int(self.size[0]/2)):
+                self.site[0]=extern.singleplayergame_resource.size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
             self.site[1]=self.site[1]+self.movey[self.signal]
-            if self.site[1]>(extern.singleplayer_background_size[1]-int(self.size[1]/2)):
-                self.site[1]=extern.singleplayer_background_size[1]-int(self.size[1]/2)
+            if self.site[1]>(extern.singleplayergame_resource.size[1]-int(self.size[1]/2)):
+                self.site[1]=extern.singleplayergame_resource.size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
                 self.site[1]=int(self.size[1]/2)
 

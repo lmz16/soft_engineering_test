@@ -38,13 +38,13 @@ class Enemy(Item):
         self.move_direction()
         if self.movable:
             self.site[0]=self.site[0]+self.movex[self.direction]
-            if self.site[0]>extern.singleplayer_background_size[0]-int(self.size[0]/2):
-                self.site[0]=extern.singleplayer_background_size[0]-int(self.size[0]/2)
+            if self.site[0]>extern.singleplayergame_resource.size[0]-int(self.size[0]/2):
+                self.site[0]=extern.singleplayergame_resource.size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
             self.site[1]=self.site[1]+self.movey[self.direction]
-            if self.site[1]>extern.singleplayer_background_size[1]-int(self.size[1]/2):
-                self.site[1]=extern.singleplayer_background_size[1]-int(self.size[1]/2)
+            if self.site[1]>extern.singleplayergame_resource.size[1]-int(self.size[1]/2):
+                self.site[1]=extern.singleplayergame_resource.size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
                 self.site[1]=int(self.size[1]/2)
 
@@ -93,10 +93,10 @@ class Enemy(Item):
 
 # 敌人类的初始化函数
     def load(self):
-        self.size=extern.singleplayer_enemysize
+        self.size=extern.enemy_resource.size
         self.state=ENEMYMOVE
         self.movable=True
-        self.velocity=extern.enemy_1_velocity
+        self.velocity=extern.enemy_resource.velocity
         self.movex=[self.velocity*x for x in movex]
         self.movey=[self.velocity*y for y in movey]
         self.count=0
@@ -104,22 +104,22 @@ class Enemy(Item):
 # 敌人的贴图函数
     def enemy_update_blit(self,n):
         if n==0:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_enemy_pic_static,
+            extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_static,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==1:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_move1,
+            extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_move1,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==2:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_move2,
+            extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_move2,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==3:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_attack1,
+            extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_attack1,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==4:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_attack2,
+            extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_attack2,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
         elif n==5:
-            extern.singleplayer_background_pic_temp.blit(extern.singleplayer_player_pic_attacked,
+            extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_attacked,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
 
 # 障碍物类
@@ -163,27 +163,27 @@ class Skill(Item):
 
     def skill_move(self):
         self.site[0]=self.site[0]+self.movex[self.direction]
-        if self.site[0]>(extern.singleplayer_background_size[0]-int(self.size[0]/2)):
+        if self.site[0]>(extern.singleplayergame_resource.size[0]-int(self.size[0]/2)):
             self.delflag=True
         if self.site[0]<int(self.size[0]/2):
             self.delflag=True
         self.site[1]=self.site[1]+self.movey[self.direction]
-        if self.site[1]>(extern.singleplayer_background_size[1]-int(self.size[1]/2)):
+        if self.site[1]>(extern.singleplayergame_resource.size[1]-int(self.size[1]/2)):
             self.delflag=True
         if self.site[1]<int(self.size[1]/2):
             self.delflag=True
 
     def load(self):
         self.delflag=0
-        self.duration=extern.skill_1_duration
-        self.velocity=extern.skill_1_velocity
+        self.duration=extern.skill_resource.duration
+        self.velocity=extern.skill_resource.velocity
         self.movex=[self.velocity*x for x in movex]
         self.movey=[self.velocity*y for y in movey]
-        self.size=extern.skill_1_size
+        self.size=extern.skill_resource.size
         self.last=False
 
     def item_blit(self):
-        extern.singleplayer_background_pic_temp.blit(extern.skill_1_pic,
+        extern.singleplayergame_resource.pic_temp.blit(extern.skill_resource.pic1,
         (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
 
     def attack_judge(self,target):
