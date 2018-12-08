@@ -26,6 +26,10 @@ class Player():
         self.count='小状态计数器'
         self.skill1time='技能一上次发动的时间'
         self.skill1_cd='技能一冷却时间'
+        self.skill2time='技能二上次发动的时间'
+        self.skill2_cd='技能二冷却时间'
+        self.skill3time='技能三上次发动的时间'
+        self.skill3_cd='技能三冷却时间'
         self.skill_direction='技能方向'
         self.freezetime='被攻击冻结时间'
         self.load()
@@ -48,6 +52,9 @@ class Player():
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2))) 
         elif n==5:
             extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_attacked,
+            (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
+        elif n==6:
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_dead,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
               
 
@@ -75,6 +82,9 @@ class Player():
             elif self.signal==ATTACKED:
                 self.state=PLAYERATTACKED
                 self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
             self.player_update_blit(0)
         elif self.state==PLAYERMOVE:
             if self.signal==None:
@@ -95,10 +105,13 @@ class Player():
             elif self.signal==SKILL3:
                 self.state=PLAYERSKILL3
                 self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
             self.player_update_blit((self.count>2)+1)
         elif self.state==PLAYERSKILL1:
             if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
-                if self.count==0:
+                if self.count==4:
                     tempskill=Item.Skill()
                     tempskill.kind=1
                     tempskill.inittime=extern.last_fresh_time
@@ -119,9 +132,15 @@ class Player():
                 self.count=self.count+1
             else:
                 self.player_update_blit(0)
+            if self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
         elif self.state==PLAYERSKILL2:
-            if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
-                if self.count==0:
+            if ((extern.last_fresh_time-self.skill2time)>self.skill2_cd):
+                if self.count==4:
                     tempskill=Item.Skill()
                     tempskill.kind=2
                     tempskill.inittime=extern.last_fresh_time
@@ -135,16 +154,22 @@ class Player():
                 elif self.count==10:
                     self.count=0
                     self.state=PLAYERSTATIC
-                    self.skill1time=extern.last_fresh_time-10/fps
+                    self.skill2time=extern.last_fresh_time-10/fps
                     self.player_update_blit(4)
                 else:
                     self.player_update_blit((self.count>5)+3)
                 self.count=self.count+1
             else:
                 self.player_update_blit(0)
+            if self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
         elif self.state==PLAYERSKILL3:
-            if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
-                if self.count==0:
+            if ((extern.last_fresh_time-self.skill3time)>self.skill3_cd):
+                if self.count==4:
                     tempskill=Item.Skill()
                     tempskill.kind=3
                     tempskill.inittime=extern.last_fresh_time
@@ -158,22 +183,34 @@ class Player():
                 elif self.count==10:
                     self.count=0
                     self.state=PLAYERSTATIC
-                    self.skill1time=extern.last_fresh_time-10/fps
+                    self.skill3time=extern.last_fresh_time-10/fps
                     self.player_update_blit(4)
                 else:
                     self.player_update_blit((self.count>5)+3)
                 self.count=self.count+1
             else:
                 self.player_update_blit(0)
-        elif self.state=PLAYERATTACKED:
             if self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
                 self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
+        elif self.state==PLAYERATTACKED:
             if self.count==self.freezetime:
                 self.count=0
                 self.state=PLAYERSTATIC
             else:
                 self.count=self.count+1
+            if self.signal==ATTACKED:
+                self.count=0
+                self.state=PLAYERATTACKED
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
             self.player_update_blit(5)
+        elif self.state==PLAYERDEAD:
+            self.player_update_blit(6)
 
 
 
