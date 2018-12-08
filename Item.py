@@ -44,7 +44,10 @@ class Enemy(Item):
                 self.site[0]=extern.singleplayergame_resource.size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
-            self.site[1]=self.site[1]+self.movey[self.direction]
+            if(abs(self.site[1] - self.target[1]) < self.speedy):
+                self.site[1]=self.target[1]
+            else:
+                self.site[1]=self.site[1]+self.movey[self.direction]
             if self.site[1]>extern.singleplayergame_resource.size[1]-int(self.size[1]/2):
                 self.site[1]=extern.singleplayergame_resource.size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
