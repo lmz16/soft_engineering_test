@@ -2,14 +2,20 @@
 #   全局变量声明（只是声明，变量初始值为该变量的注释）
 #
 
-screen='主显示窗口'
-cursor='光标图像'
-start_background='开始背景图'
-start_button='单人模式'
-start_button_online='联机对战'
-start_button_setting='设置'
-start_button_help='帮助'
-start_button_custom='自定义'
-help_text='帮助文档'
-help_text_state=0 #帮助文档状态
 game_state='游戏状态'
+last_fresh_time='上次刷新时间'
+
+interface_resource='界面资源'
+character_resource='人物资源'
+singleplayergame_resource='单人游戏资源'
+enemy_resource='敌人资源'
+skill_resource='技能资源'
+singleplayergame='单人游戏对象'
+gameinterface='游戏界面'
+
+#   单人模式选择界面上下两层界面移动值
+single_play_move1=500.0
+single_play_move2=500.0
+#   单人模式选择界面上下两层界面选择图
+single_play_choose1=1
+single_play_choose2=1
