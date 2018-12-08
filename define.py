@@ -44,10 +44,16 @@ PLAYERSTATIC=-1
 PLAYERMOVE=0
 #   攻击状态
 PLAYERATTACK=-2
-#   技能一状态
-PLAYERSKILL1=-4
 #   被攻击状态
 PLAYERATTACKED=-3
+#   技能一状态
+PLAYERSKILL1=-4
+#   技能二状态
+PLAYERSKILL1=-5
+#   技能三状态
+PLAYERSKILL1=-6
+#   死亡状态
+PLAYERDEAD=-7
 
 #   敌人状态
 #   静止状态
@@ -86,6 +92,8 @@ SKILL2=9
 SKILL3=10
 #被攻击信号
 ATTACKED=11
+#死亡信号
+DIE=12
 
 #   移动序列
 movex=[0,0,-1,1,-1,1,-1,1]
