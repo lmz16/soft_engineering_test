@@ -176,6 +176,6 @@ def mouseclick_respond(event):
             extern.game_state=GAMEINIT
 
     if pygame.key.get_pressed()[K_ESCAPE]:
-        if extern.last_fresh_time-extern.init_time>1:
+        if extern.last_fresh_time-extern.init_time>0.5:
             pygame.quit()
             sys.exit()

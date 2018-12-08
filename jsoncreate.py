@@ -23,7 +23,7 @@ singleplayer_enemy_pic_attack2='Resource/enemy/enemy1/enemy1_static.jpeg'
 singleplayer_enemy_pic_attacked='Resource/enemy/enemy1/enemy1_static.jpeg'
 
 fire_ball_pic='Resource/item/fire_ball.png'
-fire_ball_pic_size=(61,56)
+fire_ball_pic_size=[30,28]
 fire_ball_duration=5
 fire_ball_velocity=20
 fire_ball_damage=300
@@ -38,7 +38,7 @@ info=[
     singleplayer_player_pic_attack1,
     singleplayer_player_pic_attack2,
     singleplayer_player_pic_attacked],
-    (174,174),
+    (87,87),
     [(200,200)],
     singleplayer_player_velocity,
     [skill1_cd,skill2_cd,skill3_cd]
@@ -90,7 +90,7 @@ with open('Resource/json/interface','w') as interface:
 info = [
     singleplayer_background_pic,
     (2160,600),
-    [[700,250],[1000,250]]
+    [[700,250],[1000,250],[1250,100],[1250,500]]
 ]
 
 with open('Resource/json/singlegame1','w') as game:
@@ -103,8 +103,8 @@ info = [
     singleplayer_enemy_pic_attack1,
     singleplayer_enemy_pic_attack2,
     singleplayer_enemy_pic_attacked],
-    [120,138],
-    [1000,1000],
+    [60,69],
+    [1000,1000,1000,1000],
     3
 ]
 
