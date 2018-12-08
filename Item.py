@@ -30,8 +30,8 @@ class Enemy(Item):
         self.signal='接收到的信号'
         self.target='攻击目标的site'
         self.game=game
-        self.speedx=2
-        self.speedy=2
+        self.speedx=3
+        self.speedy=3
         self.load()
 
     def move(self):
@@ -42,7 +42,10 @@ class Enemy(Item):
                 self.site[0]=extern.singleplayergame_resource.size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
-            self.site[1]=self.site[1]+self.movey[self.direction]
+            if(abs(self.site[1] - self.target[1]) > self.speedy):
+                self.site[1]=self.site[1]+self.movey[self.direction]
+            else:
+                self.site[1]=self.target[1]
             if self.site[1]>extern.singleplayergame_resource.size[1]-int(self.size[1]/2):
                 self.site[1]=extern.singleplayergame_resource.size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
