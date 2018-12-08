@@ -28,6 +28,8 @@ fire_ball_duration=5
 fire_ball_velocity=20
 fire_ball_damage=300
 skill1_cd=2
+skill2_cd=3
+skill3_cd=4
 
 info=[
     [singleplayer_player_pic_static,
@@ -39,7 +41,7 @@ info=[
     (174,174),
     [(200,200)],
     singleplayer_player_velocity,
-    skill1_cd
+    [skill1_cd,skill2_cd,skill3_cd]
 ]
 with open('Resource/json/jpx','w') as jpx:
     temp=json.dump(info,jpx)
@@ -54,6 +56,15 @@ start_button_setting_filename='Resource/interface/start_button_setting.png'
 start_button_help_filename='Resource/interface/start_button_help.png'
 start_button_custom_filename='Resource/interface/start_button_custom.png'
 help_text_filename='Resource/interface/help_text.png'
+single_choose_background_filename='Resource/interface/single_choose_background.png'
+single_choose_b1_filename='Resource/interface/single_choose_b1.png'
+single_choose_b2_filename='Resource/interface/single_choose_b2.png'
+single_choose_b3_filename='Resource/interface/single_choose_b3.png'
+single_choose_p1_filename='Resource/interface/single_choose_p1.png'
+single_choose_p2_filename='Resource/interface/single_choose_p2.png'
+single_choose_p3_filename='Resource/interface/single_choose_p3.png'
+single_choose_play_filename='Resource/interface/single_choose_play.png'
+single_choose_choose_filename='Resource/interface/single_choose_choose.png'
 info = [
     start_background_filename,
     cursor_filename,
@@ -62,9 +73,17 @@ info = [
     start_button_setting_filename,
     start_button_help_filename,
     start_button_custom_filename,
-    help_text_filename
+    help_text_filename,
+    single_choose_background_filename,
+    single_choose_b1_filename,
+    single_choose_b2_filename,
+    single_choose_b3_filename,
+    single_choose_p1_filename,
+    single_choose_p2_filename,
+    single_choose_p3_filename,
+    single_choose_play_filename,
+    single_choose_choose_filename
 ]
-
 with open('Resource/json/interface','w') as interface:
     temp=json.dump(info,interface)
 
@@ -97,7 +116,8 @@ info = [
     fire_ball_pic_size,
     fire_ball_duration,
     fire_ball_velocity,
-    fire_ball_damage
+    fire_ball_damage,
+    True
 ]
 
 with open('Resource/json/skill1','w') as skill:

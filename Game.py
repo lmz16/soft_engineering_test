@@ -44,7 +44,11 @@ class Single_player_game():
         self.single_player.site=extern.character_resource.site
         self.single_player.game=self
         self.single_player.skill1time=0
+        self.single_player.skill2time=0
+        self.single_player.skill3time=0
         self.single_player.skill1_cd=extern.character_resource.skill1_cd
+        self.single_player.skill2_cd=extern.character_resource.skill2_cd
+        self.single_player.skill3_cd=extern.character_resource.skill3_cd
         self.single_player.skill_direction=MOVERIGHT
         self.gameover=False
 
@@ -59,11 +63,13 @@ class Single_player_game():
                 if (skill.caster==self.single_player):
                     for enemy in self.enemy_list:
                         if (skill.attack_judge(enemy)):
-                            enemy.signal=ATTACKED
-                            enemy.life_value=enemy.life_value-skill.damage
-                            if (not skill.last):
-                                del self.skill_list[inx]
-                                break
+                            if skill not in enemy.ignore_skill:
+                                enemy.signal=ATTACKED
+                                enemy.life_value=enemy.life_value-skill.damage
+                                enemy.ignore_skill.append(skill)
+                                if (not skill.last):
+                                    del self.skill_list[inx]
+                                    break
                 else:
                     # 技能打到了人物而且人物之前没有被这个技能打到
                     if (skill.attack_judge(self.single_player) & \
@@ -204,7 +210,7 @@ class Single_player_game():
                 del self.enemy_list[index]
             del self.single_player
             self.gameover=True
-            time.sleep(1)
+            extern.init_time=extern.last_fresh_time
 
 # 游戏画面与状态更新
     def game_update(self):
@@ -218,6 +224,9 @@ class Single_player_game():
             self.single_player.update()
             for inx,skill in enumerate(self.skill_list):
                 if (skill.delflag):#skill寿命到了的话
+                    for enemy in self.enemy_list:
+                        if skill in enemy.ignore_skill:
+                            enemy.ignore_skill.remove(skill)
                     del self.skill_list[inx]
                 else:
                     skill.update()
@@ -232,12 +241,6 @@ class Single_player_game():
         #     self.gameover=1
         # if (len(self.enemylist)==0):
         #     self.gameover=1
-
-    def interface_update(self):
-        for enemy in self.enemy_list:
-            enemy.update()
-        extern.interface_resource.screen.blit(extern.gameinterface,(0,0))
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.pic,(0,0))
 
     def blit_startpoint(self):
         sx=0

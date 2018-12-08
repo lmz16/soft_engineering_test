@@ -27,6 +27,26 @@ class RInterface():
                 pygame.image.load(data[6]).convert_alpha(),start_button_size)
             self.help_text=pygame.transform.smoothscale(
                 pygame.image.load(data[7]).convert_alpha(),help_text_size)
+            self.single_choose_background=pygame.transform.smoothscale(
+                pygame.image.load(data[8]).convert_alpha(),mainwindow_size)
+            self.single_choose_b1=pygame.transform.smoothscale(
+                pygame.image.load(data[9]).convert_alpha(),single_choose_b_size)
+            self.single_choose_b2=pygame.transform.smoothscale(
+                pygame.image.load(data[10]).convert_alpha(),single_choose_b_size)
+            self.single_choose_b3=pygame.transform.smoothscale(
+                pygame.image.load(data[11]).convert_alpha(),single_choose_b_size)
+            self.single_choose_p1=pygame.transform.smoothscale(
+                pygame.image.load(data[12]).convert_alpha(),single_choose_p_size)
+            self.single_choose_p2=pygame.transform.smoothscale(
+                pygame.image.load(data[13]).convert_alpha(),single_choose_p_size)
+            self.single_choose_p3=pygame.transform.smoothscale(
+                pygame.image.load(data[14]).convert_alpha(),single_choose_p_size)
+            self.single_choose_play=pygame.transform.smoothscale(
+                pygame.image.load(data[15]).convert_alpha(),start_button_size)
+            self.single_choose_bc=pygame.transform.smoothscale(
+                pygame.image.load(data[16]).convert_alpha(),single_choose_bc_size)
+            self.single_choose_pc=pygame.transform.smoothscale(
+                pygame.image.load(data[16]).convert_alpha(),single_choose_pc_size)
 
     def __del__(self):
         del self.screen
@@ -37,6 +57,16 @@ class RInterface():
         del self.start_button_help
         del self.start_button_custom
         del self.help_text
+        del self.single_choose_background
+        del self.single_choose_b1
+        del self.single_choose_b2
+        del self.single_choose_b3
+        del self.single_choose_p1
+        del self.single_choose_p2
+        del self.single_choose_p3
+        del self.single_choose_play
+        del self.single_choose_bc
+        del self.single_choose_pc
 
 
 class RCharacter():
@@ -58,7 +88,9 @@ class RCharacter():
             self.size=playerinfo[1]
             self.site=playerinfo[2][0]
             self.velocity=playerinfo[3]
-            self.skill1_cd=playerinfo[4]
+            self.skill1_cd=playerinfo[4][0]
+            self.skill2_cd=playerinfo[4][1]
+            self.skill3_cd=playerinfo[4][2]
         
     def __del__(self):
         del self.pic_static
@@ -118,3 +150,4 @@ class RSkill():
             self.duration=skillinfo[2]
             self.velocity=skillinfo[3]
             self.damage=skillinfo[4]
+            self.last=skillinfo[5]

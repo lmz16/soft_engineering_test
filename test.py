@@ -60,9 +60,16 @@ while True:
                         start.cursorshow()
                 #   鼠标动作响应
                         start.mouseclick_respond(event)
+                elif(extern.game_state==GAMESINGLECHOOSE):
+                #单人游戏选择画面贴图
+                        start.single_play_blit()
+                        start.cursorshow()
+                        start.mouseclick_respond(event)
+                        
                 elif(extern.game_state==GAMELOAD): 
                         extern.singleplayergame=Game.Single_player_game()
                         extern.game_state=GAMESTART
+                        
                 elif(extern.game_state==GAMESTART):
                 #   游戏循环
                         main.mainloop()

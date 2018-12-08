@@ -8,10 +8,11 @@ mainwindow_size=(1440,900)
 cursor_size=(30,40)
 #   开始按钮尺寸
 start_button_size=(250,50)
-start_button_online_size=(250,50)
-start_button_setting_size=(250,50)
-start_button_help_size=(250,50)
-start_button_custom_size=(250,50)
+#单人模式选择界面缩略图尺寸
+single_choose_b_size=(500,300)
+single_choose_bc_size=(550,340)
+single_choose_p_size=(200,200)
+single_choose_pc_size=(230,230)
 
 #   帮助文档
 help_text_size=(800,600)
@@ -27,6 +28,8 @@ GAMELOAD=-1
 GAMEHELP=2
 GAMEHELP2=3
 GAMEINIT1=4
+#   单人模式选择状态
+GAMESINGLECHOOSE=5
 
 #   碰撞阈值
 COLLISIONTHRESHOLD=10
@@ -49,9 +52,9 @@ PLAYERATTACKED=-3
 #   技能一状态
 PLAYERSKILL1=-4
 #   技能二状态
-PLAYERSKILL1=-5
+PLAYERSKILL2=-5
 #   技能三状态
-PLAYERSKILL1=-6
+PLAYERSKILL3=-6
 #   死亡状态
 PLAYERDEAD=-7
 

@@ -113,6 +113,7 @@ class Player():
             if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
                 if self.count==4:
                     tempskill=Item.Skill()
+                    tempskill.initsite=self.site[:]
                     tempskill.kind=1
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
@@ -142,6 +143,7 @@ class Player():
             if ((extern.last_fresh_time-self.skill2time)>self.skill2_cd):
                 if self.count==4:
                     tempskill=Item.Skill()
+                    tempskill.initsite=self.site[:]
                     tempskill.kind=2
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
@@ -171,6 +173,7 @@ class Player():
             if ((extern.last_fresh_time-self.skill3time)>self.skill3_cd):
                 if self.count==4:
                     tempskill=Item.Skill()
+                    tempskill.initsite=self.site[:]
                     tempskill.kind=3
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
