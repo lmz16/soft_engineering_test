@@ -12,6 +12,10 @@ import Item
 class Player():
     def __init__(self):
         self.site='人物位置(二维)'
+#12月8日晚谢福生改动
+        self.max_life='人物最大生命值'
+        self.max_mana='人物最大魔法值'
+#12月8日晚谢福生改动
         self.life_value='人物生命值'
         self.power='攻击力'
         self.mana='魔法值'

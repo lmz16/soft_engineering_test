@@ -20,6 +20,7 @@ def cursorshow():
 
 
 def start_blit():
+
     extern.interface_resource.screen.blit(extern.interface_resource.start_background,(0,0))
     extern.interface_resource.screen.blit(
         extern.interface_resource.start_button, 
@@ -54,7 +55,10 @@ def help_blit():
         mainwindow_size[1]/2-help_text_size[1]/2)
     )
 def single_play_blit():
+#12月8日晚谢福生改动
     extern.interface_resource.screen.blit(extern.interface_resource.single_choose_background,(0,0))
+    extern.interface_resource.screen.blit(extern.interface_resource.single_choose_background2,(0,0))
+    extern.interface_resource.screen.set_clip((100,0),((mainwindow_size[0]-200),mainwindow_size[1]))
     extern.interface_resource.screen.blit(
         extern.interface_resource.single_choose_play,
         ((mainwindow_size[0]-start_button_size[0])/2,
@@ -83,7 +87,7 @@ def single_play_blit():
         extern.interface_resource.single_choose_p3,
         ((mainwindow_size[0]-single_choose_p_size[0])/2-extern.single_play_move2+3*single_choose_p_size[0],
         mainwindow_size[1]*3/4-single_choose_p_size[1]/2))
-    
+ 
     if(extern.single_play_choose1==1):
         extern.interface_resource.screen.blit(
             extern.interface_resource.single_choose_bc,
@@ -116,6 +120,8 @@ def single_play_blit():
             ((mainwindow_size[0]-single_choose_p_size[0])/2-extern.single_play_move2+3*single_choose_p_size[0],
             mainwindow_size[1]*3/4-single_choose_p_size[1]/2))
 
+    extern.interface_resource.screen.set_clip((0,0),mainwindow_size)
+#12月8日晚谢福生改动
 def mouseclick_respond(event):
     if(event.type==MOUSEBUTTONDOWN):
         if(event.button==1):
@@ -176,5 +182,5 @@ def mouseclick_respond(event):
 
     if pygame.key.get_pressed()[K_ESCAPE]:
         pygame.quit()
-        sys.exit()
+        exit()
     

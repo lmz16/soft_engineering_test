@@ -32,7 +32,7 @@ while True:
                         if event.type==QUIT:
                                 pygame.quit()
                                 sys.exit()
-
+                                
                 if(extern.game_state==GAMEINIT):
                 #   开始画面贴图
                         start.start_blit()

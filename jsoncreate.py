@@ -12,6 +12,8 @@ singleplayer_player_pic_attack1='Resource/character/tmg/attack0.png'
 singleplayer_player_pic_attack2='Resource/character/tmg/attack1.png'
 singleplayer_player_pic_attacked='Resource/character/tmg/move1.png'
 singleplayer_player_velocity=(10,10)
+singleplayer_player_max_life=1000
+singleplayer_player_max_mana=1000
 
 singleplayer_background_pic='Resource/singleplayergame/game1/background1.jpg'
 
@@ -39,7 +41,12 @@ info=[
     (174,174),
     [(200,200)],
     singleplayer_player_velocity,
-    skill1_cd
+    skill1_cd,
+#12月8日晚谢福生改动
+    singleplayer_player_max_life,
+    singleplayer_player_max_mana,
+    fire_ball_pic
+#12月8日晚谢福生改动
 ]
 with open('Resource/json/jpx','w') as jpx:
     temp=json.dump(info,jpx)
@@ -54,7 +61,8 @@ start_button_setting_filename='Resource/interface/start_button_setting.png'
 start_button_help_filename='Resource/interface/start_button_help.png'
 start_button_custom_filename='Resource/interface/start_button_custom.png'
 help_text_filename='Resource/interface/help_text.png'
-single_choose_background_filename='Resource/interface/single_choose_background.png'
+single_choose_background_filename='Resource/interface/single_choose_background.jpg'
+single_choose_background2_filename='Resource/interface/single_choose_background.png'
 single_choose_b1_filename='Resource/interface/single_choose_b1.png'
 single_choose_b2_filename='Resource/interface/single_choose_b2.png'
 single_choose_b3_filename='Resource/interface/single_choose_b3.png'
@@ -81,16 +89,32 @@ info = [
     single_choose_p2_filename,
     single_choose_p3_filename,
     single_choose_play_filename,
-    single_choose_choose_filename
+    single_choose_choose_filename,
+    single_choose_background2_filename
 ]
 
 with open('Resource/json/interface','w') as interface:
     temp=json.dump(info,interface)
 
+#12月8日晚谢福生改动
+single_game_hpmp_filename='Resource/interface/single_game_hpmp.png'
+single_game_hp_filename='Resource/interface/single_game_hp.png'
+single_game_mp_filename='Resource/interface/single_game_mp.png'
+gameinterface_filename='Resource/interface/gameinterface.png'
+single_game_smallplayer_filename='Resource/interface/single_game_smallplayer.png'
+#12月8日晚谢福生改动
+
 info = [
     singleplayer_background_pic,
     (2160,600),
-    [[700,250],[1000,250]]
+    [[700,250],[1000,250]],
+    #12月8日晚谢福生改动
+    single_game_hpmp_filename,
+    single_game_hp_filename,
+    single_game_mp_filename,
+    gameinterface_filename,
+    single_game_smallplayer_filename
+    #12月8日晚谢福生改动
 ]
 
 with open('Resource/json/singlegame1','w') as game:

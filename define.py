@@ -21,7 +21,14 @@ single_choose_b_size=(500,300)
 single_choose_bc_size=(550,340)
 single_choose_p_size=(200,200)
 single_choose_pc_size=(230,230)
-
+#12月8日晚谢福生改动
+#单人模式游戏界面下方状态的尺寸
+single_game_portrait_size=(80,80)
+single_game_skill_size=(40,40)
+single_game_hp_size=(100,30)
+single_game_map_size=(300,300)
+single_game_p_size=(15,15)
+#12月8日晚谢福生改动
 #   游戏状态常量
 #   初始状态
 GAMEINIT=0

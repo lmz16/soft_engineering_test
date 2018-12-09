@@ -46,6 +46,10 @@ class Single_player_game():
         self.single_player.skill1time=0
         self.single_player.skill1_cd=extern.character_resource.skill1_cd
         self.single_player.skill_direction=MOVERIGHT
+#12月8日晚谢福生改动
+        self.single_player.max_life=extern.character_resource.max_life
+        self.single_player.max_mana=extern.character_resource.max_mana
+#12月8日晚谢福生改动
         self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
@@ -212,6 +216,9 @@ class Single_player_game():
         for enemy in self.enemy_list:
             enemy.update()
         extern.interface_resource.screen.blit(extern.gameinterface,(0,0))
+#12月8日晚谢福生改动
+        self.state_update()
+#12月8日晚谢福生改动
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
         if not self.gameover:
@@ -232,13 +239,57 @@ class Single_player_game():
         #     self.gameover=1
         # if (len(self.enemylist)==0):
         #     self.gameover=1
+#12月8日晚谢福生改动
+    def state_update(self):
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hpmp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6-2*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hpmp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6-1*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.set_clip((mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6-2*single_game_hp_size[1]),
+        (mainwindow_size[0]/3+single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6+0*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2+(self.single_player.max_life)/10/2-(self.single_player.max_life)/10,
+        mainwindow_size[1]*5/6-2*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_mp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2+(self.single_player.max_mana)/10/2-(self.single_player.max_mana)/10,
+        mainwindow_size[1]*5/6-1*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.set_clip((0,0),mainwindow_size)
 
-    def interface_update(self):
-        for enemy in self.enemy_list:
-            enemy.update()
-        extern.interface_resource.screen.blit(extern.gameinterface,(0,0))
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.pic,(0,0))
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.gameinterface,
+        (mainwindow_size[0]-single_game_map_size[0],
+        mainwindow_size[1]-single_game_map_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_smallplayer,
+        (mainwindow_size[0]-single_game_map_size[0]+self.single_player.site[0]/extern.singleplayergame_resource.size[0]*single_game_map_size[0],
+        mainwindow_size[1]-single_game_map_size[1]+self.single_player.site[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
+    )
+        
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_k,
+        (mainwindow_size[0]-single_game_map_size[0]-self.blit_startpoint()[0]/extern.singleplayergame_resource.size[0]*single_game_map_size[0],
+        mainwindow_size[1]-single_game_map_size[1]-self.blit_startpoint()[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.character_resource.pic_portrait,
+        (mainwindow_size[0]/4-single_game_portrait_size[0]/2,
+        mainwindow_size[1]*5/6-1*single_game_portrait_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
+        (mainwindow_size[0]/4+single_game_skill_size[0],
+        mainwindow_size[1]*5/6-5/2*single_game_skill_size[1])
+    )
 
+
+
+#12月8日晚谢福生改动
+    
     def blit_startpoint(self):
         sx=0
         if ((self.single_player.site[0]>mainwindow_size[0]/2) &

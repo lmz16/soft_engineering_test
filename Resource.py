@@ -47,6 +47,8 @@ class RInterface():
                 pygame.image.load(data[16]).convert_alpha(),single_choose_bc_size)
             self.single_choose_pc=pygame.transform.smoothscale(
                 pygame.image.load(data[16]).convert_alpha(),single_choose_pc_size)
+            self.single_choose_background2=pygame.transform.smoothscale(
+                pygame.image.load(data[17]).convert_alpha(),mainwindow_size)
 
     def __del__(self):
         del self.screen
@@ -67,6 +69,8 @@ class RInterface():
         del self.single_choose_play
         del self.single_choose_bc
         del self.single_choose_pc
+        del self.single_choose_background2
+
 
 
 class RCharacter():
@@ -89,13 +93,24 @@ class RCharacter():
             self.site=playerinfo[2][0]
             self.velocity=playerinfo[3]
             self.skill1_cd=playerinfo[4]
-        
+#12月8日晚谢福生改动
+            self.max_life=playerinfo[5]
+            self.max_mana=playerinfo[6]
+            self.pic_portrait=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[0][0]).convert_alpha(),single_game_portrait_size)
+            self.skill_1=pygame.transform.smoothscale(
+                pygame.image.load(playerinfo[7]).convert_alpha(),single_game_skill_size)
+
+
     def __del__(self):
         del self.pic_static
         del self.pic_move1
         del self.pic_move2
         del self.pic_attack1
         del self.pic_attack2
+        del self.pic_portrait
+        del self.skill_1
+#12月8日晚谢福生改动
 
 
 class RSingleplayergame():
@@ -107,10 +122,32 @@ class RSingleplayergame():
                 pygame.image.load(gameinfo[0]).convert_alpha(),self.size)
             self.pic_temp=self.pic.copy()
             self.enemysite=gameinfo[2]
+#12月8日晚谢福生改动
+            self.single_game_hpmp=pygame.transform.smoothscale(
+                pygame.image.load(gameinfo[3]).convert_alpha(),single_game_hp_size)
+            self.single_game_hp=pygame.transform.smoothscale(
+                pygame.image.load(gameinfo[4]).convert_alpha(),single_game_hp_size)
+            self.single_game_mp=pygame.transform.smoothscale(
+                pygame.image.load(gameinfo[5]).convert_alpha(),single_game_hp_size)
+            self.gameinterface=pygame.transform.smoothscale(
+                pygame.image.load(gameinfo[0]).convert_alpha(),single_game_map_size)
+            self.single_game_smallplayer=pygame.transform.smoothscale(
+                pygame.image.load(gameinfo[7]).convert_alpha(),single_game_p_size)
+            self.single_game_k=pygame.transform.smoothscale(
+                pygame.image.load(gameinfo[3]).convert_alpha(),(int(mainwindow_size[0]*single_game_map_size[0]/self.size[0]),int(mainwindow_size[1]*2/3*single_game_map_size[1]/self.size[1])))
+#12月8日晚谢福生改动
 
     def __del__(self):
         del self.pic
         del self.pic_temp
+#12月8日晚谢福生改动
+        del self.single_game_hpmp
+        del self.single_game_hp
+        del self.single_game_mp
+        del self.gameinterface
+        del self.single_game_smallplayer
+        del self.single_game_k
+#12月8日晚谢福生改动
 
 
 class REnemy():
@@ -148,3 +185,4 @@ class RSkill():
             self.duration=skillinfo[2]
             self.velocity=skillinfo[3]
             self.damage=skillinfo[4]
+
