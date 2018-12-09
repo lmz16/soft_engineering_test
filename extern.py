@@ -12,6 +12,8 @@ character_resource='人物资源'
 singleplayergame_resource='单人游戏资源'
 enemy_resource='敌人资源'
 skill_resource='技能资源'
+skill_resource2='技能资源2'
+skill_resource3='技能资源3'
 
 singleplayergame='单人游戏对象'
 gameinterface='游戏界面'

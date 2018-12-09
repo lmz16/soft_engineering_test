@@ -13,7 +13,7 @@ singleplayer_player_pic_attack2='Resource/character/tmg/attack1.png'
 singleplayer_player_pic_attacked='Resource/character/tmg/move1.png'
 singleplayer_player_velocity=(10,10)
 
-singleplayer_background_pic='Resource/singleplayergame/game1/background1.jpg'
+singleplayer_background_pic='Resource/singleplayergame/game1/background1.png'
 
 singleplayer_enemy_pic_static='Resource/enemy/enemy1/enemy1_static.jpeg'
 singleplayer_enemy_pic_move1='Resource/enemy/enemy1/enemy1_static.jpeg'
@@ -117,8 +117,35 @@ info = [
     fire_ball_duration,
     fire_ball_velocity,
     fire_ball_damage,
-    True
+    True,
+    1
 ]
 
 with open('Resource/json/skill1','w') as skill:
+    temp=json.dump(info,skill)
+
+info = [
+    [fire_ball_pic],
+    fire_ball_pic_size,
+    fire_ball_duration,
+    fire_ball_velocity,
+    fire_ball_damage,
+    True,
+    2
+]
+
+with open('Resource/json/skill2','w') as skill:
+    temp=json.dump(info,skill)
+
+info = [
+    [fire_ball_pic],
+    fire_ball_pic_size,
+    fire_ball_duration,
+    fire_ball_velocity,
+    fire_ball_damage,
+    True,
+    3
+]
+
+with open('Resource/json/skill3','w') as skill:
     temp=json.dump(info,skill)

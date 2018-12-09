@@ -32,9 +32,14 @@ class Single_player_game():
     def load_from_json(self):
         extern.gameinterface=pygame.image.load(gameinterface_filename).convert()
         extern.singleplayergame_resource=Resource.RSingleplayergame('Resource/json/singlegame1')
-        extern.character_resource=Resource.RCharacter('Resource/json/jpx')
+        if extern.single_play_choose2==1:
+            extern.character_resource=Resource.RCharacter('Resource/json/jpx')
+        elif single_play_choose2==2:
+            extern.character_resource=Resource.RCharacter('Resource/json/jpx')
         extern.enemy_resource=Resource.REnemy('Resource/json/enemy1')
         extern.skill_resource=Resource.RSkill('Resource/json/skill1')
+        extern.skill_resource2=Resource.RSkill('Resource/json/skill2')
+        extern.skill_resource3=Resource.RSkill('Resource/json/skill3')
         for index,location in enumerate(extern.singleplayergame_resource.enemysite):
             tempenemy=Item.Enemy(self)
             tempenemy.site=location

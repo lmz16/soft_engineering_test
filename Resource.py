@@ -151,3 +151,4 @@ class RSkill():
             self.velocity=skillinfo[3]
             self.damage=skillinfo[4]
             self.last=skillinfo[5]
+            self.kind=skillinfo[6]

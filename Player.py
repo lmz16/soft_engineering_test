@@ -113,8 +113,9 @@ class Player():
             if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
                 if self.count==4:
                     tempskill=Item.Skill()
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource
                     tempskill.initsite=self.site[:]
-                    tempskill.kind=1
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
                     tempskill.direction=self.skill_direction
@@ -143,14 +144,15 @@ class Player():
             if ((extern.last_fresh_time-self.skill2time)>self.skill2_cd):
                 if self.count==4:
                     tempskill=Item.Skill()
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource2
                     tempskill.initsite=self.site[:]
-                    tempskill.kind=2
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
                     tempskill.direction=self.skill_direction
                     tempskill.site=self.site[:]
-                    tempskill.size=extern.skill_resource.size
-                    tempskill.damage=extern.skill_resource.damage
+                    tempskill.size=extern.skill_resource2.size
+                    tempskill.damage=extern.skill_resource2.damage
                     self.game.skill_list.append(tempskill)
                     self.player_update_blit(3)
                 elif self.count==10:
@@ -173,14 +175,15 @@ class Player():
             if ((extern.last_fresh_time-self.skill3time)>self.skill3_cd):
                 if self.count==4:
                     tempskill=Item.Skill()
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource3
                     tempskill.initsite=self.site[:]
-                    tempskill.kind=3
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
                     tempskill.direction=self.skill_direction
                     tempskill.site=self.site[:]
-                    tempskill.size=extern.skill_resource.size
-                    tempskill.damage=extern.skill_resource.damage
+                    tempskill.size=extern.skill_resource3.size
+                    tempskill.damage=extern.skill_resource3.damage
                     self.game.skill_list.append(tempskill)
                     self.player_update_blit(3)
                 elif self.count==10:
