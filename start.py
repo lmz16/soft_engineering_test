@@ -4,6 +4,7 @@ import pygame
 from pygame.locals import *
 import time
 import Resource
+import os
 
 def startinit():
     extern.interface_resource=Resource.RInterface('Resource/json/interface')
@@ -167,6 +168,10 @@ def mouseclick_respond(event):
                 elif((abs(event.pos[0]-(mainwindow_size[0]/2-extern.single_play_move2+3*single_choose_p_size[0]))<single_choose_p_size[0]/2) \
                 & (abs(event.pos[1]-3/4*mainwindow_size[1])<single_choose_p_size[1]/2)):
                     extern.single_play_choose2=3
+            elif((abs(event.pos[0]-mainwindow_size[0]/2)<start_button_size[0]/2) \
+            & (abs(event.pos[1]-3/4*mainwindow_size[1]-start_button_size[1]*3)<start_button_size[1]/2) \
+            & (extern.game_state==GAMEINIT)):
+                extern.game_state=GAMECUSTOMCHOOSE
                     
         
     elif(event.type==MOUSEBUTTONUP):
@@ -178,4 +183,4 @@ def mouseclick_respond(event):
     if pygame.key.get_pressed()[K_ESCAPE]:
         if extern.last_fresh_time-extern.init_time>0.5:
             pygame.quit()
-            sys.exit()
+            os._exit(0)

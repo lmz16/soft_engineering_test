@@ -4,6 +4,7 @@
 
 import json
 from sys import exit
+import os
 
 singleplayer_player_pic_static='Resource/character/tmg/static.png'
 singleplayer_player_pic_move1='Resource/character/tmg/static.png'
@@ -65,6 +66,10 @@ single_choose_p2_filename='Resource/interface/single_choose_p2.png'
 single_choose_p3_filename='Resource/interface/single_choose_p3.png'
 single_choose_play_filename='Resource/interface/single_choose_play.png'
 single_choose_choose_filename='Resource/interface/single_choose_choose.png'
+custom_choose='Resource/interface/custom_choose.png'
+custom_choose_bk='Resource/interface/custom_choose_bk.png'
+custom_pic_choose_bk='Resource/interface/pic_choose_bk.png'
+custom_frame='Resource/interface/frame.png'
 info = [
     start_background_filename,
     cursor_filename,
@@ -82,7 +87,11 @@ info = [
     single_choose_p2_filename,
     single_choose_p3_filename,
     single_choose_play_filename,
-    single_choose_choose_filename
+    single_choose_choose_filename,
+    [custom_choose,
+    custom_choose_bk],
+    custom_pic_choose_bk,
+    custom_frame
 ]
 with open('Resource/json/interface','w') as interface:
     temp=json.dump(info,interface)
@@ -147,5 +156,12 @@ info = [
     3
 ]
 
-with open('Resource/json/skill3','w') as skill:
+pic=[]
+for x in os.listdir('Resource/custom'):
+    pic.append(x)
+
+info=[pic]
+
+with open('Resource/json/custom','w') as skill:
     temp=json.dump(info,skill)
+

@@ -17,6 +17,10 @@ single_choose_pc_size=(230,230)
 #   帮助文档
 help_text_size=(800,600)
 
+#   自定义模式缩略图大小
+custom_thumbnail_size=(100,160)
+custom_pic_choose_size=(700,700)
+
 #   游戏状态常量
 #   初始状态
 GAMEINIT=0
@@ -30,6 +34,12 @@ GAMEHELP2=3
 GAMEINIT1=4
 #   单人模式选择状态
 GAMESINGLECHOOSE=5
+#   自定义模式选择状态
+GAMECUSTOMCHOOSE=20
+#   自定义人物模式
+GAMECUSTOMC=21
+#   自定义关卡模式
+GAMECUSTOMG=22
 
 #   碰撞阈值
 COLLISIONTHRESHOLD=10
