@@ -133,6 +133,7 @@ class Player():
                     self.player_update_blit((self.count>5)+3)
                 self.count=self.count+1
             else:
+                self.state=PLAYERSTATIC
                 self.player_update_blit(0)
             if self.signal==ATTACKED:
                 self.state=PLAYERATTACKED
@@ -164,6 +165,7 @@ class Player():
                     self.player_update_blit((self.count>5)+3)
                 self.count=self.count+1
             else:
+                self.state=PLAYERSTATIC
                 self.player_update_blit(0)
             if self.signal==ATTACKED:
                 self.state=PLAYERATTACKED
@@ -195,6 +197,7 @@ class Player():
                     self.player_update_blit((self.count>5)+3)
                 self.count=self.count+1
             else:
+                self.state=PLAYERSTATIC
                 self.player_update_blit(0)
             if self.signal==ATTACKED:
                 self.state=PLAYERATTACKED

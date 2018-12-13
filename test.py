@@ -68,6 +68,8 @@ while True:
                         start.mouseclick_respond(event)
 
                 elif(extern.game_state ==GAMECUSTOMCHOOSE):
+                        if extern.custommode:
+                                del extern.custommode
                         extern.custommode=Custom.CustomC()
                         extern.game_state=GAMECUSTOMC
                 
@@ -75,6 +77,8 @@ while True:
                         extern.custommode.update(event)
                         
                 elif(extern.game_state==GAMELOAD): 
+                        if extern.singleplayergame:
+                                del extern.singleplayergame
                         extern.singleplayergame=Game.Single_player_game()
                         extern.game_state=GAMESTART
                         

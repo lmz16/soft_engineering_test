@@ -6,6 +6,8 @@ from define import *
 import json
 import time
 import Resource
+import os
+import shutil
 
 class CustomC():
     def __init__(self):
@@ -22,15 +24,16 @@ class CustomC():
         self.skill_2=None
         self.skill_3=None
         self.finished=False
-        self.buttonscale=[[160,290,120,150],[103,894,44,838]]
+        self.buttonscale=[[160,290,120,150],[103,894,44,838],[310,437,120,150],[474,600,120,150],[160,290,351,384],[308,437,351,384]]
         self.rolllength=0
         self.fontObj = pygame.font.Font('DejaVuSans.ttf', 20)
         self.actionkind=-1
-        self.actioncomplete=[False,False,False]
+        self.actioncomplete=[False,False,False,False]
         self.choosestate=0
         self.charactersize=[200,350]
         self.actionpic=[]
         self.actionblitcount=0
+        self.actionpath=[[],[],[],[]]
         extern.custom_resource=Resource.RCustom('Resource/json/custom')
 
     def customshow1(self):
@@ -69,14 +72,22 @@ class CustomC():
         if(event.type==MOUSEBUTTONDOWN):
             if(event.button==1):
                 if ((x<self.buttonscale[0][1])&(x>self.buttonscale[0][0])&(y<self.buttonscale[0][3])&(y>self.buttonscale[0][2])):
-                    self.state=2
-                    self.actionkind=0
+                    self.state2init(0)
+                elif ((x<self.buttonscale[2][1])&(x>self.buttonscale[2][0])&(y<self.buttonscale[2][3])&(y>self.buttonscale[2][2])):
+                    self.state2init(1)
+                elif ((x<self.buttonscale[3][1])&(x>self.buttonscale[3][0])&(y<self.buttonscale[3][3])&(y>self.buttonscale[3][2])):    
+                    self.state2init(2)
+                elif ((x<self.buttonscale[4][1])&(x>self.buttonscale[4][0])&(y<self.buttonscale[4][3])&(y>self.buttonscale[4][2])):    
+                    self.state2init(3)
+                elif ((x<self.buttonscale[5][1])&(x>self.buttonscale[5][0])&(y<self.buttonscale[5][3])&(y>self.buttonscale[5][2])):
                     self.temptime=extern.last_fresh_time
-                    self.actioncomplete[0]=False
+                    extern.game_state=GAMEINIT
                     if len(self.actionpic)>0:
                         for p in self.actionpic:
                             del p
                     self.actionpic=[]
+                    if False not in self.actionpath:
+                        self.writejson()
         x-=extern.interface_resource.cursor.get_width()/2
         y-=extern.interface_resource.cursor.get_width()/2
         textSurfaceObj = self.fontObj.render('('+str(x)+','+str(y)+') '+str(self.state), True,(0,0,0),(255,255,255))
@@ -107,11 +118,12 @@ class CustomC():
                                         pygame.image.load('Resource/custom/'+extern.custom_resource.picpath[int(tx/140)+int(ty/250)*5]
                                         ).convert_alpha(),
                                     self.charactersize))
+                                self.actionpath[self.actionkind].append('Resource/custom/'+extern.custom_resource.picpath[int(tx/140)+int(ty/250)*5])
                                 self.choosestate=self.choosestate+1
                                 self.temptime=extern.last_fresh_time
                                 if self.choosestate==3:
                                     self.choosestate=0
-                                    self.actioncomplete[0]=True
+                                    self.actioncomplete[self.actionkind]=True
                                     self.state=1
 
         x-=extern.interface_resource.cursor.get_width()/2
@@ -121,14 +133,47 @@ class CustomC():
         textRectObj.center = (1300,100)
         extern.interface_resource.screen.blit(textSurfaceObj, textRectObj)
 
+    def state2init(self,ak):
+        self.state=2
+        self.actionkind=ak
+        self.temptime=extern.last_fresh_time
+        self.actioncomplete[ak]=False
+        if len(self.actionpic)>0:
+            for p in self.actionpic:
+                del p
+        self.actionpic=[]
+        self.actionpath[self.actionkind]=[]
+
     def actionblit(self):
         if self.actionkind>-1:
             if self.actioncomplete[self.actionkind]:
                 self.actionblitcount=self.actionblitcount+1
                 if self.actionblitcount==15:
                     self.actionblitcount=0
-                extern.interface_resource.screen.blit(self.actionpic[int(self.actionblitcount/5)],(1000,100))
+                if not extern.game_state==GAMEINIT:
+                    extern.interface_resource.screen.blit(self.actionpic[int(self.actionblitcount/5)],(1000,100))
 
+    def writejson(self):
+        dirname='Resource/character/'+time.strftime('%Y%m%d%H%M',time.localtime(time.time()))
+        os.mkdir(dirname)
+        filename=[*self.actionpath[0],*self.actionpath[1],*self.actionpath[2],*self.actionpath[3]]
+        filename=list({}.fromkeys(filename).keys()) 
+        for x in filename:
+            shutil.copyfile(x,dirname+'/'+x.split('/')[-1])
+        with open ('Resource/json/'+time.strftime('%Y%m%d%H%M',time.localtime(time.time())),'w') as mc:
+            info = [
+                [dirname+'/'+self.actionpath[0][0].split('/')[-1],
+                dirname+'/'+self.actionpath[1][0].split('/')[-1],
+                dirname+'/'+self.actionpath[1][1].split('/')[-1],
+                dirname+'/'+self.actionpath[2][0].split('/')[-1],
+                dirname+'/'+self.actionpath[2][1].split('/')[-1],
+                dirname+'/'+self.actionpath[3][0].split('/')[-1]],
+                (75,123),
+                [(200,200)],
+                (10,10),
+                [2,3,4]
+            ]
+            json.dump(info,mc)
 
     def update(self,event):
         if self.state==1:

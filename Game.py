@@ -25,6 +25,8 @@ class Single_player_game():
         self.skill_list=[]
     # 信号列表,用于暂存未处理的信号
         self.signal_list=[]
+    # 障碍物列表
+        self.obstacle_list=[]
     # 键盘状态
         self.keyboardevent=pygame.key.get_pressed()
 
