@@ -2,7 +2,8 @@ from define import *
 import extern
 import pygame
 from pygame.locals import *
-from sys import exit
+import sys
+import Game
 
 def mainloop():
-    exit()
+    extern.singleplayergame.game_update()
