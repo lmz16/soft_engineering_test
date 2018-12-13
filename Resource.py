@@ -49,6 +49,12 @@ class RInterface():
                 pygame.image.load(data[16]).convert_alpha(),single_choose_pc_size)
             self.single_choose_background2=pygame.transform.smoothscale(
                 pygame.image.load(data[17]).convert_alpha(),mainwindow_size)
+            #12月13日谢福生改动
+            self.setting_text=pygame.transform.smoothscale(
+                pygame.image.load(data[18]).convert_alpha(),mainwindow_size)
+            self.setting_choose=pygame.transform.smoothscale(
+                pygame.image.load(data[19]).convert_alpha(),single_game_p_size)
+                #12月13日谢福生改动
 
     def __del__(self):
         del self.screen
@@ -70,6 +76,10 @@ class RInterface():
         del self.single_choose_bc
         del self.single_choose_pc
         del self.single_choose_background2
+        #12月13日谢福生改动
+        del self.setting_text
+        del self.setting_choose
+        #12月13日谢福生改动
 
 
 

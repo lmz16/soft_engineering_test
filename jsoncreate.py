@@ -61,6 +61,10 @@ start_button_setting_filename='Resource/interface/start_button_setting.png'
 start_button_help_filename='Resource/interface/start_button_help.png'
 start_button_custom_filename='Resource/interface/start_button_custom.png'
 help_text_filename='Resource/interface/help_text.png'
+#12月13日谢福生改动
+setting_text_filename='Resource/interface/setting_text.png'
+setting_choose_filename='Resource/interface/setting_choose.png'
+#12月13日谢福生改动
 single_choose_background_filename='Resource/interface/single_choose_background.jpg'
 single_choose_background2_filename='Resource/interface/single_choose_background.png'
 single_choose_b1_filename='Resource/interface/single_choose_b1.png'
@@ -90,7 +94,11 @@ info = [
     single_choose_p3_filename,
     single_choose_play_filename,
     single_choose_choose_filename,
-    single_choose_background2_filename
+    single_choose_background2_filename,
+    #12月13日谢福生改动
+    setting_text_filename,
+    setting_choose_filename
+    #12月13日谢福生改动
 ]
 
 with open('Resource/json/interface','w') as interface:
@@ -106,7 +114,7 @@ single_game_smallplayer_filename='Resource/interface/single_game_smallplayer.png
 
 info = [
     singleplayer_background_pic,
-    (2160,600),
+    (2160,900),
     [[700,250],[1000,250]],
     #12月8日晚谢福生改动
     single_game_hpmp_filename,

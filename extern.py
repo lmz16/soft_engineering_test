@@ -12,7 +12,8 @@ enemy_resource='敌人资源'
 skill_resource='技能资源'
 singleplayergame='单人游戏对象'
 gameinterface='游戏界面'
-
+# 设置值
+setting_value=[0,0,0,0,0,0,0,0,0,0,0,0]
 #   单人模式选择界面上下两层界面移动值
 single_play_move1=500.0
 single_play_move2=500.0

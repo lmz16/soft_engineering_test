@@ -65,6 +65,12 @@ while True:
                         start.cursorshow()
                 #   鼠标动作响应
                         start.mouseclick_respond(event)
+#12月13日谢福生改动
+                elif(extern.game_state==GAMESETTING):
+                        start.setting_blit()
+                        start.cursorshow()
+                        start.mouseclick_respond(event)
+#12月13日谢福生改动
                 elif(extern.game_state==GAMESINGLECHOOSE):
                 #单人游戏选择画面贴图
                         start.single_play_blit()

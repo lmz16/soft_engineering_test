@@ -216,12 +216,10 @@ class Single_player_game():
         for enemy in self.enemy_list:
             enemy.update()
         extern.interface_resource.screen.blit(extern.gameinterface,(0,0))
-#12月8日晚谢福生改动
-        self.state_update()
-#12月8日晚谢福生改动
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
         if not self.gameover:
+            
             self.single_player.update()
             for inx,skill in enumerate(self.skill_list):
                 if (skill.delflag):#skill寿命到了的话
@@ -232,9 +230,13 @@ class Single_player_game():
                 extern.singleplayergame_resource.pic_temp,
                 self.blit_startpoint()
                 )
+            #12月8日晚谢福生改动
+            self.state_update()
+            #12月8日晚谢福生改动
             for index,enemy in enumerate(self.enemy_list):
                 if (enemy.state==ENEMYDEAD):
                     del self.enemy_list[index]
+        
         # if (self.single_player.state==PLAYERDEAD):
         #     self.gameover=1
         # if (len(self.enemylist)==0):
@@ -278,12 +280,20 @@ class Single_player_game():
         mainwindow_size[1]-single_game_map_size[1]-self.blit_startpoint()[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
     )
         extern.interface_resource.screen.blit(extern.character_resource.pic_portrait,
-        (mainwindow_size[0]/4-single_game_portrait_size[0]/2,
+        (mainwindow_size[0]/4+0*single_game_portrait_size[0]/2,
         mainwindow_size[1]*5/6-1*single_game_portrait_size[1])
     )
         extern.interface_resource.screen.blit(extern.character_resource.skill_1,
-        (mainwindow_size[0]/4+single_game_skill_size[0],
-        mainwindow_size[1]*5/6-5/2*single_game_skill_size[1])
+        (mainwindow_size[0]/4+3/2*single_game_skill_size[0],
+        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
+        )
+        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
+        (mainwindow_size[0]/4+5/2*single_game_skill_size[0],
+        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
+        )    
+        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
+        (mainwindow_size[0]/4+7/2*single_game_skill_size[0],
+        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
     )
 
 
