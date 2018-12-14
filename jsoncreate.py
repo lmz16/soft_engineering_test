@@ -47,7 +47,8 @@ info=[
     [skill1_cd,skill2_cd,skill3_cd],
     singleplayer_player_max_life,
     singleplayer_player_max_mana,
-    fire_ball_pic
+    fire_ball_pic,
+    3
 ]
 with open('Resource/json/jpx','w') as jpx:
     temp=json.dump(info,jpx)

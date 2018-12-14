@@ -31,9 +31,13 @@ class Enemy(Item):
         self.signal='接收到的信号'
         self.target='攻击目标的site'
         self.game=game
-        self.speedx=2
-        self.speedy=2
         self.ignore_skill=[]
+        self.count = "計數器"
+        self.attack_range=100
+        self.skill1time='技能一上次发动的时间'
+        self.skill1_cd='技能一冷却时间'
+        self.skill_direction=0
+        self.freezetime='被攻击冻结时间'
         self.load()
 
     def move(self):
@@ -44,7 +48,7 @@ class Enemy(Item):
                 self.site[0]=extern.singleplayergame_resource.size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
-            if(abs(self.site[1] - self.target[1]) < self.speedy):
+            if(abs(self.site[1] - self.target[1]) < self.velocity):
                 self.site[1]=self.target[1]
             else:
                 self.site[1]=self.site[1]+self.movey[self.direction]
@@ -52,6 +56,9 @@ class Enemy(Item):
                 self.site[1]=extern.singleplayergame_resource.size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
                 self.site[1]=int(self.size[1]/2)
+
+    def patrol(self):        # AI巡逻
+        pass
 
     def move_direction(self):
         self.direction = MOVELEFT
@@ -78,15 +85,20 @@ class Enemy(Item):
         if self.life_value<0:
             self.state=ENEMYDEAD
         if self.state==ENEMYSTATIC:
+            if self.enemy_attack_judge():
+                #self.state = ENEMYATTACK
+                self.count = 0
             self.enemy_update_blit(0)
         elif self.state==ENEMYMOVE:
             self.move()
             self.enemy_update_blit(0)
-            if self.signal == None:
-                pass
-            elif self.signal == ATTACKED:
+            if self.signal == ATTACKED:
                 self.state=ENEMYATTACKED 
                 self.count=0
+            elif self.enemy_attack_judge():
+                self.state = ENEMYATTACK
+                self.count = 0
+                pass
         elif self.state==ENEMYATTACKED: 
             if self.count==10:
                 self.state=ENEMYMOVE
@@ -95,6 +107,40 @@ class Enemy(Item):
             if self.signal == ATTACKED:
                 self.count=0
             self.enemy_update_blit(0)
+        elif self.state==ENEMYATTACK:
+            if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
+                if self.count==4:
+                    tempskill=Skill()
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource
+                    tempskill.initsite=self.site[:]
+                    tempskill.inittime=extern.last_fresh_time
+                    tempskill.caster=self
+                    tempskill.direction=self.skill_direction
+                    tempskill.site=self.site[:]
+                    tempskill.size=extern.skill_resource.size
+                    tempskill.damage=extern.skill_resource.damage
+                    self.game.skill_list.append(tempskill)
+                    self.enemy_update_blit(0)
+                elif self.count==10:
+                    self.count=0
+                    self.state=ENEMYMOVE
+                    self.skill1time=extern.last_fresh_time-10/fps
+                    self.enemy_update_blit(0)
+                else:
+                    self.enemy_update_blit(0)
+                self.count=self.count+1
+            else:
+                self.enemy_update_blit(0)
+            if self.signal==ATTACKED:
+                self.state=ENEMYATTACKED
+                self.count=0
+            elif self.life_value<0:
+                self.state=ENEMYDEAD
+                self.count=0
+            elif self.enemy_attack_judge == False:
+                self.state = ENEMYMOVE
+                self.count = 0
 
 # 敌人类的初始化函数
     def load(self):
@@ -126,6 +172,23 @@ class Enemy(Item):
         elif n==5:
             extern.singleplayergame_resource.pic_temp.blit(extern.enemy_resource.pic_attacked,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
+
+    def enemy_attack_judge(self):
+        judge = False
+        if self.target[0] - self.site[0] < self.attack_range and self.target[1] == self.site[1]:
+            judge = True
+            self.skill_direction = MOVELEFT
+        if self.site[0] - self.target[0] < self.attack_range and self.target[1] == self.site[1]:
+            judge = True
+            self.skill_direction = MOVERIGHT
+        if self.target[1] - self.site[1] < self.attack_range and self.target[0] == self.site[0]:
+            judge = True
+            self.skill_direction = MOVEUP
+        if self.site[1] - self.target[1] < self.attack_range and self.target[0] == self.site[0]:
+            judge = True
+            self.skill_direction = MOVEDOWN
+        return judge
+
 
 # 障碍物类
 class Obstacle(Item):
@@ -222,3 +285,30 @@ class Skill(Item):
             (abs(self.site[0]-target.site[0])<(self.size[0]+target.size[0])/2) &
             (abs(self.site[1]-target.site[1])<(self.size[1]+target.size[1])/2)
         )
+
+
+# 障碍物类
+class Obstacle(Item):
+    def __init__(self, ):
+        super(Obstacle,self).__init__()
+        self.life_value='生命值'
+        self.signal='接收到的信号'
+        self.load()
+
+    # 障碍物类的状态更新
+    def update(self):
+        self.obstacle_blit()
+
+    # 障碍物类的初始化函数
+    def load(self):
+        self.site = extern.obstacle_resource.site
+        self.size = extern.obstacle_resource.size
+        self.transparent = extern.obstacle_resource.transparent
+
+    def obstacle_blit(self):
+        if self.transparent:
+            extern.singleplayergame_resource.pic_temp.blit(extern.obstacle_resource.pic_transparent,
+            (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
+        else:
+            extern.singleplayergame_resource.pic_temp.blit(extern.obstacle_resource.pic_non_transparent,
+            (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))

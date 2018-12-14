@@ -35,6 +35,7 @@ class Player():
         self.skill3_cd='技能三冷却时间'
         self.skill_direction='技能方向'
         self.freezetime='被攻击冻结时间'
+        self.attacked_skill_list=[]
         self.load()
     
     def player_update_blit(self,n):
@@ -212,6 +213,7 @@ class Player():
         self.movex=[self.velocity[0]*x for x in movex]
         self.movey=[self.velocity[1]*y for y in movey]
         self.direction=MOVERIGHT
+        self.freezetime=extern.character_resource.freezetime
 
     def move(self):
         if self.movable:

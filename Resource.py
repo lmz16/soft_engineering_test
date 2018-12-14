@@ -143,6 +143,7 @@ class RCharacter():
                 pygame.image.load(playerinfo[0][0]).convert_alpha(),single_game_portrait_size)
             self.skill_1=pygame.transform.smoothscale(
                 pygame.image.load(playerinfo[7]).convert_alpha(),single_game_skill_size)
+            self.freezetime=playerinfo[8]
         
     def __del__(self):
         del self.pic_static
@@ -204,6 +205,7 @@ class REnemy():
             self.size=enemyinfo[1]
             self.life=enemyinfo[2]
             self.velocity=enemyinfo[3]
+            self.skillcd=3
 
     def __del__(self):
         del self.pic_static
@@ -240,3 +242,16 @@ class RCustom():
     def __del__(self):
         for x in self.pic:
             del x
+
+# 障碍物
+class RObstacle():
+    def __init__(self, loadfile):
+        with open (loadfile, 'r') as RObstacle:
+            obstacleinfo = json.load(RObstacle)
+            self.pic_transparent = pygame.transform.smoothscale(                         # 透明图像
+                pygame.image.load(obstacleinfo[0][0]).convert_alpha(),obstacleinfo[1])
+            self.pic_non_transparent = pygame.transform.smoothscale(                     # 非透明图像
+                pygame.image.load(obstacleinfo[0][1]).convert_alpha(),obstacleinfo[1])
+            self.size = obstacleinfo[1]                # 大小                           
+            self.site = obstacleinfo[2]                # 坐标
+            self.transparent = obstacleinfo[3] 

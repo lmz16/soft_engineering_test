@@ -173,7 +173,8 @@ class CustomC():
                 (10,10),
                 [2,3,4],
                 1000,1000,
-                'Resource/item/fire_ball.png'
+                'Resource/item/fire_ball.png',
+                3
             ]
             json.dump(info,mc)
 

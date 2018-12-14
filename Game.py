@@ -45,6 +45,8 @@ class Single_player_game():
         for index,location in enumerate(extern.singleplayergame_resource.enemysite):
             tempenemy=Item.Enemy(self)
             tempenemy.site=location
+            tempenemy.skill1time=0
+            tempenemy.skill1_cd=extern.enemy_resource.skillcd
             tempenemy.life_value=extern.enemy_resource.life[index]
             self.enemy_list.append(tempenemy)
         self.single_player=Player.Player()
@@ -59,6 +61,8 @@ class Single_player_game():
         self.single_player.skill_direction=MOVERIGHT
         self.single_player.max_life=extern.character_resource.max_life
         self.single_player.max_mana=extern.character_resource.max_mana
+        self.single_player.life_value=self.single_player.max_life
+        self.single_player.mana=self.single_player.max_mana
         self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
@@ -83,7 +87,7 @@ class Single_player_game():
                     # 技能打到了人物而且人物之前没有被这个技能打到
                     if (skill.attack_judge(self.single_player) & \
                     (skill not in self.single_player.attacked_skill_list)):
-                        self.single_player.signal=SIGNALATTACKED
+                        self.single_player.signal=ATTACKED
                         self.single_player.life_value=self.single_player.life_value-skill.damage
                         if (skill.last==0):
                             del skill
@@ -206,11 +210,11 @@ class Single_player_game():
             if ((extern.last_fresh_time-self.single_player.skill1time)>self.single_player.skill1_cd):
                 tempsignal=Signal(skill_switch[skill_state],self.single_player)
         self.signal_list.append(tempsignal)
-        #再考虑攻击判定，这样被打到就会取消之前的移动信号
-        self.attack_judge()
         for signal in self.signal_list:
             signal.receiver.signal=signal.type
             del signal
+        #再考虑攻击判定，这样被打到就会取消之前的移动信号
+        self.attack_judge()
         if self.keyboardevent[K_ESCAPE]:
             extern.game_state=GAMEINIT
             for inx,signal in enumerate(self.signal_list):
@@ -236,6 +240,8 @@ class Single_player_game():
                     for enemy in self.enemy_list:
                         if skill in enemy.ignore_skill:
                             enemy.ignore_skill.remove(skill)
+                    if skill in self.single_player.attacked_skill_list:
+                        self.single_player.attacked_skill_list.remove(skill)
                     del self.skill_list[inx]
                 else:
                     skill.update()
@@ -270,9 +276,9 @@ class Single_player_game():
         (mainwindow_size[0]/3-single_game_hp_size[0]/2,
         mainwindow_size[1]*5/6-1*single_game_hp_size[1])
     )
-        extern.interface_resource.screen.set_clip((mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        extern.interface_resource.screen.set_clip((mainwindow_size[0]/3-single_game_hp_size[0],
         mainwindow_size[1]*5/6-2*single_game_hp_size[1]),
-        (mainwindow_size[0]/3+single_game_hp_size[0]/2,
+        (mainwindow_size[0]/3+single_game_hp_size[0],
         mainwindow_size[1]*5/6+0*single_game_hp_size[1])
     )
         extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hp,
