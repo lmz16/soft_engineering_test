@@ -25,6 +25,8 @@ class Single_player_game():
         self.skill_list=[]
     # 信号列表,用于暂存未处理的信号
         self.signal_list=[]
+    # 障碍物列表
+        self.obstacle_list=[]
     # 键盘状态
         self.keyboardevent=pygame.key.get_pressed()
 
@@ -55,6 +57,8 @@ class Single_player_game():
         self.single_player.skill2_cd=extern.character_resource.skill2_cd
         self.single_player.skill3_cd=extern.character_resource.skill3_cd
         self.single_player.skill_direction=MOVERIGHT
+        self.single_player.max_life=extern.character_resource.max_life
+        self.single_player.max_mana=extern.character_resource.max_mana
         self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
@@ -239,6 +243,7 @@ class Single_player_game():
                 extern.singleplayergame_resource.pic_temp,
                 self.blit_startpoint()
                 )
+            self.state_update()
             for index,enemy in enumerate(self.enemy_list):
                 if (enemy.state==ENEMYDEAD):
                     del self.enemy_list[index]
@@ -255,6 +260,60 @@ class Single_player_game():
         elif self.single_player.site[0]>=(extern.singleplayergame_resource.size[0]-mainwindow_size[0]/2):
             sx=extern.singleplayergame_resource.size[0]-mainwindow_size[0]
         return (-sx,0)
+
+    def state_update(self):
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hpmp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6-2*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hpmp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6-1*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.set_clip((mainwindow_size[0]/3-single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6-2*single_game_hp_size[1]),
+        (mainwindow_size[0]/3+single_game_hp_size[0]/2,
+        mainwindow_size[1]*5/6+0*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2+(self.single_player.max_life)/10/2-(self.single_player.max_life)/10,
+        mainwindow_size[1]*5/6-2*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_mp,
+        (mainwindow_size[0]/3-single_game_hp_size[0]/2+(self.single_player.max_mana)/10/2-(self.single_player.max_mana)/10,
+        mainwindow_size[1]*5/6-1*single_game_hp_size[1])
+    )
+        extern.interface_resource.screen.set_clip((0,0),mainwindow_size)
+
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.gameinterface,
+        (mainwindow_size[0]-single_game_map_size[0],
+        mainwindow_size[1]-single_game_map_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_smallplayer,
+        (mainwindow_size[0]-single_game_map_size[0]+self.single_player.site[0]/extern.singleplayergame_resource.size[0]*single_game_map_size[0],
+        mainwindow_size[1]-single_game_map_size[1]+self.single_player.site[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
+    )
+        
+        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_k,
+        (mainwindow_size[0]-single_game_map_size[0]-self.blit_startpoint()[0]/extern.singleplayergame_resource.size[0]*single_game_map_size[0],
+        mainwindow_size[1]-single_game_map_size[1]-self.blit_startpoint()[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.character_resource.pic_portrait,
+        (mainwindow_size[0]/4+0*single_game_portrait_size[0]/2,
+        mainwindow_size[1]*5/6-1*single_game_portrait_size[1])
+    )
+        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
+        (mainwindow_size[0]/4+3/2*single_game_skill_size[0],
+        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
+        )
+        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
+        (mainwindow_size[0]/4+5/2*single_game_skill_size[0],
+        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
+        )    
+        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
+        (mainwindow_size[0]/4+7/2*single_game_skill_size[0],
+        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
+    )
 
 # 信号类
 class Signal():

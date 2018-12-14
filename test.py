@@ -11,9 +11,10 @@ import pygame
 import main
 import start
 import Game
+import Custom
 
 from pygame.locals import *
-import sys
+import os
 import time
 
 #   pygame初始化
@@ -31,7 +32,7 @@ while True:
                 for event in pygame.event.get():
                         if event.type==QUIT:
                                 pygame.quit()
-                                sys.exit()
+                                os._exit(0)
 
                 if(extern.game_state==GAMEINIT):
                 #   开始画面贴图
@@ -65,8 +66,24 @@ while True:
                         start.single_play_blit()
                         start.cursorshow()
                         start.mouseclick_respond(event)
+                
+                elif(extern.game_state==GAMESETTING):
+                        start.setting_blit()
+                        start.cursorshow()
+                        start.mouseclick_respond(event)
+
+                elif(extern.game_state ==GAMECUSTOMCHOOSE):
+                        if extern.custommode:
+                                del extern.custommode
+                        extern.custommode=Custom.CustomC()
+                        extern.game_state=GAMECUSTOMC
+                
+                elif(extern.game_state ==GAMECUSTOMC):
+                        extern.custommode.update(event)
                         
                 elif(extern.game_state==GAMELOAD): 
+                        if extern.singleplayergame:
+                                del extern.singleplayergame
                         extern.singleplayergame=Game.Single_player_game()
                         extern.game_state=GAMESTART
                         
