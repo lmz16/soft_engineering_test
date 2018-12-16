@@ -18,6 +18,8 @@ game_choice = 0
 R_if = None
 #   选择界面资源
 R_gc = None
+#   游戏资源
+R_sg = None
 
 #   人物选择结果
 player_choice = 0

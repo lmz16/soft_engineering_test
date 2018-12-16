@@ -15,7 +15,8 @@ button_site = {
 }
 
 game_file = [
-    "Resource/json/game_choose"
+    "Resource/json/game_choose",
+    ["Resource/json/game1",]
 ]
 
 def update(event):
@@ -26,14 +27,15 @@ def update(event):
         cursorShow()
     elif Et.game_state == GAMEINIT1:
         cursorShow()
-        Et.R_gc = Rs.RChoose(game_file[Et.game_choice])
+        Et.R_gc = Rs.RChoose(game_file[0])
         Et.game_state = GAMESINGLECHOOSE
     elif Et.game_state == GAMESINGLECHOOSE:
         Et.R_if.screen.blit(Et.R_gc.bottom_temp,(0,0))
         cursorShow()
         Et.game_state = GAMELOAD
     elif Et.game_state == GAMELOAD:
-        pass
+        Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
+        
 
 def cursorShow():
     [x,y]=pygame.mouse.get_pos()
