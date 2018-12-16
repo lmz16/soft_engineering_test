@@ -3,7 +3,7 @@
 #
 
 from Define import *
-import Extern
+import Extern as Et
 import MainFunc as MF
 import Interface as IF
 
@@ -23,7 +23,7 @@ while True:
 
 #   时间刷新
     if MF.timeUpdate():
-        MF.gameStateManager()
         IF.update(event)
+        MF.gameStateManager()
 
         pygame.display.update()	#更新显示

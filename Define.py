@@ -10,11 +10,16 @@ start_button_size=(160,40)	#主界面按钮尺寸
 #   游戏帧率
 fps = 25
 
+#   碰撞检测阈值
+COLLISIONTHRESHOLD = 5
+
 #   游戏状态常量
 #   初始状态
 GAMEINIT=0
 #   游戏开始状态
 GAMESTART=1
+#   游戏副载入状态
+GAMELOADSUB=-2
 #   游戏载入状态
 GAMELOAD=-1
 #   帮助所需状态

@@ -30,12 +30,17 @@ def update(event):
         Et.R_gc = Rs.RChoose(game_file[0])
         Et.game_state = GAMESINGLECHOOSE
     elif Et.game_state == GAMESINGLECHOOSE:
-        Et.R_if.screen.blit(Et.R_gc.bottom_temp,(0,0))
+        Et.R_if.screen.blit(Et.R_gc.bottom_pic,(0,0))
         cursorShow()
+        Et.game_state = GAMELOADSUB
+    elif Et.game_state == GAMELOADSUB:
+        Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
     elif Et.game_state == GAMELOAD:
-        Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
-        
+        Et.game_state = GAMESTART
+    elif Et.game_state == GAMESTART:
+        gameBlit()
+
 
 def cursorShow():
     [x,y]=pygame.mouse.get_pos()
@@ -54,4 +59,9 @@ def centerBlit(surface,pic,center):
     dy = int(pic.get_height()/2)
     surface.blit(pic,[center[0] - dx,center[1] - dy])
 
-    
+def gameBlit():
+    Et.R_sg.bg_pic_temp = Et.R_sg.bg_pic.copy()
+    for enemy in Et.Em_info:
+        centerBlit(Et.R_sg.bg_pic_temp,Et.R_em.pic_static[0],enemy.site)
+    centerBlit(Et.R_sg.bg_pic_temp, Et.R_pl.pic_static[0], Et.Pr_info[0].site)
+    Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, (0, 0))

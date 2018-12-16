@@ -39,14 +39,13 @@ def timeUpdate():
 
 def gameStateManager():
     if Et.game_state == GAMEINIT:
-        print("GAMEINIT")
+        pass
     elif Et.game_state == GAMEINIT1:
-        print("in GAMEINIT1")
+        pass
     elif Et.game_state == GAMESINGLECHOOSE:
-        print("in GAMESINGLECHOOSE")
+        pass
     elif Et.game_state == GAMELOAD:
-        print("in GAMELOAD")
-
+        Et.S_game = Gm.SingleGame()
         # Et.I_ctr.update()
         # for key,value in Et.I_ctr.p1_key.items():
         #         if value:

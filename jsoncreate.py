@@ -32,6 +32,57 @@ with open("Resource/json/game1","w") as f:
     json.dump(data,f)
 
 data = [{
-    "size":[120,200]
-
+    "size":[120,200],
+    "life_value":1000,
+    "static":[
+        "Resource/character/diy1/static0.png",
+        "Resource/character/diy1/static1.png",
+        "Resource/character/diy1/static2.png",
+    ],
+    "move":[
+        "Resource/character/diy1/move0.png",
+        "Resource/character/diy1/move1.png",
+        "Resource/character/diy1/move2.png",
+    ],
+    "attack":[
+        "Resource/character/diy1/attack0.png",
+        "Resource/character/diy1/attack1.png",
+        "Resource/character/diy1/attack2.png",
+    ],
+    "attacked":[
+        "Resource/character/diy1/attacked0.png",
+        "Resource/character/diy1/attacked1.png",
+        "Resource/character/diy1/attacked2.png",
+    ],
 }]
+
+with open("Resource/json/character1","w") as f:
+    json.dump(data,f)
+
+data = [{
+    "size":[60,100],
+    "life_value":1000,
+    "static":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "move":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "attack":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "attacked":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+}]
+
+with open("Resource/json/enemy1","w") as f:
+    json.dump(data,f)

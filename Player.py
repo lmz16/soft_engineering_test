@@ -9,13 +9,14 @@ from pygame.locals import *
 
 class PlayerInfo():
     def __init__(self):
-        self.site = [0,0]
+        self.site = [200,400]
         self.max_life = 0
         self.life_value = 0
         self.state = PLAYERSTATIC
         self.pic_direction = RIGHT
         self.size = [0,0]
         self.count = 0
+        self.visible = True
 
 class Player():
     def __init__(self,pinfo):

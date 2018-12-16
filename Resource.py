@@ -41,7 +41,6 @@ class RChoose():
                 pygame.image.load(data[0]["bottom_pic"]).convert_alpha(),
                 mainwindow_size
             )
-            self.bottom_temp = self.bottom_pic.copy()
 
 
 class RSingle():
@@ -52,14 +51,85 @@ class RSingle():
                 pygame.image.load(data[0]["bg_pic"]).convert_alpha(),
                 data[0]["bg_size"]
             )
+            self.bg_pic_temp = self.bg_pic.copy()
+            self.enemy_list = data[0]["enemy"]
 
 
 class RCharacter():
     def __init__(self, loadfile):
         with open(loadfile, 'r') as RCfile:
             data = json.load(RCfile)
+            self.max_life = data[0]["life_value"]
             self.pic_static = []
             self.pic_move = []
             self.attack = []
             self.attacked = []
             self.size = data[0]["size"]
+            for p in data[0]["static"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+            for p in data[0]["move"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+            for p in data[0]["attack"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+            for p in data[0]["attacked"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+
+class REnemy():
+    def __init__(self,loadfile):
+        with open(loadfile, 'r') as REfile:
+            data = json.load(REfile)
+            self.max_life = data[0]["life_value"]
+            self.pic_static = []
+            self.pic_move = []
+            self.attack = []
+            self.attacked = []
+            self.size = data[0]["size"]
+            for p in data[0]["static"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+            for p in data[0]["move"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+            for p in data[0]["attack"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+            for p in data[0]["attacked"]:
+                self.pic_static.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        self.size
+                    )
+                )
+

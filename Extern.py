@@ -18,8 +18,12 @@ game_choice = 0
 R_if = None
 #   选择界面资源
 R_gc = None
-#   游戏资源
+#   单人游戏资源
 R_sg = None
+#   人物资源
+R_pl = None
+#   敌人资源
+R_em = None
 
 #   人物选择结果
 player_choice = 0
@@ -32,3 +36,12 @@ I_ctr = None
 
 #   人物信息对象
 Pr_info = [None]
+
+#   敌人信息对象
+Em_info = []
+
+#   障碍物信息对象
+Os_info = []
+
+#   技能信息对象
+Sk_info = []
