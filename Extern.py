@@ -26,6 +26,8 @@ R_sg = None
 R_pl = None
 #   敌人资源
 R_em = None
+#   障碍物资源
+R_ob = None
 
 #   人物选择结果
 player_choice = 0

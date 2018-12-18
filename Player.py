@@ -7,6 +7,10 @@ import Extern as Et
 import pygame
 from pygame.locals import *
 
+direct_list = [
+    "up","down","left","right"
+]
+
 class PlayerInfo():
     def __init__(self):
         self.site = [200,400]
@@ -27,4 +31,21 @@ class Player():
         self.skill_time = [0,0,0]   #技能123的上次发动时间
         self.skill_cd = [0,0,0] #技能123的冷却时间
         self.freeze_time = 0    #被攻击后僵直时间
+        self.signal = None
 
+    def update(self):
+        self.move()
+
+    def move(self):
+        self.info.state = PLAYERSTATIC
+        for i in range(0,4):
+            if self.movable[i]&(Et.I_ctr.p1_key[direct_list[i]] == True):
+                self.info.site = [
+                    self.info.site[0] + ((i == 3) - (i == 2)) * self.velocity[0],
+                    self.info.site[1] + ((i == 1) - (i == 0)) * self.velocity[1],
+                ]
+                if i == 2:
+                    self.info.pic_direction = LEFT
+                elif i == 3:
+                    self.info.pic_direction = RIGHT
+                self.info.state = PLAYERMOVE

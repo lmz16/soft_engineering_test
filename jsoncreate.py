@@ -41,6 +41,18 @@ data = [{
             "site":[700,400],
             "kind":0,
          },
+    ],
+    "obstacle":[
+        {
+            "site":[500,200],
+            "size":[100,100],
+            "kind":0
+        },
+        {
+            "site":[100,200],
+            "size":[100,100],
+            "kind":0
+        },
     ]
 }]
 
@@ -52,24 +64,24 @@ data = [{
     "realsize":[80,160],
     "life_value":1000,
     "static":[
-        "Resource/character/diy1/static0.png",
-        "Resource/character/diy1/static1.png",
-        "Resource/character/diy1/static2.png",
+        "Resource/character/lmz/static0.png",
+        "Resource/character/lmz/static1.png",
+        "Resource/character/lmz/static0.png",
     ],
     "move":[
-        "Resource/character/diy1/move0.png",
-        "Resource/character/diy1/move1.png",
-        "Resource/character/diy1/move2.png",
+        "Resource/character/lmz/move0.png",
+        "Resource/character/lmz/move1.png",
+        "Resource/character/lmz/move2.png",
     ],
     "attack":[
-        "Resource/character/diy1/attack0.png",
-        "Resource/character/diy1/attack1.png",
-        "Resource/character/diy1/attack2.png",
+        "Resource/character/lmz/attack0.png",
+        "Resource/character/lmz/attack1.png",
+        "Resource/character/lmz/attack2.png",
     ],
     "attacked":[
-        "Resource/character/diy1/attacked0.png",
-        "Resource/character/diy1/attacked1.png",
-        "Resource/character/diy1/attacked2.png",
+        "Resource/character/lmz/attacked.png",
+        "Resource/character/lmz/attacked.png",
+        "Resource/character/lmz/attacked.png",
     ],
     "v":[10,10]
 }]
@@ -105,4 +117,12 @@ data = [{
 }]
 
 with open("Resource/json/enemy1","w") as f:
+    json.dump(data,f)
+
+data = [{
+    "pic":"Resource/item/ob1.png",
+    "size":[100,100]
+}]
+
+with open("Resource/json/ob1","w") as f:
     json.dump(data,f)

@@ -48,6 +48,10 @@ enemy_file = [
     "Resource/json/enemy1",
 ]
 
+obstacle_file = [
+    "Resource/json/ob1",
+]
+
 def update(event):
     if Et.game_state == GAMEINIT:
         Et.R_if.screen.blit(Et.R_if.main_bk_pic,(0,0))
@@ -76,13 +80,15 @@ def update(event):
     elif Et.game_state == GAMELOADSUB:
         Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
         Et.R_em = Rs.REnemy(enemy_file[Et.game_choice])
+        Et.R_ob = Rs.RObstacle(obstacle_file[Et.game_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
     elif Et.game_state == GAMELOAD:
         Et.game_state = GAMESTART
     elif Et.game_state == GAMESTART:
+        # Et.I_ctr.update()
         gameBlit()
-        #test_case.test()
+        test_case.test()
     elif Et.game_state == GAMEONLINEINIT1:
         Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
@@ -170,6 +176,8 @@ def gameBlit():
     Et.R_sg.bg_pic_temp = Et.R_sg.bg_pic.copy()
     for enemy in Et.Em_info:
         enemyBlit(enemy)
+    for ob in Et.Os_info:
+        obstacleBlit(ob)
     playerBlit(Et.Pr_info[0])
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, (0, 0))
 
@@ -191,10 +199,13 @@ def playerBlit(pinfo):
 
 def enemyBlit(einfo):
     if einfo.state == ENEMYSTATIC:
-        centerBlit(Et.R_sg.bg_pic_temp, Et.R_pl.pic_static[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
-    elif einfo.state == ENEMYMOVE:
-        centerBlit(Et.R_sg.bg_pic_temp, Et.R_pl.pic_move[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_static[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
+    elif einfo.state in [ENEMYMOVE,ENEMYPATROL]:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_move[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
     elif einfo.state in [ENEMYATTACK]:
-        centerBlit(Et.R_sg.bg_pic_temp, Et.R_pl.pic_attack[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_attack[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
     elif einfo.state == ENEMYATTACKED:
-        centerBlit(Et.R_sg.bg_pic_temp, Et.R_pl.pic_attacked[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_attacked[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
+
+def obstacleBlit(oinfo):
+    centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic, oinfo.site)

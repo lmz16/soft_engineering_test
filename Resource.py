@@ -119,6 +119,7 @@ class RSingle():
             self.size = data[0]["bg_size"]
             self.bg_pic_temp = self.bg_pic.copy()
             self.enemy_list = data[0]["enemy"]
+            self.obstacle_list = data[0]["obstacle"]
 
 
 class RCharacter():
@@ -163,6 +164,7 @@ class RCharacter():
                 self.pic_attacked.append(
                     [temp, tempf]
                 )
+            self.velocity = data[0]["v"]
 
 class REnemy():
     def __init__(self,loadfile):
@@ -175,32 +177,44 @@ class REnemy():
             self.pic_attacked = []
             self.size = data[0]["realsize"]
             for p in data[0]["static"]:
+                temp = pygame.transform.smoothscale(
+                    pygame.image.load(p).convert_alpha(),
+                    data[0]["size"])
+                tempf = pygame.transform.flip(temp, True, False)
                 self.pic_static.append(
-                    pygame.transform.smoothscale(
-                        pygame.image.load(p).convert_alpha(),
-                        data[0]["size"]
-                    )
+                    [temp, tempf]
                 )
             for p in data[0]["move"]:
-                self.pic_move.append(
-                    pygame.transform.smoothscale(
+                temp = pygame.transform.smoothscale(
                         pygame.image.load(p).convert_alpha(),
-                        data[0]["size"]
-                    )
+                        data[0]["size"])
+                tempf = pygame.transform.flip(temp,True,False)
+                self.pic_move.append(
+                    [temp,tempf]
                 )
             for p in data[0]["attack"]:
+                temp = pygame.transform.smoothscale(
+                    pygame.image.load(p).convert_alpha(),
+                    data[0]["size"])
+                tempf = pygame.transform.flip(temp, True, False)
                 self.pic_attack.append(
-                    pygame.transform.smoothscale(
-                        pygame.image.load(p).convert_alpha(),
-                        data[0]["size"]
-                    )
+                    [temp, tempf]
                 )
             for p in data[0]["attacked"]:
+                temp = pygame.transform.smoothscale(
+                    pygame.image.load(p).convert_alpha(),
+                    data[0]["size"])
+                tempf = pygame.transform.flip(temp, True, False)
                 self.pic_attacked.append(
-                    pygame.transform.smoothscale(
-                        pygame.image.load(p).convert_alpha(),
-                        data[0]["size"]
-                    )
+                    [temp, tempf]
                 )
             self.velocity = data[0]["v"]
 
+
+class RObstacle():
+    def __init__(self,loadfile):
+        with open(loadfile, 'r') as ROfile:
+            data = json.load(ROfile)
+            self.pic = pygame.transform.smoothscale(
+                    pygame.image.load(data[0]["pic"]).convert_alpha(),
+                    data[0]["size"])

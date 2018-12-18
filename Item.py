@@ -4,11 +4,9 @@
 
 from Define import *
 import Extern as Et
-import pygame
 import Game
 import math
 import random
-from pygame.locals import *
 
 class EnemyInfo():
     def __init__(self):
@@ -229,48 +227,22 @@ class Enemy():
         #         self.info.count = 0
 
 
-#  class Obstacle(Item):
-#     def __init__(self, ):
-#         super(Obstacle,self).__init__()
-#         self.life_value='生命值'
-#         self.signal='接收到的信号'
-#         self.load()
-#
-#     # 障碍物类的状态更新
-#     def update(self):
-#         self.obstacle_blit()
-#
-#     # 障碍物类的初始化函数
-#     def load(self):
-#         self.site = extern.obstacle_resource.site
-#         self.size = extern.obstacle_resource.size
-#         self.transparent = extern.obstacle_resource.transparent
-#
-#     def obstacle_blit(self):
-#         if self.transparent:
-#             extern.singleplayergame_resource.pic_temp.blit(extern.obstacle_resource.pic_transparent,
-#             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
-#         else:
-#             extern.singleplayergame_resource.pic_temp.blit(extern.obstacle_resource.pic_non_transparent,
-#             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
-#
-#
-# class ObstacleInfo():
-#     def __init__(self):
-#         self.site = [0, 0]
-#         self.size = [0, 0]
-#
-# class Obstacle():
-#     def __init__(self, oinfo):
-#         super(Obstacle,self).__init__()
-#         self.info = oinfo
-#         self.load()
-#
-#     # 障碍物类的初始化函数
-#     def load(self):
-#         self.info.site = Et.obstacle_resource.site
-#         self.info.size = Et.obstacle_resource.size
-#         self.info.transparent = Et.obstacle_resource.transparent
+class ObstacleInfo():
+    def __init__(self):
+        self.site = [0, 0]
+        self.size = [0, 0]
+        self.kind = 0
+
+class Obstacle():
+    def __init__(self, oinfo):
+        self.info = oinfo
+        self.load()
+
+    # 障碍物类的初始化函数
+    def load(self):
+        self.info.site = Et.R_ob.site
+        self.info.size = Et.R_ob.size
+        self.info.transparent = Et.obstacle_resource.transparent
 
 
 
