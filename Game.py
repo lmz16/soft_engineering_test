@@ -44,6 +44,7 @@ class SingleGame():
         Et.Pr_info[0].life_value = Et.R_pl.max_life
         self.player = Pl.Player(Et.Pr_info[0])
         self.player.velocity = Et.R_pl.velocity
+        self.player.game = self
 
     def enemyLoad(self):
         for enemy in Et.R_sg.enemy_list:
@@ -103,9 +104,27 @@ class SingleGame():
 
     def update(self):
         self.moveJudge()
+        self.signalSend()
+        for skill in self.skill_list:
+            skill.update()
         for enemy in self.enemy_list:
             enemy.update()
         self.player.update()
 
-def jugde(t1,t2):
-    pass
+    def signalSend(self):
+        self.playerSignal()
+
+    def playerSignal(self):
+        move_state = Et.I_ctr.p1_key["up"] << 3 | Et.I_ctr.p1_key["down"] << 2 | Et.I_ctr.p1_key["left"] << 1 | Et.I_ctr.p1_key["right"]
+        move_switch = [None, 3, 2, None, 1, 7, 6, None, 0, 5, 4, None, None, None, None, None]
+        self.player.signal = move_switch[move_state]
+        if Et.I_ctr.p1_key["atk1"]:
+            self.player.signal = SKILL1
+
+
+
+        # 信号类
+class Signal():
+    def __init__(self,type,receiver):
+        self.type=type
+        self.receiver=receiver

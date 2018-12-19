@@ -28,6 +28,8 @@ R_pl = None
 R_em = None
 #   障碍物资源
 R_ob = None
+#   技能资源
+R_sk = [None]*6
 
 #   人物选择结果
 player_choice = 0

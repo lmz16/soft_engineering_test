@@ -60,8 +60,8 @@ with open("Resource/json/game1","w") as f:
     json.dump(data,f)
 
 data = [{
-    "size":[120,200],
-    "realsize":[80,160],
+    "size":[70,80],
+    "realsize":[40,80],
     "life_value":1000,
     "static":[
         "Resource/character/lmz/static0.png",
@@ -83,15 +83,15 @@ data = [{
         "Resource/character/lmz/attacked.png",
         "Resource/character/lmz/attacked.png",
     ],
-    "v":[10,10]
+    "v":[5,5]
 }]
 
 with open("Resource/json/character1","w") as f:
     json.dump(data,f)
 
 data = [{
-    "size":[60,100],
-    "realsize":[30,80],
+    "size":[48,80],
+    "realsize":[48,80],
     "life_value":1000,
     "static":[
         "Resource/enemy/enemy1/enemy1_static.jpeg",
@@ -125,4 +125,16 @@ data = [{
 }]
 
 with open("Resource/json/ob1","w") as f:
+    json.dump(data,f)
+
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":[30,30],
+    "life":5,
+}]
+
+with open("Resource/json/sk1","w") as f:
     json.dump(data,f)

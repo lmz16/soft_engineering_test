@@ -52,6 +52,10 @@ obstacle_file = [
     "Resource/json/ob1",
 ]
 
+skill_file = [
+    "Resource/json/sk1",
+]
+
 def update(event):
     if Et.game_state == GAMEINIT:
         Et.R_if.screen.blit(Et.R_if.main_bk_pic,(0,0))
@@ -81,6 +85,7 @@ def update(event):
         Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
         Et.R_em = Rs.REnemy(enemy_file[Et.game_choice])
         Et.R_ob = Rs.RObstacle(obstacle_file[Et.game_choice])
+        Et.R_sk[0] = Rs.RSkill(skill_file[0])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
     elif Et.game_state == GAMELOAD:
@@ -178,6 +183,8 @@ def gameBlit():
         enemyBlit(enemy)
     for ob in Et.Os_info:
         obstacleBlit(ob)
+    for sk in Et.Sk_info:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[0].pic, sk.site)
     playerBlit(Et.Pr_info[0])
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, (0, 0))
 
@@ -209,3 +216,4 @@ def enemyBlit(einfo):
 
 def obstacleBlit(oinfo):
     centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic, oinfo.site)
+

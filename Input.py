@@ -40,27 +40,27 @@ class Control():
     def reset(self):
         self.p1_key = {
             #上下左右
-            "up":None,
-            "down":None,
-            "left":None,
-            "right":None,
+            "up":False,
+            "down":False,
+            "left":False,
+            "right":False,
             #攻击
-            "atk1":None,
-            "atk2":None,
-            "atk3":None,
+            "atk1":False,
+            "atk2":False,
+            "atk3":False,
             #退出
-            "esc":None
+            "esc":False
         }
         self.p2_key = {
             #上下左右
-            "up":None,
-            "down":None,
-            "left":None,
-            "right":None,
+            "up":False,
+            "down":False,
+            "left":False,
+            "right":False,
             #攻击
-            "atk1":None,
-            "atk2":None,
-            "atk3":None,
+            "atk1":False,
+            "atk2":False,
+            "atk3":False,
             #退出
-            "esc":None
+            "esc":False
         }

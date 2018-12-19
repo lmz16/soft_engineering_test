@@ -117,6 +117,12 @@ ATTACKED = 11
 #死亡信号
 DIE = 12
 
+#技能类型
+SKILLBALLSTRAIGHT=0
+SKILLBALLSINUS=1
+SKILLBALLCIRCLE=2
+SKILLRETURN=3
+
 #   移动序列
 movex = [0,0,-1,1,-1,1,-1,1]
 movey = [-1,1,0,0,-1,-1,1,1]

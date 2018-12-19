@@ -218,3 +218,16 @@ class RObstacle():
             self.pic = pygame.transform.smoothscale(
                     pygame.image.load(data[0]["pic"]).convert_alpha(),
                     data[0]["size"])
+
+
+class RSkill():
+    def __init__(self,loadfile):
+        with open(loadfile, 'r') as RSfile:
+            data = json.load(RSfile)
+            self.duration = data[0]["life"]
+            self.pic = pygame.transform.smoothscale(
+                    pygame.image.load(data[0]["pic"]).convert_alpha(),
+                    data[0]["size"])
+            self.size = data[0]["realsize"]
+            self.damage = data[0]["damage"]
+            self.velocity = data[0]["v"]
