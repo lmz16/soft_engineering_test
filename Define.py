@@ -22,7 +22,7 @@ single_game_p_size=(10,10)
 fps = 25
 
 #   碰撞检测阈值
-COLLISIONTHRESHOLD = 5
+COLLISIONTHRESHOLD = 30
 
 #   游戏状态常量
 #   初始状态

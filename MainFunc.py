@@ -48,8 +48,8 @@ def gameStateManager():
     if Et.game_state == GAMELOAD:
         Et.S_game = Gm.SingleGame()
     elif Et.game_state == GAMESTART:
-        # Et.S_game.update()
-        pass
+        Et.S_game.update()
+        #pass
     elif Et.game_state == GAMEONLINEINIT2:
         onlineInit()
         Et.t_net.setDaemon(True)

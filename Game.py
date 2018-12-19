@@ -60,9 +60,38 @@ class SingleGame():
 
     def moveJudge(self):
         for enemy in self.enemy_list:
-            enemy.movable = [True,True,True,True]   #上下左右
-            for obstacle in self.obstacle_list:
-                pass
+            enemy.movable = [True]*4
+        self.player.movable = [True]*4
+        for obstacle in self.obstacle_list:
+            for enemy in self.enemy_list:
+                dxMin = (enemy.info.size[0] + obstacle.size[0]) / 2
+                dyMin = (enemy.info.size[1] + obstacle.size[1]) / 2
+                atDown = ((enemy.info.site[1] > obstacle.site[1]) & (
+                            enemy.info.site[1] < (obstacle.site[1] + dyMin + COLLISIONTHRESHOLD)))
+                atUp = ((enemy.info.site[1] < obstacle.site[1]) & (
+                            enemy.info.site[1] > (obstacle.site[1] - dyMin - COLLISIONTHRESHOLD)))
+                atRight = ((enemy.info.site[0] > obstacle.site[0]) & (
+                            enemy.info.site[0] < (obstacle.site[0] + dxMin + COLLISIONTHRESHOLD)))
+                atLeft = ((enemy.info.site[0] < obstacle.site[0]) & (
+                            enemy.info.site[0] > (obstacle.site[0] - dxMin - COLLISIONTHRESHOLD)))
+                enemy.movable[0] = ((enemy.movable[0]) & (~(atDown & (atLeft | atRight))))
+                enemy.movable[1] = ((enemy.movable[1]) & (~(atUp & (atLeft | atRight))))
+                enemy.movable[2] = ((enemy.movable[2]) & (~(atRight & (atUp | atDown))))
+                enemy.movable[3] = ((enemy.movable[3]) & (~(atLeft & (atUp | atDown))))
+            dxMin = (self.player.info.size[0] + obstacle.size[0]) / 2
+            dyMin = (self.player.info.size[1] + obstacle.size[1]) / 2
+            atDown = ((self.player.info.site[1] > obstacle.site[1]) & (
+                        self.player.info.site[1] < obstacle.site[1] + dyMin + COLLISIONTHRESHOLD))
+            atUp = ((self.player.info.site[1] < obstacle.site[1]) & (
+                        self.player.info.site[1] > obstacle.site[1] - dyMin - COLLISIONTHRESHOLD))
+            atRight = ((self.player.info.site[0] > obstacle.site[0]) & (
+                        self.player.info.site[0] < obstacle.site[0] + dxMin + COLLISIONTHRESHOLD))
+            atLeft = ((self.player.info.site[0] < obstacle.site[0]) & (
+                        self.player.info.site[0] > obstacle.site[0] - dxMin - COLLISIONTHRESHOLD))
+            self.player.movable[0] = ((self.player.movable[0]) & (~(atDown & (atLeft | atRight))))
+            self.player.movable[1] = ((self.player.movable[1]) & (~(atUp & (atLeft | atRight))))
+            self.player.movable[2] = ((self.player.movable[2]) & (~(atRight & (atUp | atDown))))
+            self.player.movable[3] = ((self.player.movable[3]) & (~(atLeft & (atUp | atDown))))
 
     def obstacleLoad(self):
         for ob in Et.R_sg.obstacle_list:
@@ -73,6 +102,7 @@ class SingleGame():
             Et.Os_info.append(temp)
 
     def update(self):
+        self.moveJudge()
         for enemy in self.enemy_list:
             enemy.update()
         self.player.update()

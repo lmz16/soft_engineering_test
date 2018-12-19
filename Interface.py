@@ -86,9 +86,9 @@ def update(event):
     elif Et.game_state == GAMELOAD:
         Et.game_state = GAMESTART
     elif Et.game_state == GAMESTART:
-        # Et.I_ctr.update()
+        Et.I_ctr.update()
         gameBlit()
-        test_case.test()
+        #test_case.test()
     elif Et.game_state == GAMEONLINEINIT1:
         Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
