@@ -22,7 +22,7 @@ single_game_p_size=(10,10)
 fps = 25
 
 #   碰撞检测阈值
-COLLISIONTHRESHOLD = 5
+COLLISIONTHRESHOLD = 30
 
 #   游戏状态常量
 #   初始状态
@@ -122,6 +122,8 @@ SKILLBALLSTRAIGHT=0
 SKILLBALLSINUS=1
 SKILLBALLCIRCLE=2
 SKILLRETURN=3
+SKILLBLACKHOLE=4
+SKILLHOOK=5
 
 #   移动序列
 movex = [0,0,-1,1,-1,1,-1,1]
