@@ -39,6 +39,7 @@ class Skill():
         self.ignore_player = False
         self.init_site = [0, 0]
         self.resource = None
+        self.load()
 
     def collisionJudge(self, collider):
         if ((abs(collider.info.site[0] - self.info.site[0]) - (collider.info.size[0] + self.info.size[0]) / 2 < 0) &
@@ -172,26 +173,6 @@ class SkillHook(Skill):
             temp_v = [self.info.site[0]-self.caster.info.site[0],self.info.site[1]-self.caster.info.site[1]]
             k0 = self.caster.info.size[0] / (2*temp_v[0]+0.1)
             k1 = self.caster.info.size[1] / (2*temp_v[1]+0.1)
-            self.caster.info.site = [self.info.site[0]+int(min(k0,k1)*temp_v[0]*1.1),
-                                     self.info.site[1]+int(min(k0,k1)*temp_v[1]*1.1)]
-            # if self.caster.info.site[0] > self.attach.info.site[0] - (
-            #         self.caster.info.size[0] + self.attach.info.size[0]) / 2 and self.caster.info.site[0] < \
-            #         self.attach.info.site[0]:
-            #     self.caster.info.site[0] = self.attach.info.site[0] - (
-            #                 self.caster.info.size[0] + self.attach.info.size[0]) / 2
-            # elif self.caster.info.site[0] < self.attach.info.site[0] + (
-            #         self.caster.info.size[0] + self.attach.info.size[0]) / 2 and self.caster.info.site[0] > \
-            #         self.attach.info.site[0]:
-            #     self.caster.info.site[0] = self.attach.info.site[0] + (
-            #                 self.caster.info.size[0] + self.attach.info.size[0]) / 2
-            # if self.caster.info.site[1] > self.attach.info.site[1] - (
-            #         self.caster.info.size[1] + self.attach.info.size[1]) / 2 and self.caster.info.site[1] < \
-            #         self.attach.info.site[1]:
-            #     self.caster.info.site[1] = self.attach.info.site[1] - (
-            #                 self.caster.info.size[1] + self.attach.info.size[1]) / 2
-            # elif self.caster.info.site[1] < self.attach.info.site[1] + (
-            #         self.caster.info.size[1] + self.attach.info.size[1]) / 2 and self.caster.info.site[1] > \
-            #         self.attach.info.site[1]:
-            #     self.caster.info.site[1] = self.attach.info.site[1] + (
-            #         self.caster.info.size[1] + self.attach.info.size[1]) / 2
+            self.caster.info.site = [self.info.site[0]-int(min(abs(k0),abs(k1))*temp_v[0]),
+                                     self.info.site[1]-int(min(abs(k0),abs(k1))*temp_v[1])]
             self.delflag = True

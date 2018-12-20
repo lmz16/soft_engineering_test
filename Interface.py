@@ -37,22 +37,31 @@ choose_site = {
 }
 game_file = [
     "Resource/json/game_choose",
-    ["Resource/json/game1",]
+    ["Resource/json/game1","Resource/json/game1"]
 ]
 
 character_file = [
+    "Resource/json/character1",
+    "Resource/json/character1",
     "Resource/json/character1",
 ]
 
 enemy_file = [
     "Resource/json/enemy1",
+    "Resource/json/enemy1",
 ]
 
 obstacle_file = [
     "Resource/json/ob1",
+    "Resource/json/ob1",
 ]
 
 skill_file = [
+    "Resource/json/sk1",
+    "Resource/json/sk1",
+    "Resource/json/sk1",
+    "Resource/json/sk1",
+    "Resource/json/sk1",
     "Resource/json/sk1",
 ]
 
@@ -85,7 +94,8 @@ def update(event):
         Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
         Et.R_em = Rs.REnemy(enemy_file[Et.game_choice])
         Et.R_ob = Rs.RObstacle(obstacle_file[Et.game_choice])
-        Et.R_sk[0] = Rs.RSkill(skill_file[0])
+        for i in range(0,3):
+            Et.R_sk[i] = Rs.RSkill(skill_file[Et.R_pl.skill[i]])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
     elif Et.game_state == GAMELOAD:
@@ -215,7 +225,7 @@ def enemyBlit(einfo):
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_attacked[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
 
 def obstacleBlit(oinfo):
-    if not oinfo.transparent:
+    if oinfo.kind == 0:
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic, oinfo.site)
 
 def blitPoint():

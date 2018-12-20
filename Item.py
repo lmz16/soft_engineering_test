@@ -4,7 +4,6 @@
 
 from Define import *
 import Extern as Et
-import Game
 import math
 import random
 
@@ -142,6 +141,17 @@ class Enemy():
             if self.info.site[1]<int(self.size[1]/2):
                 self.info.site[1]=int(self.size[1]/2)
 
+    def passiveMove(self,mv):
+        temp = [self.info.site[0]+mv[0],self.info.site[1]+mv[1]]
+        flag = False
+        for ob in Et.Os_info:
+            if abs(temp[0] - ob.site[0])<ob.size[0] and abs(temp[1] - ob.site[1])<ob.size[1]:
+                flag = True
+                break
+        if not flag:
+            self.info.site = temp
+
+
     # 针对move的移动方向判定
     def move_direction(self):
         self.direction = MOVELEFT
@@ -232,7 +242,6 @@ class ObstacleInfo():
         self.site = [0, 0]
         self.size = [0, 0]
         self.kind = 0
-        self.transparent = False
 
 class Obstacle():
     def __init__(self, oinfo):

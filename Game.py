@@ -24,6 +24,10 @@ obstacle_file = [
     "Resource/json/ob1",
 ]
 
+skill_file = [
+    "Resource/json/sk1"
+]
+
 class SingleGame():
     def __init__(self):
         self.player = None  #人物对象
@@ -44,6 +48,8 @@ class SingleGame():
         Et.Pr_info[0].life_value = Et.R_pl.max_life
         self.player = Pl.Player(Et.Pr_info[0])
         self.player.velocity = Et.R_pl.velocity
+        self.player.skill_type = Et.R_pl.skill
+        self.player.info.size = Et.R_pl.size
         self.player.game = self
 
     def enemyLoad(self):
@@ -123,6 +129,10 @@ class SingleGame():
         self.player.signal = move_switch[move_state]
         if Et.I_ctr.p1_key["atk1"]:
             self.player.signal = SKILL1
+        elif Et.I_ctr.p1_key["atk2"]:
+            self.player.signal = SKILL2
+        elif Et.I_ctr.p1_key["atk3"]:
+            self.player.signal = SKILL3
 
     def deskill(self,s):
         if s.delflag:

@@ -53,6 +53,11 @@ data = [{
             "size":[100,100],
             "kind":0
         },
+        {
+            "site":[1000,50],
+            "size":[10000,100],
+            "kind":0
+        },
     ]
 }]
 
@@ -83,7 +88,8 @@ data = [{
         "Resource/character/lmz/attacked.png",
         "Resource/character/lmz/attacked.png",
     ],
-    "v":[5,5]
+    "v":[5,5],
+    "skill":[0,5,2]
 }]
 
 with open("Resource/json/character1","w") as f:

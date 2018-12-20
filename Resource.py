@@ -165,6 +165,7 @@ class RCharacter():
                     [temp, tempf]
                 )
             self.velocity = data[0]["v"]
+            self.skill = data[0]["skill"]
 
 class REnemy():
     def __init__(self,loadfile):

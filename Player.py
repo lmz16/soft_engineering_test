@@ -32,7 +32,7 @@ class Player():
         self.freeze_time = 0    #被攻击后僵直时间
         self.signal = None
         self.direction = MOVERIGHT
-        self.skill_type = [SKILLHOOK, 0, 0]
+        self.skill_type = [0, 0, 0]
         self.max_count = 12
         self.return_site = [0, 0]
         self.return_released = False
@@ -119,7 +119,7 @@ class Player():
     def actSkill(self, n):
         skill_type = self.skill_type[n - 1]
         if skill_type in[SKILLBALLSTRAIGHT,SKILLBALLSINUS,SKILLBALLCIRCLE,SKILLBLACKHOLE,SKILLHOOK]:
-            new_skill = self.releaseBall(skill_type)
+            new_skill = self.releaseBall(skill_type,n-1)
             self.skill_list[n - 1].append(new_skill)
         elif skill_type == SKILLRETURN:
             if self.return_released == True:
@@ -130,33 +130,33 @@ class Player():
 
 
     #专门用于扔出实体球的技能，n选择球轨迹
-    def releaseBall(self,skill_type):
+    def releaseBall(self,skill_type,n):
         new_skill = None
         if skill_type==SKILLBALLSTRAIGHT:
             temp = Skill.SkillInfo()
             Et.Sk_info.append(temp)
             new_skill=Skill.SkillBallStraight(temp)
-            new_skill.resource=Et.R_sk[0]
+            new_skill.resource=Et.R_sk[n]
         elif skill_type==SKILLBALLSINUS:
             temp = Skill.SkillInfo()
             Et.Sk_info.append(temp)
             new_skill=Skill.SkillBallSinus(temp)
-            new_skill.resource = Et.R_sk[0]
+            new_skill.resource = Et.R_sk[n]
         elif skill_type==SKILLBALLCIRCLE:
             temp = Skill.SkillInfo()
             Et.Sk_info.append(temp)
             new_skill=Skill.SkillBallCircle(temp)
-            new_skill.resource = Et.R_sk[0]
+            new_skill.resource = Et.R_sk[n]
         elif skill_type == SKILLBLACKHOLE:
             temp = Skill.SkillInfo()
             Et.Sk_info.append(temp)
             new_skill = Skill.SkillBlackHole(temp)
-            new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
+            new_skill.resource = Et.R_sk[n]  ##############需要修改资源#######################
         elif skill_type == SKILLHOOK:
             temp = Skill.SkillInfo()
             Et.Sk_info.append(temp)
             new_skill = Skill.SkillHook(temp)
-            new_skill.resource = Et.R_sk[0]
+            new_skill.resource = Et.R_sk[n]
         new_skill.game=self.game
         new_skill.init_site=self.info.site[:]
         new_skill.init_time=Et.fresh_time
