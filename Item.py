@@ -232,6 +232,7 @@ class ObstacleInfo():
         self.site = [0, 0]
         self.size = [0, 0]
         self.kind = 0
+        self.transparent = False
 
 class Obstacle():
     def __init__(self, oinfo):
@@ -240,9 +241,7 @@ class Obstacle():
 
     # 障碍物类的初始化函数
     def load(self):
-        self.info.site = Et.R_ob.site
-        self.info.size = Et.R_ob.size
-        self.info.transparent = Et.obstacle_resource.transparent
+        pass
 
 
 

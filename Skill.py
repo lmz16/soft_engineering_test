@@ -30,7 +30,7 @@ class Skill():
         self.init_time = 0
         self.duration = 0
         self.delflag = False
-        self.velocity = 0
+        self.velocity = 10
         self.movex = []
         self.movey = []
         self.caster = None
@@ -77,9 +77,8 @@ class SkillBallStraight(Skill):
         if (Et.fresh_time - self.init_time) > self.duration:
             self.delflag = True
         else:
-            print()
-            self.info.site[0] = self.info.site[0] + movex[self.direction]
-            self.info.site[1] = self.info.site[1] + movey[self.direction]
+            self.info.site[0] = self.info.site[0] + self.movex[self.direction]
+            self.info.site[1] = self.info.site[1] + self.movey[self.direction]
 
     def influence(self):
         self.defaultInfluence()
@@ -125,3 +124,74 @@ class SkillBallCircle(Skill):
 
     def influence(self):
         self.defaultInfluence()
+
+
+class SkillBlackHole(Skill):
+    def __init__(self, info):
+        Skill.__init__(self, info)
+        self.effect_radius = 500  ##############需要加载资源#######################
+        self.displacement = 1  ##############需要加载资源#######################
+
+    def update(self):
+        if (Et.fresh_time - self.init_time) > self.duration:
+            self.delflag = True
+
+    def influence(self):
+        for enemy in self.game.enemy_list:
+            distance = math.sqrt(
+                (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+            if distance < self.effect_radius and distance > 0:
+                if distance > self.displacement:
+                    enemy_move_vector = [(self.info.site[0] - enemy.info.site[0]) / distance * self.displacement,
+                        (self.info.site[1] - enemy.info.site[1]) / distance * self.displacement]
+                else:
+                    enemy_move_vector = [self.info.site[0] - enemy.info.site[0],
+                                         self.info.site[1] - enemy.info.site[1]]
+                enemy.passiveMove(enemy_move_vector)
+
+
+class SkillHook(Skill):
+    def __init__(self, info):
+        Skill.__init__(self, info)
+        self.find_obstacle = False
+        self.attach = None
+
+    def update(self):
+        if (Et.fresh_time - self.init_time) > self.duration:
+            self.delflag = True
+        elif not self.find_obstacle:
+            self.info.site[0] = self.info.site[0] + self.velocity * movex[self.direction]
+            self.info.site[1] = self.info.site[1] + self.velocity * movey[self.direction]
+            for obstacle in self.game.obstacle_list:
+                if self.collisionJudge(obstacle):
+                    self.attach = obstacle
+                    self.find_obstacle = True
+
+    def influence(self):
+        if self.find_obstacle:
+            temp_v = [self.info.site[0]-self.caster.info.site[0],self.info.site[1]-self.caster.info.site[1]]
+            k0 = self.caster.info.size[0] / (2*temp_v[0]+0.1)
+            k1 = self.caster.info.size[1] / (2*temp_v[1]+0.1)
+            self.caster.info.site = [self.info.site[0]+int(min(k0,k1)*temp_v[0]*1.1),
+                                     self.info.site[1]+int(min(k0,k1)*temp_v[1]*1.1)]
+            # if self.caster.info.site[0] > self.attach.info.site[0] - (
+            #         self.caster.info.size[0] + self.attach.info.size[0]) / 2 and self.caster.info.site[0] < \
+            #         self.attach.info.site[0]:
+            #     self.caster.info.site[0] = self.attach.info.site[0] - (
+            #                 self.caster.info.size[0] + self.attach.info.size[0]) / 2
+            # elif self.caster.info.site[0] < self.attach.info.site[0] + (
+            #         self.caster.info.size[0] + self.attach.info.size[0]) / 2 and self.caster.info.site[0] > \
+            #         self.attach.info.site[0]:
+            #     self.caster.info.site[0] = self.attach.info.site[0] + (
+            #                 self.caster.info.size[0] + self.attach.info.size[0]) / 2
+            # if self.caster.info.site[1] > self.attach.info.site[1] - (
+            #         self.caster.info.size[1] + self.attach.info.size[1]) / 2 and self.caster.info.site[1] < \
+            #         self.attach.info.site[1]:
+            #     self.caster.info.site[1] = self.attach.info.site[1] - (
+            #                 self.caster.info.size[1] + self.attach.info.size[1]) / 2
+            # elif self.caster.info.site[1] < self.attach.info.site[1] + (
+            #         self.caster.info.size[1] + self.attach.info.size[1]) / 2 and self.caster.info.site[1] > \
+            #         self.attach.info.site[1]:
+            #     self.caster.info.site[1] = self.attach.info.site[1] + (
+            #         self.caster.info.size[1] + self.attach.info.size[1]) / 2
+            self.delflag = True

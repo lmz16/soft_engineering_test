@@ -186,7 +186,7 @@ def gameBlit():
     for sk in Et.Sk_info:
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[0].pic, sk.site)
     playerBlit(Et.Pr_info[0])
-    Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, (0, 0))
+    Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, blitPoint())
 
 def onlineBlit():
     Et.R_sg.bg_pic_temp = Et.R_sg.bg_pic.copy()
@@ -215,5 +215,16 @@ def enemyBlit(einfo):
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_attacked[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
 
 def obstacleBlit(oinfo):
-    centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic, oinfo.site)
+    if not oinfo.transparent:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic, oinfo.site)
+
+def blitPoint():
+    x,y = 0,0
+    if Et.Pr_info[0].site[0] <= mainwindow_size[0]/2:
+        x = 0
+    elif Et.Pr_info[0].site[0] >= Et.R_sg.size[0] - mainwindow_size[0]/2:
+        x = mainwindow_size[0] - Et.R_sg.size[0]
+    else:
+        x = mainwindow_size[0]/2 - Et.Pr_info[0].site[0]
+    return [x,y]
 

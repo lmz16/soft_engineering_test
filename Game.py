@@ -29,7 +29,7 @@ class SingleGame():
         self.player = None  #人物对象
         self.enemy_list = []    #敌人列表
         self.skill_list = []    #技能列表
-        self.obstacle_list = Et.Os_info #障碍物列表
+        self.obstacle_list = [] #障碍物列表
         self.load()
 
 #   资源加载函数
@@ -65,30 +65,30 @@ class SingleGame():
         self.player.movable = [True]*4
         for obstacle in self.obstacle_list:
             for enemy in self.enemy_list:
-                dxMin = (enemy.info.size[0] + obstacle.size[0]) / 2
-                dyMin = (enemy.info.size[1] + obstacle.size[1]) / 2
-                atDown = ((enemy.info.site[1] > obstacle.site[1]) & (
-                            enemy.info.site[1] < (obstacle.site[1] + dyMin + COLLISIONTHRESHOLD)))
-                atUp = ((enemy.info.site[1] < obstacle.site[1]) & (
-                            enemy.info.site[1] > (obstacle.site[1] - dyMin - COLLISIONTHRESHOLD)))
-                atRight = ((enemy.info.site[0] > obstacle.site[0]) & (
-                            enemy.info.site[0] < (obstacle.site[0] + dxMin + COLLISIONTHRESHOLD)))
-                atLeft = ((enemy.info.site[0] < obstacle.site[0]) & (
-                            enemy.info.site[0] > (obstacle.site[0] - dxMin - COLLISIONTHRESHOLD)))
+                dxMin = (enemy.info.size[0] + obstacle.info.size[0]) / 2
+                dyMin = (enemy.info.size[1] + obstacle.info.size[1]) / 2
+                atDown = ((enemy.info.site[1] > obstacle.info.site[1]) & (
+                            enemy.info.site[1] < (obstacle.info.site[1] + dyMin + COLLISIONTHRESHOLD)))
+                atUp = ((enemy.info.site[1] < obstacle.info.site[1]) & (
+                            enemy.info.site[1] > (obstacle.info.site[1] - dyMin - COLLISIONTHRESHOLD)))
+                atRight = ((enemy.info.site[0] > obstacle.info.site[0]) & (
+                            enemy.info.site[0] < (obstacle.info.site[0] + dxMin + COLLISIONTHRESHOLD)))
+                atLeft = ((enemy.info.site[0] < obstacle.info.site[0]) & (
+                            enemy.info.site[0] > (obstacle.info.site[0] - dxMin - COLLISIONTHRESHOLD)))
                 enemy.movable[0] = ((enemy.movable[0]) & (~(atDown & (atLeft | atRight))))
                 enemy.movable[1] = ((enemy.movable[1]) & (~(atUp & (atLeft | atRight))))
                 enemy.movable[2] = ((enemy.movable[2]) & (~(atRight & (atUp | atDown))))
                 enemy.movable[3] = ((enemy.movable[3]) & (~(atLeft & (atUp | atDown))))
-            dxMin = (self.player.info.size[0] + obstacle.size[0]) / 2
-            dyMin = (self.player.info.size[1] + obstacle.size[1]) / 2
-            atDown = ((self.player.info.site[1] > obstacle.site[1]) & (
-                        self.player.info.site[1] < obstacle.site[1] + dyMin + COLLISIONTHRESHOLD))
-            atUp = ((self.player.info.site[1] < obstacle.site[1]) & (
-                        self.player.info.site[1] > obstacle.site[1] - dyMin - COLLISIONTHRESHOLD))
-            atRight = ((self.player.info.site[0] > obstacle.site[0]) & (
-                        self.player.info.site[0] < obstacle.site[0] + dxMin + COLLISIONTHRESHOLD))
-            atLeft = ((self.player.info.site[0] < obstacle.site[0]) & (
-                        self.player.info.site[0] > obstacle.site[0] - dxMin - COLLISIONTHRESHOLD))
+            dxMin = (self.player.info.size[0] + obstacle.info.size[0]) / 2
+            dyMin = (self.player.info.size[1] + obstacle.info.size[1]) / 2
+            atDown = ((self.player.info.site[1] > obstacle.info.site[1]) & (
+                        self.player.info.site[1] < obstacle.info.site[1] + dyMin + COLLISIONTHRESHOLD))
+            atUp = ((self.player.info.site[1] < obstacle.info.site[1]) & (
+                        self.player.info.site[1] > obstacle.info.site[1] - dyMin - COLLISIONTHRESHOLD))
+            atRight = ((self.player.info.site[0] > obstacle.info.site[0]) & (
+                        self.player.info.site[0] < obstacle.info.site[0] + dxMin + COLLISIONTHRESHOLD))
+            atLeft = ((self.player.info.site[0] < obstacle.info.site[0]) & (
+                        self.player.info.site[0] > obstacle.info.site[0] - dxMin - COLLISIONTHRESHOLD))
             self.player.movable[0] = ((self.player.movable[0]) & (~(atDown & (atLeft | atRight))))
             self.player.movable[1] = ((self.player.movable[1]) & (~(atUp & (atLeft | atRight))))
             self.player.movable[2] = ((self.player.movable[2]) & (~(atRight & (atUp | atDown))))
@@ -101,12 +101,15 @@ class SingleGame():
             temp.size = ob["size"]
             temp.kind = ob["kind"]
             Et.Os_info.append(temp)
+            self.obstacle_list.append(It.Obstacle(temp))
 
     def update(self):
         self.moveJudge()
         self.signalSend()
         for skill in self.skill_list:
             skill.update()
+            skill.influence()
+            self.deskill(skill)
         for enemy in self.enemy_list:
             enemy.update()
         self.player.update()
@@ -121,6 +124,17 @@ class SingleGame():
         if Et.I_ctr.p1_key["atk1"]:
             self.player.signal = SKILL1
 
+    def deskill(self,s):
+        if s.delflag:
+            if s.info in Et.Sk_info:
+                Et.Sk_info.remove(s.info)
+            self.skill_list.remove(s)
+            if s in self.player.skill_list[0]:
+                self.player.skill_list[0].remove(s)
+            if s in self.player.skill_list[1]:
+                self.player.skill_list[1].remove(s)
+            if s in self.player.skill_list[2]:
+                self.player.skill_list[2].remove(s)
 
 
         # 信号类

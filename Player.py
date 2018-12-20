@@ -32,7 +32,7 @@ class Player():
         self.freeze_time = 0    #被攻击后僵直时间
         self.signal = None
         self.direction = MOVERIGHT
-        self.skill_type = [0, 0, 0]
+        self.skill_type = [SKILLHOOK, 0, 0]
         self.max_count = 12
         self.return_site = [0, 0]
         self.return_released = False
@@ -102,13 +102,13 @@ class Player():
         if self.info.count==int(self.max_count/2):
             self.actSkill(n)
             self.skill_time[n-1]=Et.fresh_time-10/fps
-        elif self.info.count==self.max_count:
+        elif self.info.count==self.max_count - 1:
             self.switchState(PLAYERSTATIC)
         if self.signal==ATTACKED:
             self.switchState(PLAYERATTACKED)
         elif self.signal==DIE:
             self.switchState(PLAYERDEAD)
-        self.info.count=(self.info.count+1)%12
+        self.info.count=self.info.count+1
 
     #状态转换，计数置零
     def switchState(self,state):
@@ -118,7 +118,7 @@ class Player():
     # 发起不同的技能，新技能在此添加
     def actSkill(self, n):
         skill_type = self.skill_type[n - 1]
-        if skill_type == SKILLBALLSTRAIGHT or skill_type == SKILLBALLSINUS or skill_type == SKILLBALLCIRCLE:
+        if skill_type in[SKILLBALLSTRAIGHT,SKILLBALLSINUS,SKILLBALLCIRCLE,SKILLBLACKHOLE,SKILLHOOK]:
             new_skill = self.releaseBall(skill_type)
             self.skill_list[n - 1].append(new_skill)
         elif skill_type == SKILLRETURN:
@@ -146,6 +146,16 @@ class Player():
             temp = Skill.SkillInfo()
             Et.Sk_info.append(temp)
             new_skill=Skill.SkillBallCircle(temp)
+            new_skill.resource = Et.R_sk[0]
+        elif skill_type == SKILLBLACKHOLE:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillBlackHole(temp)
+            new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
+        elif skill_type == SKILLHOOK:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillHook(temp)
             new_skill.resource = Et.R_sk[0]
         new_skill.game=self.game
         new_skill.init_site=self.info.site[:]
