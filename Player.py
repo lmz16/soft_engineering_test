@@ -32,7 +32,7 @@ class Player():
         self.freeze_time = 0    #被攻击后僵直时间
         self.signal = None
         self.direction = MOVERIGHT
-        self.skill_type = [5, 0, 0]
+        self.skill_type = [SKILLBALLRETURN, 0, 0]
         self.max_count = 12
         self.return_site = [0, 0]
         self.return_released = False
@@ -102,13 +102,13 @@ class Player():
         if self.info.count==int(self.max_count/2):
             self.actSkill(n)
             self.skill_time[n-1]=Et.fresh_time-10/fps
-        elif self.info.count==self.max_count-1:
+        elif self.info.count==self.max_count - 1:
             self.switchState(PLAYERSTATIC)
         if self.signal==ATTACKED:
             self.switchState(PLAYERATTACKED)
         elif self.signal==DIE:
             self.switchState(PLAYERDEAD)
-        self.info.count+=1
+        self.info.count=self.info.count+1
 
     #状态转换，计数置零
     def switchState(self,state):
@@ -118,8 +118,8 @@ class Player():
     # 发起不同的技能，新技能在此添加
     def actSkill(self, n):
         skill_type = self.skill_type[n - 1]
-        if skill_type==SKILLBALLSTRAIGHT or skill_type==SKILLBALLSINUS or skill_type==SKILLBALLCIRCLE or skill_type==SKILLBLACKHOLE or skill_type==SKILLHOOK:
-            new_skill = self.releaseBall(skill_type)
+        if skill_type in[SKILLBALLSTRAIGHT,SKILLBALLSINUS,SKILLBALLCIRCLE,SKILLBLACKHOLE,SKILLHOOK,SKILLKEKKAI]:
+            new_skill = self.releaseEntitySkill(skill_type)
             self.skill_list[n - 1].append(new_skill)
         elif skill_type == SKILLRETURN:
             if self.return_released == True:
@@ -127,27 +127,70 @@ class Player():
             else:
                 self.return_site = self.info.site[:]
             self.return_released = not self.return_released
+        elif skill_type in[SKILLBOMB,SKILLAIM]:
+            if not self.skill_list[n-1]:
+                new_skill=self.releaseEntitySkill(skill_type)
+                self.skill_list[n-1].append(new_skill)
+            else:
+                self.skill_list[n-1][0].setOff()
+        elif skill_type==SKILLBALLRETURN:
+            if not self.skill_list[n-1]:
+                for direction in[MOVELEFT,MOVERIGHT,MOVEUP,MOVEDOWN,MOVEUPLEFT,MOVEUPRIGHT,MOVEDOWNLEFT,MOVEDOWNRIGHT]:
+                    new_skill=self.releaseEntitySkill(SKILLBALLRETURN)
+                    new_skill.direction=direction
+                    self.skill_list[n-1].append(new_skill)
+            else:
+                for ball in self.skill_list[n-1]:
+                    ball.returning=True
 
 
     #专门用于扔出实体球的技能，n选择球轨迹
-    def releaseBall(self,skill_type):
-        new_skill=None
-        new_skill_info=Skill.SkillInfo()
-        Et.Sk_info.append(new_skill_info)
+    def releaseEntitySkill(self,skill_type):
+        new_skill = None
         if skill_type==SKILLBALLSTRAIGHT:
-            new_skill=Skill.SkillBallStraight(new_skill_info)
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill=Skill.SkillBallStraight(temp)
             new_skill.resource=Et.R_sk[0]
         elif skill_type==SKILLBALLSINUS:
-            new_skill=Skill.SkillBallSinus(new_skill_info)
-            new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill=Skill.SkillBallSinus(temp)
+            new_skill.resource = Et.R_sk[0]
         elif skill_type==SKILLBALLCIRCLE:
-            new_skill=Skill.SkillBallCircle(new_skill_info)
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill=Skill.SkillBallCircle(temp)
+            new_skill.resource = Et.R_sk[0]
+        elif skill_type == SKILLBLACKHOLE:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillBlackHole(temp)
             new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
-        elif skill_type==SKILLBLACKHOLE:
-            new_skill=Skill.SkillBlackHole(new_skill_info)
+        elif skill_type == SKILLHOOK:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillHook(temp)
             new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
-        elif skill_type==SKILLHOOK:
-            new_skill=Skill.SkillHook(new_skill_info)
+        elif skill_type == SKILLBOMB:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillBomb(temp)
+            new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
+        elif skill_type == SKILLAIM:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillAim(temp)
+            new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
+        elif skill_type == SKILLKEKKAI:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillKekkai(temp)
+            new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
+        elif skill_type == SKILLBALLRETURN:
+            temp = Skill.SkillInfo()
+            Et.Sk_info.append(temp)
+            new_skill = Skill.SkillBallReturn(temp)
             new_skill.resource = Et.R_sk[0]  ##############需要修改资源#######################
         new_skill.game=self.game
         new_skill.init_site=self.info.site[:]
