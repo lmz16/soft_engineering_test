@@ -4,11 +4,13 @@ import pygame
 from pygame.locals import *
 import time
 import Resource
+import os
 
 def startinit():
     extern.interface_resource=Resource.RInterface('Resource/json/interface')
     extern.game_state=GAMEINIT
     extern.last_fresh_time=time.time()
+    extern.init_time=time.time()
 
 def cursorshow():
     [x,y]=pygame.mouse.get_pos()
@@ -20,7 +22,6 @@ def cursorshow():
 
 
 def start_blit():
-
     extern.interface_resource.screen.blit(extern.interface_resource.start_background,(0,0))
     extern.interface_resource.screen.blit(
         extern.interface_resource.start_button, 
@@ -54,31 +55,8 @@ def help_blit():
         ((mainwindow_size[0]-help_text_size[0])/2,
         mainwindow_size[1]/2-help_text_size[1]/2)
     )
-#12月13日谢福生改动
-def setting_blit():
-    extern.interface_resource.screen.blit(extern.interface_resource.start_background,(0,0))
-    extern.interface_resource.screen.blit(extern.interface_resource.setting_text,(0,0))
-    i=0
-    while i<12:
-        if(extern.setting_value[i]==0):
-            extern.interface_resource.screen.blit(
-                extern.interface_resource.setting_choose,
-                (mainwindow_size[0]*27/28-single_game_p_size[0],
-                mainwindow_size[1]*(1+i)/15-2*single_game_p_size[1])
-            )
-        elif(extern.setting_value[i]==1):
-            extern.interface_resource.screen.blit(
-                extern.interface_resource.setting_choose,
-                (mainwindow_size[0]*27/28-3*single_game_p_size[0],
-                mainwindow_size[1]*(1+i)/15-2*single_game_p_size[1])
-            )
-        i=i+1
-#12月13日谢福生改动
 def single_play_blit():
-#12月8日晚谢福生改动
     extern.interface_resource.screen.blit(extern.interface_resource.single_choose_background,(0,0))
-    extern.interface_resource.screen.blit(extern.interface_resource.single_choose_background2,(0,0))
-    extern.interface_resource.screen.set_clip((100,0),((mainwindow_size[0]-200),mainwindow_size[1]))
     extern.interface_resource.screen.blit(
         extern.interface_resource.single_choose_play,
         ((mainwindow_size[0]-start_button_size[0])/2,
@@ -107,7 +85,7 @@ def single_play_blit():
         extern.interface_resource.single_choose_p3,
         ((mainwindow_size[0]-single_choose_p_size[0])/2-extern.single_play_move2+3*single_choose_p_size[0],
         mainwindow_size[1]*3/4-single_choose_p_size[1]/2))
- 
+    
     if(extern.single_play_choose1==1):
         extern.interface_resource.screen.blit(
             extern.interface_resource.single_choose_bc,
@@ -140,8 +118,6 @@ def single_play_blit():
             ((mainwindow_size[0]-single_choose_p_size[0])/2-extern.single_play_move2+3*single_choose_p_size[0],
             mainwindow_size[1]*3/4-single_choose_p_size[1]/2))
 
-    extern.interface_resource.screen.set_clip((0,0),mainwindow_size)
-#12月8日晚谢福生改动
 def mouseclick_respond(event):
     if(event.type==MOUSEBUTTONDOWN):
         if(event.button==1):
@@ -157,24 +133,6 @@ def mouseclick_respond(event):
             & (abs(event.pos[1]-mainwindow_size[1]/2)<help_text_size[1]/2)\
             & (extern.game_state==GAMEHELP2)):
                 extern.game_state=GAMEINIT1
-            #12月13日谢福生改动
-            elif((abs(event.pos[0]-mainwindow_size[0]/2)<start_button_size[0]/2) \
-            & (abs(event.pos[1]-3/4*mainwindow_size[1]-start_button_size[1]*0)<start_button_size[1]/2) \
-            & (extern.game_state==GAMEINIT)):
-                extern.game_state=GAMESETTING
-            elif(extern.game_state==GAMESETTING):
-                i=0
-                while i<12:
-                    if((abs(event.pos[0]-mainwindow_size[0]*27/28+single_game_p_size[0]/2)<single_game_p_size[0]) \
-                    & (abs(event.pos[1]-mainwindow_size[1]*(1+i)/15+1*single_game_p_size[1])<single_game_p_size[1])):
-                            extern.setting_value[i]=0
-                    if((abs(event.pos[0]-mainwindow_size[0]*27/28+3*single_game_p_size[0]/2)<single_game_p_size[0]) \
-                    & (abs(event.pos[1]-mainwindow_size[1]*(1+i)/15+1*single_game_p_size[1])<single_game_p_size[1])):
-                            extern.setting_value[i]=1
-                    i=i+1 
-                if(abs(event.pos[0])<start_button_size[0]):#我的电脑看不到界面下方。这是点界面左边退出设置界面
-                    extern.game_state = GAMEINIT
-            #12月13日谢福生改动
             elif(extern.game_state==GAMESINGLECHOOSE):
                 if((abs(event.pos[0]-mainwindow_size[0]/2)<start_button_size[0]/2) \
                 & (abs(event.pos[1]-1/2*mainwindow_size[1])<start_button_size[1]/2)):
@@ -210,6 +168,10 @@ def mouseclick_respond(event):
                 elif((abs(event.pos[0]-(mainwindow_size[0]/2-extern.single_play_move2+3*single_choose_p_size[0]))<single_choose_p_size[0]/2) \
                 & (abs(event.pos[1]-3/4*mainwindow_size[1])<single_choose_p_size[1]/2)):
                     extern.single_play_choose2=3
+            elif((abs(event.pos[0]-mainwindow_size[0]/2)<start_button_size[0]/2) \
+            & (abs(event.pos[1]-3/4*mainwindow_size[1]+start_button_size[1]*9/2)<start_button_size[1]/2) \
+            & (extern.game_state==GAMEINIT)):
+                extern.game_state=GAMECUSTOMCHOOSE
                     
         
     elif(event.type==MOUSEBUTTONUP):
@@ -219,6 +181,6 @@ def mouseclick_respond(event):
             extern.game_state=GAMEINIT
 
     if pygame.key.get_pressed()[K_ESCAPE]:
-        pygame.quit()
-        exit()
-    
+        if extern.last_fresh_time-extern.init_time>0.5:
+            pygame.quit()
+            os._exit(0)

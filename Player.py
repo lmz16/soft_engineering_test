@@ -12,10 +12,6 @@ import Item
 class Player():
     def __init__(self):
         self.site='人物位置(二维)'
-#12月8日晚谢福生改动
-        self.max_life='人物最大生命值'
-        self.max_mana='人物最大魔法值'
-#12月8日晚谢福生改动
         self.life_value='人物生命值'
         self.power='攻击力'
         self.mana='魔法值'
@@ -30,7 +26,12 @@ class Player():
         self.count='小状态计数器'
         self.skill1time='技能一上次发动的时间'
         self.skill1_cd='技能一冷却时间'
+        self.skill2time='技能二上次发动的时间'
+        self.skill2_cd='技能二冷却时间'
+        self.skill3time='技能三上次发动的时间'
+        self.skill3_cd='技能三冷却时间'
         self.skill_direction='技能方向'
+        self.freezetime='被攻击冻结时间'
         self.load()
     
     def player_update_blit(self,n):
@@ -52,6 +53,9 @@ class Player():
         elif n==5:
             extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_attacked,
             (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
+        elif n==6:
+            extern.singleplayergame_resource.pic_temp.blit(extern.character_resource.pic_dead,
+            (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
               
 
 # 状态更新,有限状态机,每个不同角色单独实现
@@ -69,6 +73,18 @@ class Player():
             elif self.signal==SKILL1:
                 self.state=PLAYERSKILL1
                 self.count=0
+            elif self.signal==SKILL2:
+                self.state=PLAYERSKILL2
+                self.count=0
+            elif self.signal==SKILL3:
+                self.state=PLAYERSKILL3
+                self.count=0
+            elif self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
             self.player_update_blit(0)
         elif self.state==PLAYERMOVE:
             if self.signal==None:
@@ -83,12 +99,23 @@ class Player():
             elif self.signal==SKILL1:
                 self.state=PLAYERSKILL1
                 self.count=0
+            elif self.signal==SKILL2:
+                self.state=PLAYERSKILL2
+                self.count=0
+            elif self.signal==SKILL3:
+                self.state=PLAYERSKILL3
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
             self.player_update_blit((self.count>2)+1)
         elif self.state==PLAYERSKILL1:
             if ((extern.last_fresh_time-self.skill1time)>self.skill1_cd):
-                if self.count==0:
+                if self.count==4:
                     tempskill=Item.Skill()
-                    tempskill.kind=1
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource
+                    tempskill.initsite=self.site[:]
                     tempskill.inittime=extern.last_fresh_time
                     tempskill.caster=self
                     tempskill.direction=self.skill_direction
@@ -106,7 +133,93 @@ class Player():
                     self.player_update_blit((self.count>5)+3)
                 self.count=self.count+1
             else:
+                self.state=PLAYERSTATIC
                 self.player_update_blit(0)
+            if self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
+        elif self.state==PLAYERSKILL2:
+            if ((extern.last_fresh_time-self.skill2time)>self.skill2_cd):
+                if self.count==4:
+                    tempskill=Item.Skill()
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource2
+                    tempskill.initsite=self.site[:]
+                    tempskill.inittime=extern.last_fresh_time
+                    tempskill.caster=self
+                    tempskill.direction=self.skill_direction
+                    tempskill.site=self.site[:]
+                    tempskill.size=extern.skill_resource2.size
+                    tempskill.damage=extern.skill_resource2.damage
+                    self.game.skill_list.append(tempskill)
+                    self.player_update_blit(3)
+                elif self.count==10:
+                    self.count=0
+                    self.state=PLAYERSTATIC
+                    self.skill2time=extern.last_fresh_time-10/fps
+                    self.player_update_blit(4)
+                else:
+                    self.player_update_blit((self.count>5)+3)
+                self.count=self.count+1
+            else:
+                self.state=PLAYERSTATIC
+                self.player_update_blit(0)
+            if self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
+        elif self.state==PLAYERSKILL3:
+            if ((extern.last_fresh_time-self.skill3time)>self.skill3_cd):
+                if self.count==4:
+                    tempskill=Item.Skill()
+                    tempskill.game=self.game
+                    tempskill.resource=extern.skill_resource3
+                    tempskill.initsite=self.site[:]
+                    tempskill.inittime=extern.last_fresh_time
+                    tempskill.caster=self
+                    tempskill.direction=self.skill_direction
+                    tempskill.site=self.site[:]
+                    tempskill.size=extern.skill_resource3.size
+                    tempskill.damage=extern.skill_resource3.damage
+                    self.game.skill_list.append(tempskill)
+                    self.player_update_blit(3)
+                elif self.count==10:
+                    self.count=0
+                    self.state=PLAYERSTATIC
+                    self.skill3time=extern.last_fresh_time-10/fps
+                    self.player_update_blit(4)
+                else:
+                    self.player_update_blit((self.count>5)+3)
+                self.count=self.count+1
+            else:
+                self.state=PLAYERSTATIC
+                self.player_update_blit(0)
+            if self.signal==ATTACKED:
+                self.state=PLAYERATTACKED
+                self.count=0
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
+        elif self.state==PLAYERATTACKED:
+            if self.count==self.freezetime:
+                self.count=0
+                self.state=PLAYERSTATIC
+            else:
+                self.count=self.count+1
+            if self.signal==ATTACKED:
+                self.count=0
+                self.state=PLAYERATTACKED
+            elif self.signal==DIE:
+                self.state=PLAYERDEAD
+                self.count=0
+            self.player_update_blit(5)
+        elif self.state==PLAYERDEAD:
+            self.player_update_blit(6)
 
 
 

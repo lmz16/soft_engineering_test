@@ -25,6 +25,8 @@ class Single_player_game():
         self.skill_list=[]
     # 信号列表,用于暂存未处理的信号
         self.signal_list=[]
+    # 障碍物列表
+        self.obstacle_list=[]
     # 键盘状态
         self.keyboardevent=pygame.key.get_pressed()
 
@@ -32,9 +34,14 @@ class Single_player_game():
     def load_from_json(self):
         extern.gameinterface=pygame.image.load(gameinterface_filename).convert()
         extern.singleplayergame_resource=Resource.RSingleplayergame('Resource/json/singlegame1')
-        extern.character_resource=Resource.RCharacter('Resource/json/jpx')
+        if extern.single_play_choose2==1:
+            extern.character_resource=Resource.RCharacter('Resource/json/jpx')
+        elif single_play_choose2==2:
+            extern.character_resource=Resource.RCharacter('Resource/json/jpx')
         extern.enemy_resource=Resource.REnemy('Resource/json/enemy1')
         extern.skill_resource=Resource.RSkill('Resource/json/skill1')
+        extern.skill_resource2=Resource.RSkill('Resource/json/skill2')
+        extern.skill_resource3=Resource.RSkill('Resource/json/skill3')
         for index,location in enumerate(extern.singleplayergame_resource.enemysite):
             tempenemy=Item.Enemy(self)
             tempenemy.site=location
@@ -44,12 +51,12 @@ class Single_player_game():
         self.single_player.site=extern.character_resource.site
         self.single_player.game=self
         self.single_player.skill1time=0
+        self.single_player.skill2time=0
+        self.single_player.skill3time=0
         self.single_player.skill1_cd=extern.character_resource.skill1_cd
+        self.single_player.skill2_cd=extern.character_resource.skill2_cd
+        self.single_player.skill3_cd=extern.character_resource.skill3_cd
         self.single_player.skill_direction=MOVERIGHT
-#12月8日晚谢福生改动
-        self.single_player.max_life=extern.character_resource.max_life
-        self.single_player.max_mana=extern.character_resource.max_mana
-#12月8日晚谢福生改动
         self.gameover=False
 
 # 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
@@ -63,11 +70,13 @@ class Single_player_game():
                 if (skill.caster==self.single_player):
                     for enemy in self.enemy_list:
                         if (skill.attack_judge(enemy)):
-                            enemy.signal=ATTACKED
-                            enemy.life_value=enemy.life_value-skill.damage
-                            if (not skill.last):
-                                del self.skill_list[inx]
-                                break
+                            if skill not in enemy.ignore_skill:
+                                enemy.signal=ATTACKED
+                                enemy.life_value=enemy.life_value-skill.damage
+                                enemy.ignore_skill.append(skill)
+                                if (not skill.last):
+                                    del self.skill_list[inx]
+                                    break
                 else:
                     # 技能打到了人物而且人物之前没有被这个技能打到
                     if (skill.attack_judge(self.single_player) & \
@@ -208,7 +217,7 @@ class Single_player_game():
                 del self.enemy_list[index]
             del self.single_player
             self.gameover=True
-            time.sleep(1)
+            extern.init_time=extern.last_fresh_time
 
 # 游戏画面与状态更新
     def game_update(self):
@@ -219,10 +228,12 @@ class Single_player_game():
         self.keyboardevent=pygame.key.get_pressed()
         self.message_translate()
         if not self.gameover:
-            
             self.single_player.update()
             for inx,skill in enumerate(self.skill_list):
                 if (skill.delflag):#skill寿命到了的话
+                    for enemy in self.enemy_list:
+                        if skill in enemy.ignore_skill:
+                            enemy.ignore_skill.remove(skill)
                     del self.skill_list[inx]
                 else:
                     skill.update()
@@ -230,76 +241,14 @@ class Single_player_game():
                 extern.singleplayergame_resource.pic_temp,
                 self.blit_startpoint()
                 )
-            #12月8日晚谢福生改动
-            self.state_update()
-            #12月8日晚谢福生改动
             for index,enemy in enumerate(self.enemy_list):
                 if (enemy.state==ENEMYDEAD):
                     del self.enemy_list[index]
-        
         # if (self.single_player.state==PLAYERDEAD):
         #     self.gameover=1
         # if (len(self.enemylist)==0):
         #     self.gameover=1
-#12月8日晚谢福生改动
-    def state_update(self):
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hpmp,
-        (mainwindow_size[0]/3-single_game_hp_size[0]/2,
-        mainwindow_size[1]*5/6-2*single_game_hp_size[1])
-    )
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hpmp,
-        (mainwindow_size[0]/3-single_game_hp_size[0]/2,
-        mainwindow_size[1]*5/6-1*single_game_hp_size[1])
-    )
-        extern.interface_resource.screen.set_clip((mainwindow_size[0]/3-single_game_hp_size[0]/2,
-        mainwindow_size[1]*5/6-2*single_game_hp_size[1]),
-        (mainwindow_size[0]/3+single_game_hp_size[0]/2,
-        mainwindow_size[1]*5/6+0*single_game_hp_size[1])
-    )
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_hp,
-        (mainwindow_size[0]/3-single_game_hp_size[0]/2+(self.single_player.max_life)/10/2-(self.single_player.max_life)/10,
-        mainwindow_size[1]*5/6-2*single_game_hp_size[1])
-    )
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_mp,
-        (mainwindow_size[0]/3-single_game_hp_size[0]/2+(self.single_player.max_mana)/10/2-(self.single_player.max_mana)/10,
-        mainwindow_size[1]*5/6-1*single_game_hp_size[1])
-    )
-        extern.interface_resource.screen.set_clip((0,0),mainwindow_size)
 
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.gameinterface,
-        (mainwindow_size[0]-single_game_map_size[0],
-        mainwindow_size[1]-single_game_map_size[1])
-    )
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_smallplayer,
-        (mainwindow_size[0]-single_game_map_size[0]+self.single_player.site[0]/extern.singleplayergame_resource.size[0]*single_game_map_size[0],
-        mainwindow_size[1]-single_game_map_size[1]+self.single_player.site[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
-    )
-        
-        extern.interface_resource.screen.blit(extern.singleplayergame_resource.single_game_k,
-        (mainwindow_size[0]-single_game_map_size[0]-self.blit_startpoint()[0]/extern.singleplayergame_resource.size[0]*single_game_map_size[0],
-        mainwindow_size[1]-single_game_map_size[1]-self.blit_startpoint()[1]/extern.singleplayergame_resource.size[1]*single_game_map_size[1])
-    )
-        extern.interface_resource.screen.blit(extern.character_resource.pic_portrait,
-        (mainwindow_size[0]/4+0*single_game_portrait_size[0]/2,
-        mainwindow_size[1]*5/6-1*single_game_portrait_size[1])
-    )
-        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
-        (mainwindow_size[0]/4+3/2*single_game_skill_size[0],
-        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
-        )
-        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
-        (mainwindow_size[0]/4+5/2*single_game_skill_size[0],
-        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
-        )    
-        extern.interface_resource.screen.blit(extern.character_resource.skill_1,
-        (mainwindow_size[0]/4+7/2*single_game_skill_size[0],
-        mainwindow_size[1]*5/6-2*single_game_skill_size[1])
-    )
-
-
-
-#12月8日晚谢福生改动
-    
     def blit_startpoint(self):
         sx=0
         if ((self.single_player.site[0]>mainwindow_size[0]/2) &

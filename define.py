@@ -8,27 +8,19 @@ mainwindow_size=(1440,900)
 cursor_size=(30,40)
 #   开始按钮尺寸
 start_button_size=(250,50)
-start_button_online_size=(250,50)
-start_button_setting_size=(250,50)
-start_button_help_size=(250,50)
-start_button_custom_size=(250,50)
-
-#   帮助文档尺寸
-help_text_size=(800,600)
-
 #单人模式选择界面缩略图尺寸
 single_choose_b_size=(500,300)
 single_choose_bc_size=(550,340)
 single_choose_p_size=(200,200)
 single_choose_pc_size=(230,230)
-#12月8日晚谢福生改动
-#单人模式游戏界面下方状态的尺寸
-single_game_portrait_size=(80,80)
-single_game_skill_size=(40,40)
-single_game_hp_size=(100,20)
-single_game_map_size=(300,300)
-single_game_p_size=(15,15)
-#12月8日晚谢福生改动
+
+#   帮助文档
+help_text_size=(800,600)
+
+#   自定义模式缩略图大小
+custom_thumbnail_size=(100,160)
+custom_pic_choose_size=(700,700)
+
 #   游戏状态常量
 #   初始状态
 GAMEINIT=0
@@ -42,8 +34,13 @@ GAMEHELP2=3
 GAMEINIT1=4
 #   单人模式选择状态
 GAMESINGLECHOOSE=5
-#   设置状态
-GAMESETTING=6
+#   自定义模式选择状态
+GAMECUSTOMCHOOSE=20
+#   自定义人物模式
+GAMECUSTOMC=21
+#   自定义关卡模式
+GAMECUSTOMG=22
+
 #   碰撞阈值
 COLLISIONTHRESHOLD=10
 
@@ -60,10 +57,16 @@ PLAYERSTATIC=-1
 PLAYERMOVE=0
 #   攻击状态
 PLAYERATTACK=-2
-#   技能一状态
-PLAYERSKILL1=-4
 #   被攻击状态
 PLAYERATTACKED=-3
+#   技能一状态
+PLAYERSKILL1=-4
+#   技能二状态
+PLAYERSKILL2=-5
+#   技能三状态
+PLAYERSKILL3=-6
+#   死亡状态
+PLAYERDEAD=-7
 
 #   敌人状态
 #   静止状态
@@ -102,6 +105,8 @@ SKILL2=9
 SKILL3=10
 #被攻击信号
 ATTACKED=11
+#死亡信号
+DIE=12
 
 #   移动序列
 movex=[0,0,-1,1,-1,1,-1,1]

@@ -6,6 +6,7 @@ from define import *
 import extern
 import pygame
 import Game
+import math
 from pygame.locals import *
 
 # Item基类,作为敌人类,障碍物类等的父类
@@ -32,6 +33,7 @@ class Enemy(Item):
         self.game=game
         self.speedx=2
         self.speedy=2
+        self.ignore_skill=[]
         self.load()
 
     def move(self):
@@ -42,7 +44,10 @@ class Enemy(Item):
                 self.site[0]=extern.singleplayergame_resource.size[0]-int(self.size[0]/2)
             if self.site[0]<int(self.size[0]/2):
                 self.site[0]=int(self.size[0]/2)
-            self.site[1]=self.site[1]+self.movey[self.direction]
+            if(abs(self.site[1] - self.target[1]) < self.speedy):
+                self.site[1]=self.target[1]
+            else:
+                self.site[1]=self.site[1]+self.movey[self.direction]
             if self.site[1]>extern.singleplayergame_resource.size[1]-int(self.size[1]/2):
                 self.site[1]=extern.singleplayergame_resource.size[1]-int(self.size[1]/2)
             if self.site[1]<int(self.size[1]/2):
@@ -145,12 +150,14 @@ class Skill(Item):
         self.damage='伤害值'
         self.duration='技能持续时间'
         self.inittime='初始化时间'
+        self.initsite='初始化位置'
         self.signal='接收到的信号'
         self.caster='技能释放者'
         self.last='击中后是否消失'
         self.delflag='技能是否应该被删除'
         self.kind='技能类型'
         self.velocity='技能速度'
+        self.resource='资源指针'
         self.load()
 
     # 技能类的状态更新
@@ -158,7 +165,12 @@ class Skill(Item):
         if extern.last_fresh_time-self.inittime>self.duration:
             self.delflag=True
         else:
-            self.skill_move()
+            if self.resource.kind == 1:
+                self.skill_move()
+            elif self.resource.kind == 2:
+                self.skill_move2()
+            elif self.resource.kind == 3:
+                self.skill_move3()
             self.item_blit()
 
     def skill_move(self):
@@ -172,6 +184,25 @@ class Skill(Item):
             self.delflag=True
         if self.site[1]<int(self.size[1]/2):
             self.delflag=True
+    
+    def skill_move2(self):
+        sinmovex=10*self.velocity*(extern.last_fresh_time-self.inittime)
+        sinmovey=50*math.sin(2*math.pi*(extern.last_fresh_time-self.inittime))
+        transmat=[
+            [0,1,-1,0],[0,-1,1,0],[-1,0,0,-1],[1,0,0,1],
+            [-1,1,-1,-1],[1,1,-1,1],[-1,-1,1,-1],[1,-1,1,1]
+        ]
+        self.site=[
+            self.initsite[0]+int(sinmovex*transmat[self.direction][0]+sinmovey*transmat[self.direction][1]),
+            self.initsite[1]+int(sinmovex*transmat[self.direction][2]+sinmovey*transmat[self.direction][3])
+        ]
+
+    def skill_move3(self):
+        dx=1.5*max(self.caster.size)*math.cos(2*math.pi*(extern.last_fresh_time-self.inittime))
+        dy=1.5*max(self.caster.size)*math.sin(2*math.pi*(extern.last_fresh_time-self.inittime))
+        self.site=[
+            self.caster.site[0]+int(dx),
+            self.caster.site[1]+int(dy)]
 
     def load(self):
         self.delflag=0
@@ -180,10 +211,10 @@ class Skill(Item):
         self.movex=[self.velocity*x for x in movex]
         self.movey=[self.velocity*y for y in movey]
         self.size=extern.skill_resource.size
-        self.last=False
+        self.last=extern.skill_resource.last
 
     def item_blit(self):
-        extern.singleplayergame_resource.pic_temp.blit(extern.skill_resource.pic1,
+        extern.singleplayergame_resource.pic_temp.blit(self.resource.pic1,
         (int(self.site[0]-self.size[0]/2),int(self.site[1]-self.size[1]/2)))
 
     def attack_judge(self,target):
