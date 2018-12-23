@@ -16,14 +16,16 @@ import math
 
 
 class SkillInfo():
-    def __init__(self):  ##############需要加载资源#######################
+    def __init__(self):
         self.site = [0, 0]
         self.size = 0
         self.visible = True
+        self.pic = ""
+        self.draw_line = None
 
 
 class Skill():
-    def __init__(self, sinfo):  ##############需要加载资源#######################
+    def __init__(self, sinfo):
         self.info = sinfo
         self.direction = MOVERIGHT
         self.game = None
@@ -39,6 +41,7 @@ class Skill():
         self.ignore_player = False
         self.init_site = [0, 0]
         self.resource = None
+        self.load()
 
     def collisionJudge(self, collider):
         if ((abs(collider.info.site[0] - self.info.site[0]) - (collider.info.size[0] + self.info.size[0]) / 2 < 0) &
@@ -77,8 +80,8 @@ class SkillBallStraight(Skill):
         if (Et.fresh_time - self.init_time) > self.duration:
             self.delflag = True
         else:
-            self.info.site[0] = self.info.site[0] + self.velocity*movex[self.direction]
-            self.info.site[1] = self.info.site[1] + self.velocity*movey[self.direction]
+            self.info.site[0] = self.info.site[0] + self.movex[self.direction]
+            self.info.site[1] = self.info.site[1] + self.movey[self.direction]
 
     def influence(self):
         self.defaultInfluence()
@@ -129,8 +132,8 @@ class SkillBallCircle(Skill):
 class SkillBlackHole(Skill):
     def __init__(self, info):
         Skill.__init__(self, info)
-        self.effect_radius = 500  ##############需要加载资源#######################
-        self.displacement = 1  ##############需要加载资源#######################
+        self.effect_radius = 0
+        self.displacement = 0
 
     def update(self):
         if (Et.fresh_time - self.init_time) > self.duration:
@@ -160,36 +163,29 @@ class SkillHook(Skill):
         if (Et.fresh_time - self.init_time) > self.duration:
             self.delflag = True
         elif not self.find_obstacle:
-            self.info.site[0] = self.info.site[0] + self.velocity * movex[self.direction]
-            self.info.site[1] = self.info.site[1] + self.velocity * movey[self.direction]
+            self.info.site[0] = self.info.site[0] + self.movex[self.direction]
+            self.info.site[1] = self.info.site[1] + self.movey[self.direction]
             for obstacle in self.game.obstacle_list:
                 if self.collisionJudge(obstacle):
                     self.attach = obstacle
                     self.find_obstacle = True
+        self.info.draw_line = [self.info.site, self.caster.info.site]
 
     def influence(self):
         if self.find_obstacle:
-            self.caster.info.site=self.info.site[:]
-            lborder=self.attach.info.site[0]-(self.caster.info.size[0]+self.attach.info.size[0])/2
-            rborder=self.attach.info.site[0]+(self.caster.info.size[0]+self.attach.info.size[0])/2
-            uborder=self.attach.info.site[1]-(self.caster.info.size[1]+self.attach.info.size[1])/2
-            dborder=self.attach.info.site[1]+(self.caster.info.size[1]+self.attach.info.size[1])/2
-            if self.caster.info.site[0]>lborder-COLLISIONTHRESHOLD and self.caster.info.site[0]<lborder:
-                self.caster.info.site[0]=lborder-COLLISIONTHRESHOLD
-            elif self.caster.info.site[0]<rborder+COLLISIONTHRESHOLD and self.caster.info.site[0]>rborder:
-                self.caster.info.site[0]=rborder+COLLISIONTHRESHOLD
-            if self.caster.info.site[1]>uborder-COLLISIONTHRESHOLD and self.caster.info.site[1]<uborder:
-                self.caster.info.site[1]=uborder-COLLISIONTHRESHOLD
-            elif self.caster.info.site[1]<dborder+COLLISIONTHRESHOLD and self.caster.info.site[1]>dborder:
-                self.caster.info.site[1]=dborder+COLLISIONTHRESHOLD
+            temp_v = [self.info.site[0]-self.caster.info.site[0],self.info.site[1]-self.caster.info.site[1]]
+            k0 = self.caster.info.size[0] / (2*temp_v[0]+0.1)
+            k1 = self.caster.info.size[1] / (2*temp_v[1]+0.1)
+            self.caster.info.site = [self.info.site[0]-int(min(abs(k0),abs(k1))*temp_v[0]),
+                                     self.info.site[1]-int(min(abs(k0),abs(k1))*temp_v[1])]
             self.delflag = True
-            
-            
+
+
 class SkillBomb(Skill):
     def __init__(self, info):
         Skill.__init__(self, info)
-        self.explosion_radius=500  ##############需要加载资源#######################
-        self.explosion_flag=False
+        self.explosion_radius = 0
+        self.explosion_flag = False
 
     def update(self):
         if (Et.fresh_time - self.init_time) > self.duration:
@@ -199,29 +195,31 @@ class SkillBomb(Skill):
 
     def influence(self):
         pass
-            
+
     def setOff(self):
         for enemy in self.game.enemy_list:
-            distance=math.sqrt((self.info.site[0]-enemy.info.site[0])**2+(self.info.site[1]-enemy.info.site[1])**2)
-            if distance<self.explosion_radius:
-                enemy.info.life_value-=self.damage
-        exploding_info=SkillInfo()
+            distance = math.sqrt(
+                (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+            if distance < self.explosion_radius:
+                enemy.info.life_value -= self.damage
+        exploding_info = SkillInfo()
         Et.Sk_info.append(exploding_info)
-        exploding=SkillBombExploding(exploding_info)
-        exploding.resource=Et.R_sk[0]  ##############需要修改资源#######################
-        exploding.game=self.game
-        exploding.init_site=self.info.site[:]
-        exploding.init_time=Et.fresh_time
-        exploding.caster=self.caster
-        exploding.direction=self.direction
-        exploding.info.site=self.info.site[:]
-        exploding.info.size=exploding.resource.size
-        exploding.damage=exploding.resource.damage
-        exploding.duration=exploding.resource.duration
+        exploding = SkillBombExploding(exploding_info)
+        exploding.resource = Et.R_sk[SKILLBOMBEXPLODING]
+        exploding.game = self.game
+        exploding.init_site = self.info.site[:]
+        exploding.init_time = Et.fresh_time
+        exploding.caster = self.caster
+        exploding.direction = self.direction
+        exploding.info.site = self.info.site[:]
+        exploding.info.size = exploding.resource.size
+        exploding.damage = exploding.resource.damage
+        exploding.duration = exploding.resource.duration
+        exploding.info.pic = exploding.resource.pic
         self.game.skill_list.append(exploding)
-        self.delflag=True
-            
-            
+        self.delflag = True
+
+
 class SkillBombExploding(Skill):
     def __init__(self, info):
         Skill.__init__(self, info)
@@ -232,50 +230,52 @@ class SkillBombExploding(Skill):
 
     def influence(self):
         pass
-    
-    
+
+
 class SkillAim(Skill):
-    def __init__(self,info):
-        Skill.__init__(self,info)
-        self.fire_range=500  ##############需要加载资源#######################
+    def __init__(self, info):
+        Skill.__init__(self, info)
+        self.fire_range = 0
 
     def update(self):
         if Et.fresh_time - self.init_time > self.duration:
             self.delflag = True
         else:
-            dx=10*self.velocity*(Et.fresh_time-self.init_time)
+            dx = 10 * self.velocity * (Et.fresh_time - self.init_time)
             transmat = [
                 [0, 1, -1, 0], [0, -1, 1, 0], [-1, 0, 0, -1], [1, 0, 0, 1],
                 [-1, 1, -1, -1], [1, 1, -1, 1], [-1, -1, 1, -1], [1, -1, 1, 1]
             ]
-            self.info.site=[self.caster.info.site[0]+int(dx*transmat[self.direction][0]),
-                            self.caster.info.site[1]+int(dx*transmat[self.direction][2])]
+            self.info.site = [self.caster.info.site[0] + int(dx * transmat[self.direction][0]),
+                              self.caster.info.site[1] + int(dx * transmat[self.direction][2])]
 
     def influence(self):
         pass
-    
+
     def setOff(self):
         for enemy in self.game.enemy_list:
-            distance=math.sqrt((self.info.site[0]-enemy.info.site[0])**2+(self.info.site[1]-enemy.info.site[1])**2)
-            if distance<self.fire_range:
-                enemy.info.life_value-=self.damage
-        fired_info=SkillInfo()
+            distance = math.sqrt(
+                (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+            if distance < self.fire_range:
+                enemy.info.life_value -= self.damage
+        fired_info = SkillInfo()
         Et.Sk_info.append(fired_info)
-        fired=SkillAimFired(fired_info)
-        fired.resource=Et.R_sk[0]  ##############需要修改资源#######################
-        fired.game=self.game
-        fired.init_site=self.info.site[:]
-        fired.init_time=Et.fresh_time
-        fired.caster=self.caster
-        fired.direction=self.direction
-        fired.info.site=self.info.site[:]
-        fired.info.size=fired.resource.size
-        fired.damage=fired.resource.damage
-        fired.duration=fired.resource.duration
+        fired = SkillAimFired(fired_info)
+        fired.resource = Et.R_sk[SKILLAIMFIRED]
+        fired.game = self.game
+        fired.init_site = self.info.site[:]
+        fired.init_time = Et.fresh_time
+        fired.caster = self.caster
+        fired.direction = self.direction
+        fired.info.site = self.info.site[:]
+        fired.info.size = fired.resource.size
+        fired.damage = fired.resource.damage
+        fired.duration = fired.resource.duration
+        fired.info.pic = fired.resource.pic
         self.game.skill_list.append(fired)
-        self.delflag=True
-        
-        
+        self.delflag = True
+
+
 class SkillAimFired(Skill):
     def __init__(self, info):
         Skill.__init__(self, info)
@@ -286,12 +286,12 @@ class SkillAimFired(Skill):
 
     def influence(self):
         pass
-    
-    
+
+
 class SkillKekkai(Skill):
     def __init__(self, info):
         Skill.__init__(self, info)
-        self.radius = 500  ##############需要加载资源#######################
+        self.radius = 0
 
     def update(self):
         if (Et.fresh_time - self.init_time) > self.duration:
@@ -299,39 +299,118 @@ class SkillKekkai(Skill):
 
     def influence(self):
         for enemy in self.game.enemy_list:
-            distance=math.sqrt((self.info.site[0]-enemy.info.site[0])**2+(self.info.site[1]-enemy.info.site[1])**2)
-            enemy_radius=(enemy.info.size[0]+enemy.info.size[1])/4
-            if abs(distance-self.radius)<enemy_radius:
+            distance = math.sqrt(
+                (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+            enemy_radius = (enemy.info.size[0] + enemy.info.size[1]) / 4
+            if abs(distance - self.radius) < enemy_radius:
                 if not enemy in self.ignore_list:
-                    enemy.info.life_value-=self.damage
+                    enemy.info.life_value -= self.damage
                     self.ignore_list.append(enemy)
             else:
                 if enemy in self.ignore_list:
                     self.ignore_list.remove(enemy)
-                    
-                    
+
+
 class SkillBallReturn(Skill):
-    def __init__(self,info):
-        Skill.__init__(self,info)
-        self.returning=False
-        self.returning_velocity=20  ##############需要加载资源#######################
+    def __init__(self, info):
+        Skill.__init__(self, info)
+        self.returning = False
+        self.returning_velocity = 0
 
     def update(self):
         if not self.returning:
             if (Et.fresh_time - self.init_time) > self.duration:
                 self.delflag = True
             else:
-                self.info.site[0] = self.info.site[0] + self.velocity*movex[self.direction]
-                self.info.site[1] = self.info.site[1] + self.velocity*movey[self.direction]
+                self.info.site[0] = self.info.site[0] + self.movex[self.direction]
+                self.info.site[1] = self.info.site[1] + self.movey[self.direction]
         else:
-            distance=math.sqrt((self.caster.info.site[0]-self.info.site[0])**2+(self.caster.info.site[1]-self.info.site[1])**2)
-            if distance<self.returning_velocity:
-                self.info.site=self.caster.info.site[:]
+            distance = math.sqrt((self.caster.info.site[0] - self.info.site[0]) ** 2 + (
+                        self.caster.info.site[1] - self.info.site[1]) ** 2)
+            if distance < self.returning_velocity:
+                self.info.site = self.caster.info.site[:]
             else:
-                self.info.site=[self.info.site[0]+(self.caster.info.site[0]-self.info.site[0])/distance*self.returning_velocity,
-                                self.info.site[1]+(self.caster.info.site[1]-self.info.site[1])/distance*self.returning_velocity]
-            if self.info.site==self.caster.info.site:
-                self.delflag=True
+                self.info.site = [self.info.site[0] + (
+                            self.caster.info.site[0] - self.info.site[0]) / distance * self.returning_velocity,
+                                  self.info.site[1] + (self.caster.info.site[1] - self.info.site[
+                                      1]) / distance * self.returning_velocity]
+            if self.info.site == self.caster.info.site:
+                self.delflag = True
 
     def influence(self):
         self.defaultInfluence()
+        
+        
+class SkillPortal(Skill):
+    def __init__(self, info):
+        Skill.__init__(self, info)
+        self.pair = None
+        self.effect_radius = 0
+
+    def update(self):
+        if (Et.fresh_time - self.init_time) > self.duration and self.pair != None and (Et.fresh_time - self.pair.init_time) > self.pair.duration:
+            self.delflag = True
+
+    def influence(self):
+        if self.pair != None:
+            for enemy in self.game.enemy_list:
+                distance = math.sqrt(
+                    (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+                pair_distance = math.sqrt(
+                    (self.pair.info.site[0] - enemy.info.site[0]) ** 2 + (self.pair.info.site[1] - enemy.info.site[1]) ** 2)
+                if distance < self.effect_radius:
+                    if not enemy in self.ignore_list and not enemy in self.pair.ignore_list:
+                        enemy.info.site = self.pair.info.site[:]
+                        self.ignore_list.append(enemy)
+                        self.pair.ignore_list.append(enemy)
+                elif pair_distance >= self.pair.effect_radius:
+                    if enemy in self.ignore_list or enemy in self.pair.ignore_list:
+                        self.ignore_list.remove(enemy)
+                        self.pair.ignore_list.remove(enemy)
+            distance = math.sqrt(
+                (self.info.site[0] - self.game.player.info.site[0]) ** 2 + (self.info.site[1] - self.game.player.info.site[1]) ** 2)
+            pair_distance = math.sqrt(
+                (self.pair.info.site[0] - self.game.player.info.site[0]) ** 2 + (self.pair.info.site[1] - self.game.player.info.site[1]) ** 2)
+            if distance < self.effect_radius:
+                if not self.ignore_player and not self.pair.ignore_player:
+                    self.game.player.info.site = self.pair.info.site[:]
+                    self.ignore_player = True
+                    self.pair.ignore_player = True
+            elif pair_distance >= self.pair.effect_radius:
+                if self.ignore_player or self.pair.ignore_player:
+                    self.ignore_player = False
+                    self.pair.ignore_player = False
+                    
+                    
+class SkillTriangle(Skill):
+    def __init__(self, info):
+        Skill.__init__(self, info)
+        self.next = None
+        self.effective = False
+
+    def update(self):
+        if (Et.fresh_time - self.init_time) > self.duration:
+            if self.effective:
+                checker = self
+                while True:
+                    checker.effective = False
+                    checker = checker.next
+                    if checker == self:
+                        break
+            self.delflag = True
+        if self.effective:
+            self.info.draw_line = [self.info.site, self.next.info.site]
+        else:
+            self.info.draw_line = None
+
+    def influence(self):
+        if self.effective:
+            [x1,y1] = self.info.site[:]
+            [x2,y2] = self.next.info.site[:]
+            for enemy in self.game.enemy_list:
+                [x,y] = enemy.info.site[:]
+                distance = ((y2-y1)*x-(x2-x1)*y-x1*y2+x2*y1)/math.sqrt((y2-y2)**2+(x2-x1)**2)
+                enemy_radius = (enemy.info.size[0]+enemy.info.size[1])/4
+                if distance < enemy_radius and (x-x1)*(x2-x1)+(y-y1)*(y2-y1) >= 0 and (x-x2)*(x1-x2)+(y-y2)*(y1-y2) >= 0:
+                    enemy.info.life_value -= self.damage
+                    enemy.signal = ATTACKED

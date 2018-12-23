@@ -1,151 +1,344 @@
-#
-#   创建json文件
-#
-
 import json
-from sys import exit
 
-singleplayer_player_pic_static='Resource/character/tmg/static.png'
-singleplayer_player_pic_move1='Resource/character/tmg/static.png'
-singleplayer_player_pic_move2='Resource/character/tmg/move1.png'
-singleplayer_player_pic_attack1='Resource/character/tmg/attack0.png'
-singleplayer_player_pic_attack2='Resource/character/tmg/attack1.png'
-singleplayer_player_pic_attacked='Resource/character/tmg/move1.png'
-singleplayer_player_velocity=(10,10)
+data = [{
+    "main_bk_pic":"Resource/interface/start_interface.jpg",
+    "cursor_pic":"Resource/interface/cursor.png",
+    "single_button":"Resource/interface/start_button_single.png",
+    "setting_button":"Resource/interface/start_button_setting.png",
+    "online_button":"Resource/interface/start_button_online.png",
+    "help_button":"Resource/interface/start_button_help.png",
+    "custom_button":"Resource/interface/start_button_custom.png",
+    "help_text":'Resource/interface/help_text.png',
+    "setting_text":'Resource/interface/setting_text.png',
+    "setting_choose":'Resource/interface/setting_choose.png',
+}]
 
-singleplayer_background_pic='Resource/singleplayergame/game1/background1.png'
+with open("Resource/json/interface","w") as f:
+    json.dump(data,f)
 
-singleplayer_enemy_pic_static='Resource/enemy/enemy1/enemy1_static.jpeg'
-singleplayer_enemy_pic_move1='Resource/enemy/enemy1/enemy1_static.jpeg'
-singleplayer_enemy_pic_move2='Resource/enemy/enemy1/enemy1_static.jpeg'
-singleplayer_enemy_pic_attack1='Resource/enemy/enemy1/enemy1_static.jpeg'
-singleplayer_enemy_pic_attack2='Resource/enemy/enemy1/enemy1_static.jpeg'
-singleplayer_enemy_pic_attacked='Resource/enemy/enemy1/enemy1_static.jpeg'
+data = [{
+    "bottom_pic":'Resource/interface/single_choose_background.jpg',
+    "single_choose_frame":'Resource/interface/single_choose_frame.png',
+    "single_choose_b":['Resource/interface/single_choose_b1.png',
+        'Resource/interface/single_choose_b2.png',
+        'Resource/interface/single_choose_b3.png'],
+    "single_choose_p":['Resource/interface/single_choose_p1.png',
+        'Resource/interface/single_choose_p2.png',
+        'Resource/interface/single_choose_p3.png'],
+    "single_choose_play":'Resource/interface/single_choose_play.png',
+    "single_choose_choose":'Resource/interface/single_choose_choose.png',
+}]
 
-fire_ball_pic='Resource/item/fire_ball.png'
-fire_ball_pic_size=[30,28]
-fire_ball_duration=5
-fire_ball_velocity=20
-fire_ball_damage=300
-skill1_cd=2
-skill2_cd=3
-skill3_cd=4
+with open("Resource/json/game_choose","w") as f:
+    json.dump(data,f)
 
-info=[
-    [singleplayer_player_pic_static,
-    singleplayer_player_pic_move1,
-    singleplayer_player_pic_move2,
-    singleplayer_player_pic_attack1,
-    singleplayer_player_pic_attack2,
-    singleplayer_player_pic_attacked],
-    (87,87),
-    [(200,200)],
-    singleplayer_player_velocity,
-    [skill1_cd,skill2_cd,skill3_cd]
-]
-with open('Resource/json/jpx','w') as jpx:
-    temp=json.dump(info,jpx)
+data = [{
+    "p1_site":[200,400],
+    "bg_pic":"Resource/singleplayergame/game1/background2.png",
+    "bg_size":[1160,600],
+    "enemy":[
+        {
+            "site":[700,400],
+            "kind":0,
+         },
+    ],
+    "obstacle":[
+        {
+            "site":[500,200],
+            "size":[100,100],
+            "kind":0
+        },
+        {
+            "site":[100,200],
+            "size":[100,100],
+            "kind":0
+        },
+        {
+            "site":[1000,50],
+            "size":[10000,100],
+            "kind":1
+        },
+    ]
+}]
 
-start_background_filename='Resource/interface/start_interface.jpg'
-#   光标图片路径
-cursor_filename='Resource/interface/cursor.png'
-#   开始按钮图片路径 单人游戏，联机对战，设置，帮助，自定义
-start_button_filename='Resource/interface/start_button_single.png'
-start_button_online_filename='Resource/interface/start_button_online.png'
-start_button_setting_filename='Resource/interface/start_button_setting.png'
-start_button_help_filename='Resource/interface/start_button_help.png'
-start_button_custom_filename='Resource/interface/start_button_custom.png'
-help_text_filename='Resource/interface/help_text.png'
-single_choose_background_filename='Resource/interface/single_choose_background.png'
-single_choose_b1_filename='Resource/interface/single_choose_b1.png'
-single_choose_b2_filename='Resource/interface/single_choose_b2.png'
-single_choose_b3_filename='Resource/interface/single_choose_b3.png'
-single_choose_p1_filename='Resource/interface/single_choose_p1.png'
-single_choose_p2_filename='Resource/interface/single_choose_p2.png'
-single_choose_p3_filename='Resource/interface/single_choose_p3.png'
-single_choose_play_filename='Resource/interface/single_choose_play.png'
-single_choose_choose_filename='Resource/interface/single_choose_choose.png'
-info = [
-    start_background_filename,
-    cursor_filename,
-    start_button_filename,
-    start_button_online_filename,
-    start_button_setting_filename,
-    start_button_help_filename,
-    start_button_custom_filename,
-    help_text_filename,
-    single_choose_background_filename,
-    single_choose_b1_filename,
-    single_choose_b2_filename,
-    single_choose_b3_filename,
-    single_choose_p1_filename,
-    single_choose_p2_filename,
-    single_choose_p3_filename,
-    single_choose_play_filename,
-    single_choose_choose_filename
-]
-with open('Resource/json/interface','w') as interface:
-    temp=json.dump(info,interface)
+with open("Resource/json/game1","w") as f:
+    json.dump(data,f)
 
-info = [
-    singleplayer_background_pic,
-    (2160,600),
-    [[700,250],[1000,250],[1250,100],[1250,500]]
-]
+data = [{
+    "size":[70,80],
+    "realsize":[40,80],
+    "life_value":1000,
+    "static":[
+        "Resource/character/lmz/static0.png",
+        "Resource/character/lmz/static1.png",
+        "Resource/character/lmz/static0.png",
+    ],
+    "move":[
+        "Resource/character/lmz/move0.png",
+        "Resource/character/lmz/move1.png",
+        "Resource/character/lmz/move2.png",
+    ],
+    "attack":[
+        "Resource/character/lmz/attack0.png",
+        "Resource/character/lmz/attack1.png",
+        "Resource/character/lmz/attack2.png",
+    ],
+    "attacked":[
+        "Resource/character/lmz/attacked.png",
+        "Resource/character/lmz/attacked.png",
+        "Resource/character/lmz/attacked.png",
+    ],
+    "v":[5,5],
+    "skill":[0,5,2]
+}]
 
-with open('Resource/json/singlegame1','w') as game:
-    temp=json.dump(info,game)
+with open("Resource/json/character1","w") as f:
+    json.dump(data,f)
 
-info = [
-    [singleplayer_enemy_pic_static,
-    singleplayer_enemy_pic_move1,
-    singleplayer_enemy_pic_move2,
-    singleplayer_enemy_pic_attack1,
-    singleplayer_enemy_pic_attack2,
-    singleplayer_enemy_pic_attacked],
-    [60,69],
-    [1000,1000,1000,1000],
-    3
-]
+data = [{
+    "size":[48,80],
+    "realsize":[48,80],
+    "life_value":1000,
+    "static":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "move":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "attack":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "attacked":[
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+        "Resource/enemy/enemy1/enemy1_static.jpeg",
+    ],
+    "v":[10,10],
+}]
 
-with open('Resource/json/enemy1','w') as enemy:
-    temp=json.dump(info,enemy)
+with open("Resource/json/enemy1","w") as f:
+    json.dump(data,f)
 
-info = [
-    [fire_ball_pic],
-    fire_ball_pic_size,
-    fire_ball_duration,
-    fire_ball_velocity,
-    fire_ball_damage,
-    True,
-    1
-]
+data = [{
+    "pic":"Resource/item/ob1.png",
+    "size":[100,100]
+}]
 
-with open('Resource/json/skill1','w') as skill:
-    temp=json.dump(info,skill)
+with open("Resource/json/ob1","w") as f:
+    json.dump(data,f)
 
-info = [
-    [fire_ball_pic],
-    fire_ball_pic_size,
-    fire_ball_duration,
-    fire_ball_velocity,
-    fire_ball_damage,
-    True,
-    2
-]
+#SkBallStraight
+data =[{
+    "pic":"Resource/item/hand_sword.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
 
-with open('Resource/json/skill2','w') as skill:
-    temp=json.dump(info,skill)
+with open("Resource/json/sk0","w") as f:
+    json.dump(data,f)
 
-info = [
-    [fire_ball_pic],
-    fire_ball_pic_size,
-    fire_ball_duration,
-    fire_ball_velocity,
-    fire_ball_damage,
-    True,
-    3
-]
+#SkBallSinus
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
 
-with open('Resource/json/skill3','w') as skill:
-    temp=json.dump(info,skill)
+with open("Resource/json/sk1","w") as f:
+    json.dump(data,f)
+    
+#SkBallCircle
+data =[{
+    "pic":"Resource/item/circle_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk2","w") as f:
+    json.dump(data,f)
+    
+#SkReturn
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[0,0],
+    "size":[50,50],
+    "damage":0,
+    "v":0,
+    "life":0,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk3","w") as f:
+    json.dump(data,f)
+    
+#SkBlackHole
+data =[{
+    "pic":"Resource/item/blackhole.png",
+    "realsize":[200,200],
+    "size":[200,200],
+    "damage":0,
+    "v":0,
+    "life":5,
+    "extra_param1":200,
+    "extra_param2":5,
+}]
+
+with open("Resource/json/sk4","w") as f:
+    json.dump(data,f)
+
+#SkHook
+data =[{
+    "pic":"Resource/item/hook_place.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":10,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk5","w") as f:
+    json.dump(data,f)
+
+#SkBomb
+data =[{
+    "pic":"Resource/item/aim.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":500,
+    "v":0,
+    "life":5,
+    "extra_param1":300,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk6","w") as f:
+    json.dump(data,f)
+    
+#SkBombExploding
+data =[{
+    "pic":"Resource/item/explosion.png",
+    "realsize":[300,300],
+    "size":[300,300],
+    "damage":0,
+    "v":0,
+    "life":0.5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk7","w") as f:
+    json.dump(data,f)
+    
+#SkAim
+data =[{
+    "pic":"Resource/item/aim.png",
+    "realsize":[20,20],
+    "size":[20,20],
+    "damage":700,
+    "v":10,
+    "life":10,
+    "extra_param1":50,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk8","w") as f:
+    json.dump(data,f)
+    
+#SkAimFired
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":0,
+    "v":0,
+    "life":0.5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk9","w") as f:
+    json.dump(data,f)
+    
+#SkKekkai
+data =[{
+    "pic":"Resource/item/kekkai.png",
+    "realsize":[200,200],
+    "size":[200,200],
+    "damage":300,
+    "v":0,
+    "life":10,
+    "extra_param1":200,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk10","w") as f:
+    json.dump(data,f)
+
+#SkBallReturn
+data =[{
+    "pic":"Resource/item/flash.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":10,
+    "extra_param1":30,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk11","w") as f:
+    json.dump(data,f)
+
+#SkPortal
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":0,
+    "v":0,
+    "life":10,
+    "extra_param1":50,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk12","w") as f:
+    json.dump(data,f)
+    
+#SkTriangle
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[20,20],
+    "size":[20,20],
+    "damage":300,
+    "v":0,
+    "life":10,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk13","w") as f:
+    json.dump(data,f)
