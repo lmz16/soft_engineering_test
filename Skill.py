@@ -56,6 +56,7 @@ class Skill():
                 if self.collisionJudge(enemy):
                     if not enemy in self.ignore_list:
                         enemy.info.life_value -= self.damage
+                        enemy.signal = ATTACKED
                         self.ignore_list.append(enemy)
                 else:
                     if enemy in self.ignore_list:
@@ -63,6 +64,7 @@ class Skill():
         else:
             if self.collisionJudge(self.game.player):
                 self.game.player.info.life_value -= self.damage
+                self.game.signal = ATTACKED
                 self.ignore_player = True
             else:
                 self.ignore_player = False
@@ -202,6 +204,7 @@ class SkillBomb(Skill):
                 (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
             if distance < self.explosion_radius:
                 enemy.info.life_value -= self.damage
+                enemy.signal = ATTACKED
         exploding_info = SkillInfo()
         Et.Sk_info.append(exploding_info)
         exploding = SkillBombExploding(exploding_info)
@@ -258,6 +261,7 @@ class SkillAim(Skill):
                 (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
             if distance < self.fire_range:
                 enemy.info.life_value -= self.damage
+                enemy.signal = ATTACKED
         fired_info = SkillInfo()
         Et.Sk_info.append(fired_info)
         fired = SkillAimFired(fired_info)
@@ -305,6 +309,7 @@ class SkillKekkai(Skill):
             if abs(distance - self.radius) < enemy_radius:
                 if not enemy in self.ignore_list:
                     enemy.info.life_value -= self.damage
+                    enemy.signal = ATTACKED
                     self.ignore_list.append(enemy)
             else:
                 if enemy in self.ignore_list:
@@ -409,7 +414,7 @@ class SkillTriangle(Skill):
             [x2,y2] = self.next.info.site[:]
             for enemy in self.game.enemy_list:
                 [x,y] = enemy.info.site[:]
-                distance = ((y2-y1)*x-(x2-x1)*y-x1*y2+x2*y1)/math.sqrt((y2-y2)**2+(x2-x1)**2)
+                distance = abs(((y2-y1)*x-(x2-x1)*y-x1*y2+x2*y1))/math.sqrt((y2-y2)**2+(x2-x1)**2)
                 enemy_radius = (enemy.info.size[0]+enemy.info.size[1])/4
                 if distance < enemy_radius and (x-x1)*(x2-x1)+(y-y1)*(y2-y1) >= 0 and (x-x2)*(x1-x2)+(y-y2)*(y1-y2) >= 0:
                     enemy.info.life_value -= self.damage
