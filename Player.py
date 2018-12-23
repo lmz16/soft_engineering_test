@@ -176,6 +176,9 @@ class Player():
                     self.skill_list[n - 1][-1].next = new_skill
                     new_skill.next = self.skill_list[n - 1][0]
                 self.skill_list[n - 1].append(new_skill)
+                if len(self.skill_list[n - 1]) == 3:
+                    for vertex in self.skill_list[n - 1]:
+                        vertex.effective = True
 
 
     #专门用于扔出实体球的技能，n选择球轨迹

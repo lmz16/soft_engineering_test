@@ -204,7 +204,9 @@ def gameBlit():
     for ob in Et.Os_info:
         obstacleBlit(ob)
     for sk in Et.Sk_info:
-        centerBlit(Et.R_sg.bg_pic_temp, sk.pic, sk.site) #这里是有用的，但是sk.kind一直是skillinfo里面的初始值
+        centerBlit(Et.R_sg.bg_pic_temp, sk.pic, sk.site)
+        if sk.draw_line != None:
+            pygame.draw.line(Et.R_sg.bg_pic_temp, (0,0,0), sk.draw_line[0], sk.draw_line[1], 5)
     playerBlit(Et.Pr_info[0])
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, blitPoint())
 
