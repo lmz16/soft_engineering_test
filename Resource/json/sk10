@@ -1,1 +1,1 @@
-[{"pic": "Resource/item/circle_ball.png", "realsize": [50, 50], "size": [50, 50], "damage": 200, "v": [30, 30], "life": 5}]
+[{"pic": "Resource/item/kekkai.png", "realsize": [200, 200], "size": [200, 200], "damage": 300, "v": 0, "life": 10, "extra_param1": 200, "extra_param2": 0}]
