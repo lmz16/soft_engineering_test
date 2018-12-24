@@ -1,0 +1,74 @@
+
+
+#   游戏状态宏定义
+GAMEWAIT = 0
+GAMEJOIN = 1
+GAMESTART = 2
+
+#人物朝向
+LEFT = 1
+RIGHT = 0
+
+#   帧率
+fps = 25
+
+#   人物状态
+#   静止状态
+PLAYERSTATIC=-1
+#   移动状态
+PLAYERMOVE=0
+#   攻击状态
+PLAYERATTACK=-2
+#   被攻击状态
+PLAYERATTACKED=-3
+#   技能一状态
+PLAYERSKILL1=-4
+#   技能二状态
+PLAYERSKILL2=-5
+#   技能三状态
+PLAYERSKILL3=-6
+#   死亡状态
+PLAYERDEAD=-7
+
+#上
+MOVEUP = 0
+#下
+MOVEDOWN = 1
+#左
+MOVELEFT = 2
+#右
+MOVERIGHT = 3
+#左上
+MOVEUPLEFT = 4
+#右上
+MOVEUPRIGHT = 5
+#左下
+MOVEDOWNLEFT = 6
+#右下
+MOVEDOWNRIGHT = 7
+#1技能
+SKILL1 = 8
+#2技能
+SKILL2 = 9
+#3技能
+SKILL3 =10
+#被攻击信号
+ATTACKED = 11
+#死亡信号
+DIE = 12
+
+#技能类型
+SKILLBALLSTRAIGHT=0
+SKILLBALLSINUS=1
+SKILLBALLCIRCLE=2
+SKILLRETURN=3
+SKILLBLACKHOLE=4
+SKILLHOOK=5
+SKILLBOMB=6
+SKILLAIM=7
+SKILLKEKKAI=8
+SKILLBALLRETURN=9
+
+#   移动序列
+movex = [0,0,-1,1,-1,1,-1,1]
+movey = [-1,1,0,0,-1,-1,1,1]
