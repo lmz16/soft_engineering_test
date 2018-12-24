@@ -15,6 +15,10 @@ game_choice = 0
 #   单人游戏选择界面控制
 single_play_move1=10.0
 single_play_move2=10.0
+#   自定义模式资源
+R_cu = None
+custommode='自定义模式'
+C_G = None
 #   游戏资源
 #   开始界面资源
 R_if = None
@@ -29,7 +33,7 @@ R_em = None
 #   障碍物资源
 R_ob = None
 #   技能资源
-R_sk = [None]*6
+R_sk = [None]*12
 
 #   人物选择结果
 player_choice = 0

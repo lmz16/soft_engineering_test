@@ -10,6 +10,8 @@ import Extern as Et
 import Input as Ip
 import Resource as Rs
 import InterfaceTest as Itest
+import json
+import Custom
 
 test_case = Itest.TInterface()
 
@@ -35,15 +37,32 @@ choose_site = {
     "step2":200,
     "range":((100,0),(760,600)),
 }
+single_site = {
+    "portrait":(435,535),
+    "hp":(480,580),
+    "skill":(480,535),
+    "smallmap":(860,550),
+    "smallplayer":(770,510),
+    "step":30,
+}
+custom_choose_site = {
+    "back":(150,100),
+    "c1":(250,350),
+    "c2":(650,350),
+    "backsize":(200,100),
+    "csize":(400,300),
+}
+custom_c_site = {
+    "static":(140,83),
+    "attack":(249,83),
+    "move":(357,83),
+    "skill":(140,245),
+    "ok":(249,245),
+    "buttom_size":(90,30),
+}
 game_file = [
     "Resource/json/game_choose",
-    ["Resource/json/game1","Resource/json/game1"]
-]
-
-character_file = [
-    "Resource/json/character1",
-    "Resource/json/character1",
-    "Resource/json/character1",
+    ["Resource/json/game1","Resource/json/game2"]
 ]
 
 enemy_file = [
@@ -57,12 +76,18 @@ obstacle_file = [
 ]
 
 skill_file = [
+    "Resource/json/sk0",
     "Resource/json/sk1",
-    "Resource/json/sk1",
-    "Resource/json/sk1",
-    "Resource/json/sk1",
-    "Resource/json/sk1",
-    "Resource/json/sk1",
+    "Resource/json/sk2",
+    "Resource/json/sk3",
+    "Resource/json/sk4",
+    "Resource/json/sk5",
+    "Resource/json/sk6",
+    "Resource/json/sk7",
+    "Resource/json/sk8",
+    "Resource/json/sk9",
+    "Resource/json/sk10",  #这是凯丰的传送门
+    "Resource/json/sk11",  #加载我的backfire
 ]
 
 def update(event):
@@ -91,11 +116,11 @@ def update(event):
         singleChooseShow()
         cursorShow()
     elif Et.game_state == GAMELOADSUB:
-        Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
+        Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_em = Rs.REnemy(enemy_file[Et.game_choice])
         Et.R_ob = Rs.RObstacle(obstacle_file[Et.game_choice])
-        for i in range(0,3):
-            Et.R_sk[i] = Rs.RSkill(skill_file[Et.R_pl.skill[i]])
+        for i in range(0,11):
+            Et.R_sk[i] = Rs.RSkill(skill_file[i])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
     elif Et.game_state == GAMELOAD:
@@ -105,7 +130,7 @@ def update(event):
         gameBlit()
         #test_case.test()
     elif Et.game_state == GAMEONLINEINIT1:
-        Et.R_pl = Rs.RCharacter(character_file[Et.player_choice])
+        Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMEONLINEINIT2
     elif Et.game_state == GAMEONLINEINIT2:
@@ -113,6 +138,37 @@ def update(event):
     elif Et.game_state == GAMEONLINE:
         Et.I_ctr.update()
         onlineBlit()
+    elif Et.game_state == GAMECUSTOMCHOOSE:
+        Et.R_if.screen.blit(Et.R_if.main_bk_pic, (0, 0))
+        Et.R_if.screen.blit(Et.R_if.custom_choose_choose_pic, (0, 0))
+        mouseResponseGameCustomChoose(event)
+        cursorShow()
+        if Et.R_cu:
+            del Et.R_cu
+        #   Et.R_cu=Custom.CustomC()
+
+        # elif(Et.game_state==GAMECUSTOMC):
+        #     Et.R_cu=Custom.CustomC()
+        #     customCShow1()
+        #     if (Et.fresh_time-Et.R_cu.temptime)>0.5:
+        #         mouseResponseGameCustomC(event)
+        #     customCActionshow()
+        # elif(Et.game_state==GAMECUSTOMC2):
+        #     self.customShow2()
+        #     if (Et.fresh_time-self.temptime)>0.5:
+        #         self.mouseRespond1(event)
+    elif Et.game_state == GAMECUSTOMG:
+        if Et.C_G:
+            del Et.C_G
+        Et.C_G = Custom.CustomG()
+        Et.game_state = GAMECUSTOMG2
+    elif Et.game_state == GAMECUSTOMG2:
+        customGShow1()
+        mouseResponseCustomG(event)
+        cursorShow()
+        if Et.C_G.choose == 7:
+            Et.game_state = GAMEINIT
+            Et.C_G.writeJson()
 
 def cursorShow():
     [x,y]=pygame.mouse.get_pos()
@@ -127,6 +183,8 @@ def mouseResponseGameInit(event):
         Et.game_state = GAMEHELP
     if Ip.regionMonitor(event,button_site["online"],start_button_size):
         Et.game_state = GAMEONLINEINIT1
+    if Ip.regionMonitor(event, button_site["custom"], start_button_size):
+        Et.game_state = GAMECUSTOMCHOOSE
 
 def mouseResponseGameHelp(event):
     if Ip.regionMonitor(event,text_site["quit"],start_button_size):
@@ -153,6 +211,37 @@ def mouseResponseGameSingleChoose(event):
     for i in range(len(Et.R_gc.single_choose_p)):
         if Ip.regionMonitor(event,(choose_site["p"][0]+i*choose_site["step2"]-Et.single_play_move2,choose_site["p"][1]),single_choose_p_size):
             Et.player_choice=i
+
+def mouseResponseGameCustomChoose(event):
+    if Ip.regionMonitor(event, custom_choose_site["back"], custom_choose_site["backsize"]):
+        Et.game_state = GAMEINIT
+    if Ip.regionMonitor(event, custom_choose_site["c1"], custom_choose_site["csize"]):
+        Et.game_state = GAMECUSTOMC
+    if Ip.regionMonitor(event, custom_choose_site["c2"], custom_choose_site["csize"]):
+        Et.game_state = GAMECUSTOMG
+
+def mouseResponseGameCustomC(event):
+    if Ip.regionMonitor(event,custom_c_site["static"],custom_c_site["buttom_size"]):
+        Et.game_state=GAMECUSTOMC2
+        Et.R_cu.state2init(0)
+    if Ip.regionMonitor(event,custom_c_site["attack"],custom_c_site["buttom_size"]):
+        Et.game_state=GAMECUSTOMC2
+        Et.R_cu.state2init(1)
+    if Ip.regionMonitor(event,custom_c_site["move"],custom_c_site["buttom_size"]):
+        Et.game_state=GAMECUSTOMC2
+        Et.R_cu.state2init(2)
+    if Ip.regionMonitor(event,custom_c_site["skill"],custom_c_site["buttom_size"]):
+        Et.game_state=GAMECUSTOMC2
+        Et.R_cu.state2init(3)
+    if Ip.regionMonitor(event,custom_c_site["ok"],custom_c_site["buttom_size"]):
+        Et.R_cu.temptime=Et.fresh_time
+        Et.game_state=GAMEINIT
+        if len(Et.R_cu.actionpic)>0:
+            for p in Et.R_cu.actionpic:
+                del p
+        Et.R_cu.actionpic=[]
+        if False not in Et.R_cu.actionpath:
+            Et.R_cu.writeJson()
 
 
 def buttonShow():
@@ -182,6 +271,20 @@ def singleChooseShow():
     centerBlit(Et.R_if.screen,Et.R_gc.single_choose_pc,(choose_site["p"][0]+Et.player_choice*choose_site["step2"]-Et.single_play_move2,choose_site["p"][1]))
     Et.R_if.screen.set_clip((0,0),mainwindow_size)
 
+def customCShow1():
+    Et.R_if.screen.blit(Et.R_if.custom_choose_pic,(-1,-1))
+    [x,y]=pygame.mouse.get_pos()
+    centerBlit(Et.R_if.screen,Et.R_if.cursor_pic,[x,y])
+
+def customCActionshow():
+        if Et.R_cu.actionkind>-1:
+            if Et.R_cu.actioncomplete[Et.R_cu.actionkind]:
+                Et.R_cu.actionblitcount=Et.R_cu.actionblitcount+1
+                if Et.R_cu.actionblitcount==15:
+                    Et.R_cu.actionblitcount=0
+                if not Et.game_state==GAMEINIT:
+                    Et.R_if.screen.blit(Et.R_cu.actionpic[int(Et.R_cu.actionblitcount/5)],(650,67))
+
 def centerBlit(surface,pic,center):
     dx = int(pic.get_width()/2)
     dy = int(pic.get_height()/2)
@@ -194,9 +297,21 @@ def gameBlit():
     for ob in Et.Os_info:
         obstacleBlit(ob)
     for sk in Et.Sk_info:
-        centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[0].pic, sk.site)
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[sk.kind].pic, sk.site)
     playerBlit(Et.Pr_info[0])
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, blitPoint())
+    Et.R_if.screen.blit(Et.R_if.single_frame_pic, (0, 0))
+    centerBlit(Et.R_if.screen, Et.R_gc.single_portrait[Et.player_choice], single_site["portrait"])
+    centerBlit(Et.R_if.screen, Et.R_if.single_hp_pic, (
+    single_site["hp"][0] + ((Et.Pr_info[0].life_value - Et.R_pl.max_life) * single_game_hp_size[0] / Et.R_pl.max_life),
+    single_site["hp"][1]))
+    for i in range(0, 2):
+        centerBlit(Et.R_if.screen, Et.R_sk[i].single_game_skill,
+                   (single_site["skill"][0] + i * single_site["step"], single_site["skill"][1]))
+    centerBlit(Et.R_if.screen, Et.R_sg.small_map_pic, single_site["smallmap"])
+    centerBlit(Et.R_if.screen, Et.R_if.single_game_smallplayer_pic, (
+    single_site["smallplayer"][0] + Et.Pr_info[0].site[0] / Et.R_sg.size[0] * single_game_map_size[0],
+    single_site["smallplayer"][1] + Et.Pr_info[0].site[1] / Et.R_sg.size[1] * single_game_map_size[1]))
 
 def onlineBlit():
     Et.R_sg.bg_pic_temp = Et.R_sg.bg_pic.copy()
@@ -237,4 +352,25 @@ def blitPoint():
     else:
         x = mainwindow_size[0]/2 - Et.Pr_info[0].site[0]
     return [x,y]
+
+
+def customGShow1():
+    Et.R_if.screen.blit(Et.C_G.back, (-1,-1))
+    Et.R_if.screen.blit(Et.C_G.pic, (10,10))
+    for i in range(0,8):
+        Et.R_if.screen.blit(Et.C_G.button, (800, 10+50*i))
+    for site in Et.C_G.enemy_list:
+        Et.R_if.screen.blit(Et.C_G.enemy_pic[0], site)
+    for site in Et.C_G.obstacle_list:
+        Et.R_if.screen.blit(Et.C_G.ob_pic[0], site)
+
+def mouseResponseCustomG(event):
+    for i in range(0,8):
+        if Ip.regionMonitor(event,[850,25+50*i],[100,30]):
+            Et.C_G.choose = i
+    if Ip.regionMonitor(event,[366,205],[712,400]):
+        if Et.C_G.choose in [0,1,2,3]:
+            Et.C_G.enemy_list.append(pygame.mouse.get_pos())
+        else:
+            Et.C_G.obstacle_list.append(pygame.mouse.get_pos())
 

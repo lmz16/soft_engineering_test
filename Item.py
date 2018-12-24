@@ -5,6 +5,7 @@
 from Define import *
 import Extern as Et
 import math
+import Skill
 import random
 
 class EnemyInfo():
@@ -27,22 +28,18 @@ class Enemy():
         self.signal = None                          # 接受到的信号
         self.target= [0, 0]                         # 目标的坐标
         self.attack_range = 100                     # 攻击范围
-        self.skill_time = []                        # 技能上一次发出的时间
-        self.skill_cd = []                          # 技能冷却时间
+        self.skill_time = 0                        # 技能上一次发出的时间
+        self.skill_cd = 1                          # 技能冷却时间
         self.skill_direction = []                   # 技能方向
         self.freezetime = 0                         # 被攻击冻结时间
         self.origin_site = []                       # 出生位置，用于巡逻
-        self.direction = random.randint(0,3)        # 决定巡逻方向 上下or左右
-        if self.direction == 0:
-            self.patrol_towards = MOVELEFT          
-        if self.direction == 1:
-            self.patrol_towards = MOVERIGHT
-        if self.direction == 2:
-            self.patrol_towards = MOVEUP
-        if self.direction == 3:
-            self.patrol_towards = MOVEDOWN
+        self.direction = [0,0,0,0]                  # 上下左右
+        self.patrol_direction = [0,0,0,0]
+        m=random.randint(0,3)
+        self.patrol_direction[m] = 1
+        self.count = 0
         self.load()                                 # 初始化与显示有关的信息
-        self.velocity = Et.R_em.velocity
+        self.velocity = [1,1] #Et.R_em.velocity
         self.movex = [self.velocity[0]*x for x in movex]
         self.movey = [self.velocity[1]*y for y in movey]
     
@@ -90,56 +87,82 @@ class Enemy():
 
     
     # Enemy的巡逻函数 沿某一方向来回移动
-    def patrol(self):    
-        self.judge_direction()   
-        if self.can_move:
-            if self.direction == 0 or self.direction == 1:  # 左右巡逻
-                range = 50
-                #print("下一步位置：", self.site[0]+self.movex[self.patrol_towards])
-                #print("容忍范围：", self.origin_site[0] - range)
-                if self.info.site[0]+self.movex[self.patrol_towards] < self.origin_site[0] - range: 
-                    self.patrol_towards = MOVERIGHT
-                if self.info.site[0]+self.movex[self.patrol_towards] > self.origin_site[0] + range: 
-                    self.patrol_towards = MOVELEFT
-                self.info.site[0]=self.info.site[0]+self.movex[self.patrol_towards]
-                if self.info.site[0]>Et.R_sg.size[0]-int(self.size[0]/2):
-                    self.info.site[0]=Et.R_sg.size[0]-int(self.size[0]/2)
-                    self.patrol_towards = MOVELEFT
-                if self.info.site[0]<int(self.size[0]/2):
-                    self.info.site[0]=int(self.size[0]/2)
-                    self.patrol_towards = MOVERIGHT
-            else:
-                range = 40
-                if self.info.site[1]+self.movey[self.patrol_towards] < self.origin_site[1] - range: 
-                    self.patrol_towards = MOVEDOWN
-                if self.info.site[1]+self.movey[self.patrol_towards] > self.origin_site[1] + range: 
-                    self.patrol_towards = MOVEUP
-                self.info.site[1]=self.info.site[1]+self.movey[self.patrol_towards]
-                if self.info.site[1]>Et.R_sg.size[1]-int(self.size[1]/2):
-                    self.info.site[1]=Et.R_sg.size[1]-int(self.size[1]/2)
-                    self.patrol_towards = MOVEUP
-                if self.info.site[1]<int(self.size[1]/2):
-                    self.info.site[1]=int(self.size[1]/2)
-                    self.patrol_towards = MOVEDOWN
+    def patrol(self):
+        if self.count < 30:
+            if self.patrol_direction[0] == 1 and self.movable[0] == True:
+                self.info.site[1] = self.info.site[1] + self.velocity[1]
+            if self.patrol_direction[1] == 1 and self.movable[1] == True:
+                self.info.site[1] = self.info.site[1] - self.velocity[1]
+            if self.patrol_direction[2] == 1 and self.movable[2] == True:
+                self.info.site[0] = self.info.site[0] - self.velocity[0]
+            if self.patrol_direction[3] == 1 and self.movable[3] == True:
+                self.info.site[0] = self.info.site[0] + self.velocity[0]  
+            self.count = self.count + 1
+        if self.count == 30:
+            if self.patrol_direction[0] == 1:
+                self.patrol_direction[0] = 0 
+                self.patrol_direction[1] = 1
+            elif self.patrol_direction[1] == 1:
+                self.patrol_direction[0] = 1 
+                self.patrol_direction[1] = 0
+            elif self.patrol_direction[2] == 1:
+                self.patrol_direction[2] = 0 
+                self.patrol_direction[3] = 1
+            elif self.patrol_direction[3] == 1:
+                self.patrol_direction[2] = 1 
+                self.patrol_direction[3] = 0
+            self.count = self.count + 1
+        if self.count > 30:
+            if self.patrol_direction[0] == 1 and self.movable[0] == True:
+                self.info.site[1] = self.info.site[1] + self.velocity[1]
+            if self.patrol_direction[1] == 1 and self.movable[1] == True:
+                self.info.site[1] = self.info.site[1] - self.velocity[1]
+            if self.patrol_direction[2] == 1 and self.movable[2] == True:
+                self.info.site[0] = self.info.site[0] - self.velocity[0]
+            if self.patrol_direction[3] == 1 and self.movable[3] == True:
+                self.info.site[0] = self.info.site[0] + self.velocity[0]  
+            self.count = self.count + 1
+        if self.count == 60:
+            self.count = 0
+        if self.info.site[0] > (Et.R_sg.size[0] - int(self.info.size[0] / 2)):
+            self.info.site[0] = Et.R_sg.size[0] - int(self.info.size[0] / 2)
+        if self.info.site[0] < int(self.info.size[0] / 2):
+            self.info.site[0] = int(self.info.size[0] / 2)
+        if self.info.site[1] > (Et.R_sg.size[1] - int(self.info.size[1] / 2)):
+            self.info.site[1] = Et.R_sg.size[1] - int(self.info.size[1] / 2)
+        if self.info.site[1] < int(self.info.size[1] / 2):
+            self.info.site[1] = int(self.info.size[1] / 2)
+        if self.patrol_direction[2] == 1:
+            self.info.pic_direction = RIGHT
+        elif self.patrol_direction[3] == 1:
+            self.info.pic_direction = LEFT
 
     # Enemy进入战斗状态后的移动函数
     def move(self):
-        self.move_direction()
-        self.judge_direction()
-        if self.can_move:
-            self.info.site[0]=self.info.site[0]+self.movex[self.direction]
-            if self.info.site[0]>Et.R_sg.size[0]-int(self.size[0]/2):
-                self.info.site[0]=Et.R_sg.size[0]-int(self.size[0]/2)
-            if self.info.site[0]<int(self.size[0]/2):
-                self.info.site[0]=int(self.size[0]/2)
-            if(abs(self.info.site[1] - self.target[1]) < self.velocity[0]):
-                self.info.site[1]=self.target[1]
-            else:
-                self.info.site[1]=self.info.site[1]+self.movey[self.direction]
-            if self.info.site[1]>Et.R_sg.size[1]-int(self.size[1]/2):
-                self.info.site[1]=Et.R_sg.size[1]-int(self.size[1]/2)
-            if self.info.site[1]<int(self.size[1]/2):
-                self.info.site[1]=int(self.size[1]/2)
+        # self.move_direction()
+        # self.judge_direction()
+        self.direction = [0,0,0,0]
+        if self.target[0] > self.info.site[0]:
+            self.direction[3] = 1
+        if self.target[0] < self.info.site[0]:
+            self.direction[2] = 1
+        if self.target[1] > self.info.site[1]:
+            self.direction[0] = 1
+        if self.target[1] < self.info.site[1]:
+            self.direction[1] = 1
+        if self.direction[0] == 1 and self.movable[0] == True:
+            self.info.site[1] = self.info.site[1] + self.velocity[1]
+        if self.direction[1] == 1 and self.movable[1] == True:
+            self.info.site[1] = self.info.site[1] - self.velocity[1]
+        if self.direction[2] == 1 and self.movable[2] == True:
+            self.info.site[0] = self.info.site[0] - self.velocity[0]
+        if self.direction[3] == 1 and self.movable[3] == True:
+            self.info.site[0] = self.info.site[0] + self.velocity[0]
+        if self.direction[2] == 1:
+            self.info.pic_direction = RIGHT
+        elif self.direction[3] == 1:
+            self.info.pic_direction = LEFT
+
 
     def passiveMove(self,mv):
         temp = [self.info.site[0]+mv[0],self.info.site[1]+mv[1]]
@@ -190,6 +213,7 @@ class Enemy():
                 self.info.state = ENEMYMOVE
         elif self.info.state==ENEMYMOVE:
             self.move()
+            self.info.count = (self.info.count + 1) % 12 
             if self.signal == ATTACKED:
                 self.info.state=ENEMYATTACKED 
                 self.info.count=0
@@ -205,36 +229,39 @@ class Enemy():
             if self.signal == ATTACKED:
                 self.info.count=0
         elif self.info.state==ENEMYATTACK:
-            pass
-        #     if ((Et.last_fresh_time-self.skill1time)>self.skill1_cd):
-        #         if self.info.count==4:
-        #             tempskill=Skill()
-        #             tempskill.game=self.game
-        #             tempskill.resource=Et.skill_resource
-        #             tempskill.initsite=self.info.site[:]
-        #             tempskill.inittime=Et.last_fresh_time
-        #             tempskill.caster=self
-        #             tempskill.direction=self.skill_direction
-        #             tempskill.site=self.info.site[:]
-        #             tempskill.size=Et.skill_resource.size
-        #             tempskill.damage=extern.skill_resource.damage
-        #             self.game.skill_list.append(tempskill)
-        #         elif self.info.count==10:
-        #             self.info.count=0
-        #             self.info.state=ENEMYMOVE
-        #             self.skill1time=Et.last_fresh_time-10/fps
-        #         else:
-        #         self.info.count=self.info.count+1
-        #     else:
-        #     if self.signal==ATTACKED:
-        #         self.info.state=ENEMYATTACKED
-        #         self.info.count=0
-        #     elif self.info.life_value<0:
-        #         self.info.state=ENEMYDEAD
-        #         self.info.count=0
-        #     elif self.enemy_attack_judge == False:
-        #         self.info.state = ENEMYMOVE
-        #         self.info.count = 0
+            if ((Et.fresh_time-self.skill_time)>self.skill_cd):
+                if self.info.count==4:
+                    tempinfo = Skill.SkillInfo()
+                    Et.Sk_info.append(tempinfo)
+                    new_skill=Skill.SkillBallStraight(tempinfo)
+                    new_skill.resource=Et.R_sk[0]
+                    new_skill.game=self.game
+                    new_skill.init_site=self.info.site[:]
+                    new_skill.init_time=Et.fresh_time
+                    new_skill.caster=self
+                    new_skill.direction=self.skill_direction
+                    new_skill.info.site=self.info.site[:]
+                    new_skill.info.size=new_skill.resource.size
+                    new_skill.damage=new_skill.resource.damage
+                    new_skill.duration=new_skill.resource.duration
+                    self.game.skill_list.append(new_skill)
+                    self.info.count = self.info.count + 1
+                elif self.info.count==10:
+                    self.info.count=0
+                    self.info.state=ENEMYMOVE
+                    self.skill_time=Et.fresh_time-10/fps
+                else:
+                    self.info.count=self.info.count+1
+            else:
+                if self.signal==ATTACKED:
+                    self.info.state=ENEMYATTACKED
+                    self.info.count=0
+                elif self.info.life_value<0:
+                    self.info.state=ENEMYDEAD
+                    self.info.count=0
+                elif self.enemy_attack_judge == False:
+                    self.info.state = ENEMYMOVE
+                    self.info.count = 0
 
 
 class ObstacleInfo():
@@ -251,6 +278,4 @@ class Obstacle():
     # 障碍物类的初始化函数
     def load(self):
         pass
-
-
 

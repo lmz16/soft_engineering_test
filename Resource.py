@@ -52,6 +52,38 @@ class RInterface():
                 pygame.image.load(data[0]["setting_choose"]).convert_alpha(),
                 single_game_p_size
             )
+            self.single_frame_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["single_frame_pic"]).convert_alpha(),
+                mainwindow_size
+            )
+            self.single_hp_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["single_hp"]).convert_alpha(),
+                single_game_hp_size
+            )
+            self.single_game_smallplayer_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["single_game_smallplayer"]).convert_alpha(),
+                single_game_p_size
+            )
+            self.custom_choose_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["custom_choose"]).convert_alpha(),
+                mainwindow_size
+            )
+            self.custom_choose_bk_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["custom_choose_bk"]).convert_alpha(),
+                mainwindow_size
+            )
+            self.pic_choose_bk_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["pic_choose_bk"]).convert_alpha(),
+                custom_pic_choose_size
+            )
+            self.custom_frame_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["custom_frame"]).convert_alpha(),
+                (custom_pic_choose_size[0] + 20, custom_pic_choose_size[1] + 20)
+            )
+            self.custom_choose_choose_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["custom_choose_choose"]).convert_alpha(),
+                (mainwindow_size)
+            )
 
 
     
@@ -67,6 +99,14 @@ class RInterface():
         del self.setting_text_pic
         del self.setting_choose_pic
         del self.screen
+        del self.single_frame_pic
+        del self.single_hp_pic
+        del self.single_game_smallplayer_pic
+        del self.custom_choose_pic
+        del self.custom_choose_bk_pic
+        del self.pic_choose_bk_pic
+        del self.custom_frame_pic
+        del self.custom_choose_choose_pic
 
 
 
@@ -89,11 +129,7 @@ class RChoose():
                     single_choose_b_size)
                 )
             self.single_choose_p = []
-            for i in range(0,len((data[0]["single_choose_p"]))):
-                self.single_choose_p.append(pygame.transform.smoothscale(
-                    pygame.image.load(data[0]["single_choose_p"][i]).convert_alpha(),
-                    single_choose_p_size)
-                )
+            self.character_file = []
             self.single_choose_play = pygame.transform.smoothscale(
                 pygame.image.load(data[0]["single_choose_play"]).convert_alpha(),
                 start_button_size
@@ -106,6 +142,20 @@ class RChoose():
                 pygame.image.load(data[0]["single_choose_choose"]).convert_alpha(),
                 single_choose_pc_size
             )
+        with open ("Resource/json/player_choose",'r') as RCfile:
+            data = json.load(RCfile)
+            for i in range(0,len(data[0]["data"])):
+                self.single_choose_p.append(pygame.transform.smoothscale(
+                    pygame.image.load(data[0]["data"][i]["pic"]).convert_alpha(),
+                    single_choose_p_size)
+                )
+                self.character_file.append(data[0]["data"][i]["config_file"])
+            self.single_portrait = []
+            for i in range(0, len(data[0]["data"])):
+                self.single_portrait.append(pygame.transform.smoothscale(
+                    pygame.image.load(data[0]["data"][i]["pic"]).convert_alpha(),
+                    single_game_portrait_size)
+                )
 
 
 class RSingle():
@@ -120,6 +170,10 @@ class RSingle():
             self.bg_pic_temp = self.bg_pic.copy()
             self.enemy_list = data[0]["enemy"]
             self.obstacle_list = data[0]["obstacle"]
+            self.small_map_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["bg_pic"]).convert_alpha(),
+                single_game_map_size
+            )
 
 
 class RCharacter():
@@ -232,3 +286,23 @@ class RSkill():
             self.size = data[0]["realsize"]
             self.damage = data[0]["damage"]
             self.velocity = data[0]["v"]
+            self.single_game_skill = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["pic"]).convert_alpha(),
+                single_game_skill_size)
+
+
+class RCustom():
+    def __init__(self,loadfile):
+        with open (loadfile,'r') as Rcustom:
+            custominfo=json.load(Rcustom)
+            self.pic=[]
+            self.picpath=custominfo[0]
+            for picpath in custominfo[0]:
+                self.pic.append(
+                    pygame.transform.smoothscale(
+                        pygame.image.load('Resource/custom/'+picpath).convert_alpha(),custom_thumbnail_size)
+                )
+
+    def __del__(self):
+        for x in self.pic:
+            del x

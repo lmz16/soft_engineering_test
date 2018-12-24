@@ -14,12 +14,15 @@ single_choose_p_size=(130,130)
 single_choose_pc_size=(150,150)
 #   单人模式游戏界面尺寸
 single_game_portrait_size=(50,50)
-single_game_skill_size=(25,25)
-single_game_hp_size=(130,13)
-single_game_map_size=(160,160)
-single_game_p_size=(10,10)
+single_game_skill_size=(30,30)
+single_game_hp_size=(120,20)
+single_game_map_size=(180,80)
+single_game_p_size=(7,7)
 #   游戏帧率
 fps = 25
+#   自定义模式缩略图大小
+custom_thumbnail_size=(60,100)
+custom_pic_choose_size=(500,500)
 
 #   碰撞检测阈值
 COLLISIONTHRESHOLD = 6
@@ -51,8 +54,10 @@ GAMEONLINE=17
 GAMECUSTOMCHOOSE=20
 #   自定义人物模式
 GAMECUSTOMC=21
+GAMECUSTOMC2=212
 #   自定义关卡模式
 GAMECUSTOMG=22
+GAMECUSTOMG2=222
 
 #   人物状态
 #   静止状态
@@ -124,6 +129,11 @@ SKILLBALLCIRCLE=2
 SKILLRETURN=3
 SKILLBLACKHOLE=4
 SKILLHOOK=5
+SKILLBOMB=6
+SKILLAIM=7
+SKILLKEKKAI=8
+SKILLBALLRETURN=9
+SKILLBACKFIRE=11  #新技能
 
 #   移动序列
 movex = [0,0,-1,1,-1,1,-1,1]
