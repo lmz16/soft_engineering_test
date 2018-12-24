@@ -14,6 +14,7 @@ import Resource as Rs
 import Input as Ip
 import Game as Gm
 import Player as Pl
+import Skill
 import threading
 from Define import *
 
@@ -46,6 +47,7 @@ def timeUpdate():
 
 def gameStateManager():
     if Et.game_state == GAMELOAD:
+        Et.S_game = None
         Et.S_game = Gm.SingleGame()
     elif Et.game_state == GAMESTART:
         Et.S_game.update()
@@ -63,9 +65,7 @@ def gameStateManager():
 
 
 def onlineInit():
-    Et.Pr_info[0] = Pl.PlayerInfo()
-    Et.Pr_info[1] = Pl.PlayerInfo()
-    Et.Pr_info[1].site = [300,400]
+    pass
 
 
 def host():
@@ -86,12 +86,30 @@ def client(message):
         sock.sendall(message.encode("utf-8"))
         response = sock.recv(1024)
         jresp = json.loads(response.decode('utf-8'))
-        Et.Pr_info[0].site = jresp[0]["site"]
+        Et.Pr_info = []
+        for p in jresp[0]["p"]:
+            temp = Pl.PlayerInfo()
+            temp.site = p["site"]
+            temp.state = p["state"]
+            temp.life_value = p["life"]
+            temp.max_life = p["max_life"]
+            temp.state = p["state"]
+            temp.count = p["count"]
+            temp.pic_direction = p["pic_direction"]
+            Et.Pr_info.append(temp)
+        Et.Sk_info = []
+        for s in jresp[0]["s"]:
+            temp = Skill.SkillInfo()
+            temp.kind = s["kind"]
+            temp.site = s["site"]
+            Et.Sk_info.append(temp)
+
 
     finally:
         sock.close()
 
 def pack():
     msg = [Et.I_ctr.p1_key]
+    msg[0]["player_kind"] = 0
     jmsg = json.dumps(msg)
     return jmsg

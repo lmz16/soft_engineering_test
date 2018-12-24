@@ -34,10 +34,13 @@ class SingleGame():
         self.enemy_list = []    #敌人列表
         self.skill_list = []    #技能列表
         self.obstacle_list = [] #障碍物列表
+        self.over = 0
         self.load()
 
 #   资源加载函数
     def load(self):
+        Et.Em_info = []
+        Et.Sk_info = []
         self.playerLoad()
         self.enemyLoad()
         self.obstacleLoad()
@@ -94,15 +97,21 @@ class SingleGame():
             self.obstacle_list.append(It.Obstacle(temp))
 
     def update(self):
-        self.moveJudge()
-        self.signalSend()
-        for skill in self.skill_list:
-            skill.update()
-            skill.influence()
-            self.deskill(skill)
-        for enemy in self.enemy_list:
-            enemy.update()
-        self.player.update()
+        if self.over == 0:
+            self.moveJudge()
+            self.signalSend()
+            for skill in self.skill_list:
+                skill.update()
+                skill.influence()
+                self.deskill(skill)
+            for enemy in self.enemy_list:
+                enemy.update()
+                self.deenemy(enemy)
+            self.player.update()
+            if len(self.enemy_list) == 0:
+                self.over = 1
+            if self.player.info.life_value < 0:
+                self.over = 2
 
     def signalSend(self):
         self.playerSignal()
@@ -129,6 +138,15 @@ class SingleGame():
                 self.player.skill_list[1].remove(s)
             if s in self.player.skill_list[2]:
                 self.player.skill_list[2].remove(s)
+            del s
+
+    def deenemy(self,e):
+        if e.info.life_value < 0:
+            if e.info in Et.Em_info:
+                Et.Em_info.remove(e.info)
+            self.enemy_list.remove(e)
+            del e
+
 
 
         # 信号类

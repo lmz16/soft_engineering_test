@@ -67,3 +67,6 @@ t_net = None
 
 #   网络游戏结束标志
 online_over = False
+
+#   用于游戏结束状态的计数变量
+over_count = 0

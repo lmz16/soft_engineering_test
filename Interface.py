@@ -128,11 +128,19 @@ def update(event):
     elif Et.game_state == GAMESTART:
         Et.I_ctr.update()
         gameBlit()
+        if Et.over_count == 50:
+            Et.over_count = 0
+            Et.game_state = GAMESINGLECHOOSE
+            mydel()
         #test_case.test()
     elif Et.game_state == GAMEONLINEINIT1:
+        Et.R_gc = Rs.RChoose(game_file[0])
         Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
+        for i in range(0,11):
+            Et.R_sk[i] = Rs.RSkill(skill_file[i])
         Et.game_state = GAMEONLINEINIT2
+        Et.Pr_info = []
     elif Et.game_state == GAMEONLINEINIT2:
         Et.game_state = GAMEONLINE
     elif Et.game_state == GAMEONLINE:
@@ -307,16 +315,24 @@ def gameBlit():
     single_site["hp"][1]))
     for i in range(0, 2):
         centerBlit(Et.R_if.screen, Et.R_sk[i].single_game_skill,
-                   (single_site["skill"][0] + i * single_site["step"], single_site["skill"][1]))
+            (single_site["skill"][0] + i * single_site["step"], single_site["skill"][1]))
     centerBlit(Et.R_if.screen, Et.R_sg.small_map_pic, single_site["smallmap"])
     centerBlit(Et.R_if.screen, Et.R_if.single_game_smallplayer_pic, (
     single_site["smallplayer"][0] + Et.Pr_info[0].site[0] / Et.R_sg.size[0] * single_game_map_size[0],
     single_site["smallplayer"][1] + Et.Pr_info[0].site[1] / Et.R_sg.size[1] * single_game_map_size[1]))
+    if Et.S_game.over == 1:
+        centerBlit(Et.R_if.screen, Et.R_if.vic_pic, [mainwindow_size[0]/2,mainwindow_size[1]/2])
+        Et.over_count += 1
+    elif Et.S_game.over == 2:
+        centerBlit(Et.R_if.screen, Et.R_if.lose_pic, [mainwindow_size[0] / 2, mainwindow_size[1] / 2])
+        Et.over_count += 1
 
 def onlineBlit():
     Et.R_sg.bg_pic_temp = Et.R_sg.bg_pic.copy()
     for p in Et.Pr_info:
         playerBlit(p)
+    for sk in Et.Sk_info:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[sk.kind].pic, sk.site)
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, (0, 0))
 
 def playerBlit(pinfo):
@@ -374,3 +390,7 @@ def mouseResponseCustomG(event):
         else:
             Et.C_G.obstacle_list.append(pygame.mouse.get_pos())
 
+
+def mydel():
+    Et.R_sg = None
+    Et.R_pl = [None]*2

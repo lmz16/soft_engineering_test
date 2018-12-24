@@ -84,6 +84,14 @@ class RInterface():
                 pygame.image.load(data[0]["custom_choose_choose"]).convert_alpha(),
                 (mainwindow_size)
             )
+            self.vic_pic = pygame.transform.smoothscale(
+                pygame.image.load("Resource/interface/vic.png").convert_alpha(),
+                (250,70)
+            )
+            self.lose_pic = pygame.transform.smoothscale(
+                pygame.image.load("Resource/interface/lose.png").convert_alpha(),
+                (300, 70)
+            )
 
 
     
@@ -220,6 +228,17 @@ class RCharacter():
                 )
             self.velocity = data[0]["v"]
             self.skill = data[0]["skill"]
+
+    def __del__(self):
+        for p in self.pic_static:
+            del p
+        for p in self.pic_move:
+            del p
+        for p in self.pic_attack:
+            del p
+        for p in self.pic_attacked:
+            del p
+
 
 class REnemy():
     def __init__(self,loadfile):
