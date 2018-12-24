@@ -86,8 +86,10 @@ skill_file = [
     "Resource/json/sk7",
     "Resource/json/sk8",
     "Resource/json/sk9",
-    "Resource/json/sk10",  #这是凯丰的传送门
-    "Resource/json/sk11",  #加载我的backfire
+    "Resource/json/sk10",
+    "Resource/json/sk11",
+    "Resource/json/sk12",
+    "Resource/json/sk13",
 ]
 
 def update(event):
@@ -119,7 +121,7 @@ def update(event):
         Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_em = Rs.REnemy(enemy_file[Et.game_choice])
         Et.R_ob = Rs.RObstacle(obstacle_file[Et.game_choice])
-        for i in range(0,11):
+        for i in range(0,SKILLMAXINDEX):
             Et.R_sk[i] = Rs.RSkill(skill_file[i])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
@@ -306,6 +308,8 @@ def gameBlit():
         obstacleBlit(ob)
     for sk in Et.Sk_info:
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[sk.kind].pic, sk.site)
+        if sk.draw_line != None:
+            pygame.draw.line(Et.R_sg.bg_pic_temp, (0,0,0), sk.draw_line[0], sk.draw_line[1], 5)
     playerBlit(Et.Pr_info[0])
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, blitPoint())
     Et.R_if.screen.blit(Et.R_if.single_frame_pic, (0, 0))
@@ -313,8 +317,8 @@ def gameBlit():
     centerBlit(Et.R_if.screen, Et.R_if.single_hp_pic, (
     single_site["hp"][0] + ((Et.Pr_info[0].life_value - Et.R_pl.max_life) * single_game_hp_size[0] / Et.R_pl.max_life),
     single_site["hp"][1]))
-    for i in range(0, 2):
-        centerBlit(Et.R_if.screen, Et.R_sk[i].single_game_skill,
+    for i in range(0, 3):
+        centerBlit(Et.R_if.screen, Et.R_sk[Et.R_pl.skill[i]].single_game_skill,
             (single_site["skill"][0] + i * single_site["step"], single_site["skill"][1]))
     centerBlit(Et.R_if.screen, Et.R_sg.small_map_pic, single_site["smallmap"])
     centerBlit(Et.R_if.screen, Et.R_if.single_game_smallplayer_pic, (

@@ -133,14 +133,212 @@ data = [{
 with open("Resource/json/ob1","w") as f:
     json.dump(data,f)
 
+#SkBallStraight
+data =[{
+    "pic":"Resource/item/hand_sword.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk0","w") as f:
+    json.dump(data,f)
+
+#SkBallSinus
 data =[{
     "pic":"Resource/item/fire_ball.png",
     "realsize":[50,50],
     "size":[50,50],
     "damage":200,
-    "v":[30,30],
+    "v":10,
     "life":5,
+    "extra_param1":0,
+    "extra_param2":0,
 }]
 
 with open("Resource/json/sk1","w") as f:
+    json.dump(data,f)
+    
+#SkBallCircle
+data =[{
+    "pic":"Resource/item/circle_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk2","w") as f:
+    json.dump(data,f)
+    
+#SkReturn
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[0,0],
+    "size":[50,50],
+    "damage":0,
+    "v":0,
+    "life":0,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk3","w") as f:
+    json.dump(data,f)
+    
+#SkBlackHole
+data =[{
+    "pic":"Resource/item/blackhole.png",
+    "realsize":[200,200],
+    "size":[200,200],
+    "damage":0,
+    "v":0,
+    "life":5,
+    "extra_param1":200,
+    "extra_param2":5,
+}]
+
+with open("Resource/json/sk4","w") as f:
+    json.dump(data,f)
+
+#SkHook
+data =[{
+    "pic":"Resource/item/hook_place.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":10,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk5","w") as f:
+    json.dump(data,f)
+
+#SkBomb
+data =[{
+    "pic":"Resource/item/aim.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":500,
+    "v":0,
+    "life":5,
+    "extra_param1":300,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk6","w") as f:
+    json.dump(data,f)
+    
+#SkBombExploding
+data =[{
+    "pic":"Resource/item/explosion.png",
+    "realsize":[300,300],
+    "size":[300,300],
+    "damage":0,
+    "v":0,
+    "life":0.5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk7","w") as f:
+    json.dump(data,f)
+    
+#SkAim
+data =[{
+    "pic":"Resource/item/aim.png",
+    "realsize":[20,20],
+    "size":[20,20],
+    "damage":700,
+    "v":10,
+    "life":10,
+    "extra_param1":50,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk8","w") as f:
+    json.dump(data,f)
+    
+#SkAimFired
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":0,
+    "v":0,
+    "life":0.5,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk9","w") as f:
+    json.dump(data,f)
+    
+#SkKekkai
+data =[{
+    "pic":"Resource/item/kekkai.png",
+    "realsize":[200,200],
+    "size":[200,200],
+    "damage":300,
+    "v":0,
+    "life":10,
+    "extra_param1":200,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk10","w") as f:
+    json.dump(data,f)
+
+#SkBallReturn
+data =[{
+    "pic":"Resource/item/flash.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":200,
+    "v":10,
+    "life":10,
+    "extra_param1":30,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk11","w") as f:
+    json.dump(data,f)
+
+#SkPortal
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[50,50],
+    "size":[50,50],
+    "damage":0,
+    "v":0,
+    "life":10,
+    "extra_param1":50,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk12","w") as f:
+    json.dump(data,f)
+    
+#SkTriangle
+data =[{
+    "pic":"Resource/item/fire_ball.png",
+    "realsize":[20,20],
+    "size":[20,20],
+    "damage":300,
+    "v":0,
+    "life":10,
+    "extra_param1":0,
+    "extra_param2":0,
+}]
+
+with open("Resource/json/sk13","w") as f:
     json.dump(data,f)
