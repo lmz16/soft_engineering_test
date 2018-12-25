@@ -139,7 +139,7 @@ def update(event):
         Et.R_gc = Rs.RChoose(game_file[0])
         Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
-        for i in range(0,11):
+        for i in range(0,SKILLMAXINDEX):
             Et.R_sk[i] = Rs.RSkill(skill_file[i])
         Et.game_state = GAMEONLINEINIT2
         Et.Pr_info = []

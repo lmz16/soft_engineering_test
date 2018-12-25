@@ -34,8 +34,6 @@ class Player():
         self.direction = MOVERIGHT
         self.skill_type = [0, 0, 0]
         self.max_count = 12
-        self.return_site = [0, 0]
-        self.return_released = False
         self.skill_list = [[], [], []]
 
     def update(self):
@@ -127,11 +125,12 @@ class Player():
             elif skill_type == SKILLKEKKAI:
                 new_skill.radius = new_skill.resource.extra_param1
         elif skill_type == SKILLRETURN:
-            if self.return_released == True:
-                self.info.site = self.return_site[:]
+            if not self.skill_list[n - 1]:
+                new_skill = self.releaseEntitySkill(SKILLRETURN)
+                self.skill_list[n - 1].append(new_skill)
             else:
-                self.return_site = self.info.site[:]
-            self.return_released = not self.return_released
+                self.info.site = self.skill_list[n - 1][0].init_site[:]
+                self.skill_list[n - 1][0].delflag = True
         elif skill_type in [SKILLBOMB, SKILLAIM]:
             if not self.skill_list[n - 1]:
                 new_skill = self.releaseEntitySkill(skill_type)
@@ -192,6 +191,8 @@ class Player():
             new_skill=Skill.SkillBallSinus(new_skill_info)
         elif skill_type==SKILLBALLCIRCLE:
             new_skill=Skill.SkillBallCircle(new_skill_info)
+        elif skill_type==SKILLRETURN:
+            new_skill=Skill.SkillReturn(new_skill_info)
         elif skill_type == SKILLBLACKHOLE:
             new_skill = Skill.SkillBlackHole(new_skill_info)
         elif skill_type == SKILLHOOK:

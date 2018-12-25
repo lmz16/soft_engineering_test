@@ -98,7 +98,7 @@ class SkillBallSinus(Skill):
         if Et.fresh_time - self.init_time > self.duration:
             self.delflag = True
         else:
-            sinmovex = 10 * self.velocity * (Et.fresh_time - self.init_time)
+            sinmovex = fps * self.velocity * (Et.fresh_time - self.init_time)
             sinmovey = 50 * math.sin(2 * math.pi * (Et.fresh_time - self.init_time))
             transmat = [
                 [0, 1, -1, 0], [0, -1, 1, 0], [-1, 0, 0, -1], [1, 0, 0, 1],
@@ -131,6 +131,18 @@ class SkillBallCircle(Skill):
 
     def influence(self):
         self.defaultInfluence()
+        
+        
+class SkillReturn(Skill):
+    def __init__(self,info):
+        Skill.__init__(self,info)
+        self.info.kind = SKILLRETURN
+
+    def update(self):
+        pass
+
+    def influence(self):
+        pass
 
 
 class SkillBlackHole(Skill):
