@@ -1,277 +1,155 @@
 #
-#   游戏类
+#   游戏类文件
 #
 
-from define import *
-import extern
-import Player
-import Item
-import copy
+from Define import *
+import Extern as Et
+import Resource as Rs
+import Player as Pl
+import Item as It
 
 import pygame
-import json
-import time
 from pygame.locals import *
+import time
 
-class Single_player_game():
+character_file = [
+    "Resource/json/character1",
+]
+
+enemy_file = [
+    "Resource/json/enemy1",
+]
+
+obstacle_file = [
+    "Resource/json/ob1",
+]
+
+skill_file = [
+    "Resource/json/sk1"
+]
+
+class SingleGame():
     def __init__(self):
-        self.single_player='人物'
-    # 调用初始化函数,加载关卡信息,敌人数量与类型,地图资源
-        self.enemy_list=[]
-        self.gameover='游戏是否结束'
-        self.load_from_json()
-    # 技能列表
-        self.skill_list=[]
-    # 信号列表,用于暂存未处理的信号
-        self.signal_list=[]
-    # 键盘状态
-        self.keyboardevent=pygame.key.get_pressed()
+        self.player = None  #人物对象
+        self.enemy_list = []    #敌人列表
+        self.skill_list = []    #技能列表
+        self.obstacle_list = [] #障碍物列表
+        self.over = 0
+        self.load()
 
-# 初始化函数,从json文件读入信息
-    def load_from_json(self):
-        extern.gameinterface=pygame.image.load(gameinterface_filename).convert()
-        playerinfojson='jpx'
-        gametestjson='gametest'
-        with open (gametestjson,'r') as checkpointinfo:
-            checkpoint1=json.load(checkpointinfo)
-            extern.singleplayer_background_pic_filename=checkpoint1[0]
-            extern.singleplayer_background_pic=pygame.transform.smoothscale(
-            pygame.image.load(checkpoint1[0]).convert(),checkpoint1[2])
-            extern.singleplayer_background_size=checkpoint1[2]
-            extern.singleplayer_enemy_pic_static=pygame.transform.smoothscale(
-                pygame.image.load(checkpoint1[1][0]).convert(),checkpoint1[3])
-            extern.singleplayer_enemysize=checkpoint1[3]
-            extern.skill_1_pic=pygame.transform.smoothscale(
-                pygame.image.load(checkpoint1[6]).convert_alpha(),checkpoint1[7])
-            extern.skill_1_size=checkpoint1[7]
-            extern.skill_1_duration=checkpoint1[8]
-            extern.skill_1_velocity=checkpoint1[9]
-            extern.skill_1_damage=checkpoint1[10]
-            for index,location in enumerate(checkpoint1[4]):
-                tempenemy=Item.Enemy(self)
-                tempenemy.site=location
-                tempenemy.life_value=checkpoint1[5][index]
-                self.enemy_list.append(tempenemy)
-        with open (playerinfojson,'r') as jpx:
-            playerinfo=json.load(jpx)
-            extern.singleplayer_player_pic_static=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][0]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_move1=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][1]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_move2=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][2]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_attack1=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][3]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_player_pic_attack2=pygame.transform.smoothscale(
-                pygame.image.load(playerinfo[0][4]).convert_alpha(),playerinfo[1])
-            extern.singleplayer_playersize=playerinfo[1]
-            extern.singleplayer_player_velocity=playerinfo[3]
-            self.single_player=Player.Player()
-            self.single_player.site=playerinfo[2][0]
-            self.single_player.game=self
-            self.single_player.skill1time=0
-            self.single_player.skill1_cd=playerinfo[4]
-            self.single_player.skill_direction=MOVERIGHT
-        self.gameover=False
+#   资源加载函数
+    def load(self):
+        Et.Em_info = []
+        Et.Sk_info = []
+        self.playerLoad()
+        self.enemyLoad()
+        self.obstacleLoad()
 
-# 攻击判定方法,根据技能列表里的技能判断是否向message_list写入信号
-    def attack_judge(self):
+    def playerLoad(self):
+        Et.Pr_info[0] = Pl.PlayerInfo()
+        Et.Pr_info[0].max_life = Et.R_pl.max_life
+        Et.Pr_info[0].life_value = Et.R_pl.max_life
+        self.player = Pl.Player(Et.Pr_info[0])
+        self.player.velocity = Et.R_pl.velocity
+        self.player.skill_type = Et.R_pl.skill
+        self.player.info.size = Et.R_pl.size
+        self.player.game = self
+
+    def enemyLoad(self):
+        for enemy in Et.R_sg.enemy_list:
+            temp = It.EnemyInfo()
+            temp.site = enemy["site"]
+            Et.Em_info.append(
+                temp
+            )
+            tempe = It.Enemy(temp,self)
+            tempe.origin_site = enemy["site"]
+            self.enemy_list.append(
+                tempe
+            )
+
+    def moveJudge(self):
         for enemy in self.enemy_list:
-            enemy.signal=None
-        if (len(self.skill_list)==0):
-            pass
-        else:
-            for inx,skill in enumerate(self.skill_list):
-                if (skill.caster==self.single_player):
-                    for enemy in self.enemy_list:
-                        if (skill.attack_judge(enemy)):
-                            enemy.signal=ATTACKED
-                            enemy.life_value=enemy.life_value-skill.damage
-                            if (not skill.last):
-                                del self.skill_list[inx]
-                                break
-                else:
-                    # 技能打到了人物而且人物之前没有被这个技能打到
-                    if (skill.attack_judge(self.single_player) & \
-                    (skill not in self.single_player.attacked_skill_list)):
-                        self.single_player.signal=SIGNALATTACKED
-                        self.single_player.life_value=self.single_player.life_value-skill.damage
-                        if (skill.last==0):
-                            del skill
-                        else:
-                            #被哪些技能攻击到的列表
-                            self.single_player.attacked_skill_list.append(skill)
+            enemy.movable = [True] * 4
+            self.player.movable = [True] * 4
+        for obstacle in self.obstacle_list:
+            for enemy in self.enemy_list:
+                self.__collisionJudge(obstacle.info, enemy)
+            self.__collisionJudge(obstacle.info, self.player)
 
-# 移动判定方法,判定对象是否可以移动,将结果写入成员对象的movable属性
-    def move_judge(self,tempsignal):
-        tempsite=tempsignal.receiver.site
-        tempsize=tempsignal.receiver.size
-        tempsignal.receiver.movable=True
-        tempmoveflag=[True,True]
-        for enemy in self.enemy_list:
-            umovable=((abs(-enemy.site[1]+tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                    (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2))
-            dmovable=((abs(enemy.site[1]-tempsite[1]-(enemy.size[1]+tempsize[1])/2)<COLLISIONTHRESHOLD) &  \
-                    (abs(enemy.site[0]-tempsite[0])<(enemy.size[0]+tempsize[0])/2))
-            lmovable=((abs(-enemy.site[0]+tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                    (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2))
-            rmovable=((abs(enemy.site[0]-tempsite[0]-(enemy.size[0]+tempsize[0])/2)<COLLISIONTHRESHOLD) &  \
-                    (abs(enemy.site[1]-tempsite[1])<(enemy.size[1]+tempsize[1])/2))
-            if (tempsignal.type==MOVEUP):
-                if (umovable):
-                    tempsignal.receiver.movable=False
-                    tempmoveflag=[False,False]
-                    break
-            elif (tempsignal.type==MOVEDOWN):
-                if (dmovable):
-                    tempsignal.receiver.movable=False
-                    tempmoveflag=[False,False]
-                    break
-            elif (tempsignal.type==MOVELEFT):
-                if (lmovable):
-                    tempsignal.receiver.movable=False
-                    tempmoveflag=[False,False]
-                    break
-            elif (tempsignal.type==MOVERIGHT):
-                if (rmovable):
-                    tempsignal.receiver.movable=False
-                    tempmoveflag=[False,False]
-                    break
-            elif (tempsignal.type==MOVEUPLEFT):
-                if (umovable):
-                    tempmoveflag[1]=False
-                if (lmovable):
-                    tempmoveflag[0]=False
-                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                    break
-            elif (tempsignal.type==MOVEUPRIGHT):
-                if (umovable):
-                    tempmoveflag[1]=False
-                if (rmovable):
-                    tempmoveflag[0]=False
-                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                    break
-            elif (tempsignal.type==MOVEDOWNLEFT):
-                if (dmovable):
-                    tempmoveflag[1]=False
-                if (lmovable):
-                    tempmoveflag[0]=False
-                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                    break
-            elif (tempsignal.type==MOVEDOWNRIGHT):
-                if (dmovable):
-                    tempmoveflag[1]=False
-                if (rmovable):
-                    tempmoveflag[0]=False
-                if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                    break
-        if (tempsignal.type==MOVEUPLEFT):
-            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                tempsignal.receiver.movable=False
-            elif (tempmoveflag[1]==False):
-                tempsignal.type=MOVELEFT
-            elif (tempmoveflag[0]==False):
-                tempsignal.type=MOVEUP
-        elif (tempsignal.type==MOVEUPRIGHT):
-            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                tempsignal.receiver.movable=False
-            elif (tempmoveflag[1]==False):
-                tempsignal.type=MOVERIGHT
-            elif (tempmoveflag[0]==False):
-                tempsignal.type=MOVEUP
-        elif (tempsignal.type==MOVEDOWNLEFT):
-            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                tempsignal.receiver.movable=False
-            elif (tempmoveflag[1]==False):
-                tempsignal.type=MOVELEFT
-            elif (tempmoveflag[0]==False):
-                tempsignal.type=MOVEDOWN
-        elif (tempsignal.type==MOVEDOWNRIGHT):
-            if ((tempmoveflag[1]==False) & (tempmoveflag[0]==False)):
-                tempsignal.receiver.movable=False
-            elif (tempmoveflag[1]==False):
-                tempsignal.type=MOVERIGHT
-            elif (tempmoveflag[0]==False):
-                tempsignal.type=MOVEDOWN
-        if ((tempmoveflag[1]==True) | (tempmoveflag[0]==True)):
-            tempsignal.receiver.movable=True
+    def __collisionJudge(self, obstacleInfo, obj):
+        dxMin = (obj.info.size[0] + obstacleInfo.size[0]) / 2
+        dyMin = (obj.info.size[1] + obstacleInfo.size[1]) / 2
+        if ((abs(obj.info.site[0] - obstacleInfo.site[0]) < (dxMin + COLLISIONTHRESHOLD)) &
+                (abs(obj.info.site[1] - obstacleInfo.site[1]) < (dyMin + COLLISIONTHRESHOLD))):
+            obj.movable[3] &= ~(obj.info.site[0] < obstacleInfo.site[0] - dxMin)
+            obj.movable[2] &= ~(obj.info.site[0] > obstacleInfo.site[0] + dxMin)
+            obj.movable[1] &= ~(obj.info.site[1] < obstacleInfo.site[1] - dyMin)
+            obj.movable[0] &= ~(obj.info.site[1] > obstacleInfo.site[1] + dyMin)
+
+    def obstacleLoad(self):
+        for ob in Et.R_sg.obstacle_list:
+            temp = It.ObstacleInfo()
+            temp.site = ob["site"]
+            temp.size = ob["size"]
+            temp.kind = ob["kind"]
+            Et.Os_info.append(temp)
+            self.obstacle_list.append(It.Obstacle(temp))
+
+    def update(self):
+        if self.over == 0:
+            self.moveJudge()
+            self.signalSend()
+            for skill in self.skill_list:
+                skill.update()
+                skill.influence()
+                self.deskill(skill)
+            for enemy in self.enemy_list:
+                enemy.update()
+                self.deenemy(enemy)
+            self.player.update()
+            if len(self.enemy_list) == 0:
+                self.over = 1
+            if self.player.info.life_value < 0:
+                self.over = 2
+
+    def signalSend(self):
+        self.playerSignal()
+
+    def playerSignal(self):
+        move_state = Et.I_ctr.p1_key["up"] << 3 | Et.I_ctr.p1_key["down"] << 2 | Et.I_ctr.p1_key["left"] << 1 | Et.I_ctr.p1_key["right"]
+        move_switch = [None, 3, 2, None, 1, 7, 6, None, 0, 5, 4, None, None, None, None, None]
+        self.player.signal = move_switch[move_state]
+        if Et.I_ctr.p1_key["atk1"]:
+            self.player.signal = SKILL1
+        elif Et.I_ctr.p1_key["atk2"]:
+            self.player.signal = SKILL2
+        elif Et.I_ctr.p1_key["atk3"]:
+            self.player.signal = SKILL3
+
+    def deskill(self,s):
+        if s.delflag:
+            if s.info in Et.Sk_info:
+                Et.Sk_info.remove(s.info)
+            self.skill_list.remove(s)
+            if s in self.player.skill_list[0]:
+                self.player.skill_list[0].remove(s)
+            if s in self.player.skill_list[1]:
+                self.player.skill_list[1].remove(s)
+            if s in self.player.skill_list[2]:
+                self.player.skill_list[2].remove(s)
+            del s
+
+    def deenemy(self,e):
+        if e.info.life_value < 0:
+            if e.info in Et.Em_info:
+                Et.Em_info.remove(e.info)
+            self.enemy_list.remove(e)
+            del e
 
 
-# 信号处理函数,解决信号冲突,向每个对象发送信号
-    def message_translate(self):
-        move_state = self.keyboardevent[K_w]<<3 | self.keyboardevent[K_s]<<2 | \
-                    self.keyboardevent[K_a]<<1 | self.keyboardevent[K_d]
-        move_switch = [None,3,2,None,1,7,6,None,0,5,4,None,None,None,None,None]
-        #if (not move_switch[move_state] is None):
-        tempsignal=Signal(move_switch[move_state],self.single_player)
-        if move_switch[move_state] is not None:
-            self.single_player.skill_direction=move_switch[move_state]
-        skill_state = self.keyboardevent[K_j]<<2 | self.keyboardevent[K_k]<<1 | self.keyboardevent[K_l]
-        skill_switch = [None,10,9,None,8,None,None,None]
-        #J      SKILL1=8
-        # #K      SKILL2=9
-        # #L      SKILL3=10
-        # #可改变skill_switch定义组合技
-        self.move_judge(tempsignal)
-        if (not skill_switch[skill_state] is None):
-            if ((extern.last_fresh_time-self.single_player.skill1time)>self.single_player.skill1_cd):
-                tempsignal=Signal(skill_switch[skill_state],self.single_player)
-        self.signal_list.append(tempsignal)
-        #再考虑攻击判定，这样被打到就会取消之前的移动信号
-        self.attack_judge()
-        for signal in self.signal_list:
-            signal.receiver.signal=signal.type
-            del signal
-        if self.keyboardevent[K_ESCAPE]:
-            extern.game_state=GAMEINIT
-            for inx,signal in enumerate(self.signal_list):
-                del self.signal_list[inx]
-            for index,enemy in enumerate(self.enemy_list):
-                del self.enemy_list[index]
-            del self.single_player
-            self.gameover=True
-            time.sleep(1)
 
-# 游戏画面与状态更新
-    def game_update(self):
-        extern.singleplayer_background_pic_temp=extern.singleplayer_background_pic.copy()
-        for enemy in self.enemy_list:
-            enemy.update()
-        extern.screen.blit(extern.gameinterface,(0,0))
-        self.keyboardevent=pygame.key.get_pressed()
-        self.message_translate()
-        if not self.gameover:
-            self.single_player.update()
-            for inx,skill in enumerate(self.skill_list):
-                if (skill.delflag):#skill寿命到了的话
-                    del self.skill_list[inx]
-                else:
-                    skill.update()
-            extern.screen.blit(extern.singleplayer_background_pic_temp,self.blit_startpoint())
-            for index,enemy in enumerate(self.enemy_list):
-                if (enemy.state==ENEMYDEAD):
-                    del self.enemy_list[index]
-        # if (self.single_player.state==PLAYERDEAD):
-        #     self.gameover=1
-        # if (len(self.enemylist)==0):
-        #     self.gameover=1
-
-    def interface_update(self):
-        for enemy in self.enemy_list:
-            enemy.update()
-        extern.screen.blit(extern.gameinterface,(0,0))
-        extern.screen.blit(extern.singleplayer_background_pic,(0,0))
-
-    def blit_startpoint(self):
-        sx=0
-        if ((self.single_player.site[0]>mainwindow_size[0]/2) &
-        (self.single_player.site[0]<(extern.singleplayer_background_size[0]-mainwindow_size[0]/2))):
-            sx=self.single_player.site[0]-mainwindow_size[0]/2
-        elif self.single_player.site[0]>=(extern.singleplayer_background_size[0]-mainwindow_size[0]/2):
-            sx=extern.singleplayer_background_size[0]-mainwindow_size[0]
-        return (-sx,0)
-
-# 信号类
+        # 信号类
 class Signal():
     def __init__(self,type,receiver):
         self.type=type
