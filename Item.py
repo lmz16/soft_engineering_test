@@ -174,7 +174,7 @@ class Enemy():
         if not flag:
             self.info.site = temp
 
-
+    '''
     # 针对move的移动方向判定
     def move_direction(self):
         self.direction = MOVELEFT
@@ -194,7 +194,7 @@ class Enemy():
             self.direction = MOVEDOWNLEFT
         elif(self.target[0] < self.info.site[0]) and (self.target[1] < self.info.site[1]):
             self.direction = MOVEUPLEFT
-
+    '''
     # 敌人类的状态更新
     def update(self):
         self.target=self.game.player.info.site
