@@ -17,6 +17,7 @@ class EnemyInfo():
         self.pic_direction = RIGHT
         self.size = [0,0]
         self.count = 0
+        self.kind = 1    # 敌人类型
 
 class Enemy():
     def __init__(self, einfo, game):
@@ -55,19 +56,34 @@ class Enemy():
     # Enemy的攻击判定函数 根据攻击范围和玩家方位进行判定
     def enemy_attack_judge(self):
         judge = False
-        if self.target[0] - self.info.site[0] < self.attack_range and self.target[1] == self.info.site[1]:
-            judge = True
-            self.skill_direction = MOVELEFT
-        if self.info.site[0] - self.target[0] < self.attack_range and self.target[1] == self.info.site[1]:
-            judge = True
-            self.skill_direction = MOVERIGHT
-        if self.target[1] - self.info.site[1] < self.attack_range and self.target[0] == self.info.site[0]:
-            judge = True
-            self.skill_direction = MOVEUP
-        if self.info.site[1] - self.target[1] < self.attack_range and self.target[0] == self.info.site[0]:
-            judge = True
-            self.skill_direction = MOVEDOWN
-        return judge
+        if self.info.kind == 0:
+            if self.target[0] - self.info.site[0] < self.attack_range and self.target[1] == self.info.site[1]:
+                judge = True
+                self.skill_direction = MOVELEFT
+            if self.info.site[0] - self.target[0] < self.attack_range and self.target[1] == self.info.site[1]:
+                judge = True
+                self.skill_direction = MOVERIGHT
+            if self.target[1] - self.info.site[1] < self.attack_range and self.target[0] == self.info.site[0]:
+                judge = True
+                self.skill_direction = MOVEUP
+            if self.info.site[1] - self.target[1] < self.attack_range and self.target[0] == self.info.site[0]:
+                judge = True
+                self.skill_direction = MOVEDOWN
+            return judge
+        if self.info.kind == 1:
+            if self.target[0] - self.info.site[0] < self.attack_range and abs(self.target[1] - self.info.site[1]) < 5:
+                judge = True
+                self.skill_direction = MOVELEFT
+            if self.info.site[0] - self.target[0] < self.attack_range and abs(self.target[1] - self.info.site[1]) < 5:
+                judge = True
+                self.skill_direction = MOVERIGHT
+            if self.target[1] - self.info.site[1] < self.attack_range and abs(self.target[0] - self.info.site[0]) < 5:
+                judge = True
+                self.skill_direction = MOVEUP
+            if self.info.site[1] - self.target[1] < self.attack_range and abs(self.target[0] - self.info.site[0]) < 5:
+                judge = True
+                self.skill_direction = MOVEDOWN
+            return judge   
 
     def judge_direction(self):
         if self.movable[0] == False and self.direction == 2:
@@ -147,13 +163,13 @@ class Enemy():
         if self.target[0] < self.info.site[0]:
             self.direction[2] = 1
         if self.target[1] > self.info.site[1]:
-            self.direction[0] = 1
-        if self.target[1] < self.info.site[1]:
             self.direction[1] = 1
+        if self.target[1] < self.info.site[1]:
+            self.direction[0] = 1
         if self.direction[0] == 1 and self.movable[0] == True:
-            self.info.site[1] = self.info.site[1] + self.velocity[1]
-        if self.direction[1] == 1 and self.movable[1] == True:
             self.info.site[1] = self.info.site[1] - self.velocity[1]
+        if self.direction[1] == 1 and self.movable[1] == True:
+            self.info.site[1] = self.info.site[1] + self.velocity[1]
         if self.direction[2] == 1 and self.movable[2] == True:
             self.info.site[0] = self.info.site[0] - self.velocity[0]
         if self.direction[3] == 1 and self.movable[3] == True:
@@ -198,7 +214,9 @@ class Enemy():
     # 敌人类的状态更新
     def update(self):
         #print(self.signal)
-        #print(self.info.state)
+        print(self.info.state)
+        print(self.movable)
+        print(self.direction)
         self.target=self.game.player.info.site
         if self.info.life_value<0:
             self.info.state=ENEMYDEAD
@@ -233,22 +251,40 @@ class Enemy():
         elif self.info.state==ENEMYATTACK:
             if ((Et.fresh_time-self.skill_time)>self.skill_cd):
                 if self.info.count==4:
-                    tempinfo = Skill.SkillInfo()
-                    Et.Sk_info.append(tempinfo)
-                    new_skill=Skill.SkillBallStraight(tempinfo)
-                    new_skill.influence_list.append(self.game.player)
-                    new_skill.resource=Et.R_sk[0]
-                    new_skill.game=self.game
-                    new_skill.init_site=self.info.site[:]
-                    new_skill.init_time=Et.fresh_time
-                    new_skill.caster=self
-                    new_skill.direction=self.skill_direction
-                    new_skill.info.site=self.info.site[:]
-                    new_skill.info.size=new_skill.resource.size
-                    new_skill.damage=new_skill.resource.damage
-                    new_skill.duration=new_skill.resource.duration
-                    self.game.skill_list.append(new_skill)
-                    self.info.count = self.info.count + 1
+                    if self.info.kind == 0:
+                        tempinfo = Skill.SkillInfo()
+                        Et.Sk_info.append(tempinfo)
+                        new_skill=Skill.SkillBallStraight(tempinfo)
+                        new_skill.influence_list.append(self.game.player)
+                        new_skill.resource=Et.R_sk[0]
+                        new_skill.game=self.game
+                        new_skill.init_site=self.info.site[:]
+                        new_skill.init_time=Et.fresh_time
+                        new_skill.caster=self
+                        new_skill.direction=self.skill_direction
+                        new_skill.info.site=self.info.site[:]
+                        new_skill.info.size=new_skill.resource.size
+                        new_skill.damage=new_skill.resource.damage
+                        new_skill.duration=new_skill.resource.duration
+                        self.game.skill_list.append(new_skill)
+                        self.info.count = self.info.count + 1
+                    if self.info.kind == 1:
+                        tempinfo = Skill.SkillInfo()
+                        Et.Sk_info.append(tempinfo)
+                        new_skill=Skill.SkillBallSinus(tempinfo)
+                        new_skill.influence_list.append(self.game.player)
+                        new_skill.resource=Et.R_sk[0]
+                        new_skill.game=self.game
+                        new_skill.init_site=self.info.site[:]
+                        new_skill.init_time=Et.fresh_time
+                        new_skill.caster=self
+                        new_skill.direction=self.skill_direction
+                        new_skill.info.site=self.info.site[:]
+                        new_skill.info.size=new_skill.resource.size
+                        new_skill.damage=new_skill.resource.damage
+                        new_skill.duration=new_skill.resource.duration
+                        self.game.skill_list.append(new_skill)
+                        self.info.count = self.info.count + 1
                 elif self.info.count==10:
                     self.info.count=0
                     self.info.state=ENEMYMOVE
