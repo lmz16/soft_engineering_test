@@ -20,6 +20,7 @@ class PlayerInfo():
         self.size = [0,0]
         self.count = 0
         self.visible = True
+        self.kind = 0
 
 class Player():
     def __init__(self,pinfo):
@@ -34,8 +35,6 @@ class Player():
         self.direction = MOVERIGHT
         self.skill_type = [0, 0, 0]
         self.max_count = 12
-        self.return_site = [0, 0]
-        self.return_released = False
         self.skill_list = [[], [], []]
 
     def update(self):
@@ -86,7 +85,7 @@ class Player():
         elif self.info.state == PLAYERSKILL3:
             self.skillstate(3)
         elif self.info.state == PLAYERATTACKED:
-            if self.info.count == self.freeze_time:
+            if self.info.count == self.max_count-1:
                 self.switchState(PLAYERSTATIC)
             else:
                 self.info.count = self.info.count + 1
@@ -127,11 +126,12 @@ class Player():
             elif skill_type == SKILLKEKKAI:
                 new_skill.radius = new_skill.resource.extra_param1
         elif skill_type == SKILLRETURN:
-            if self.return_released == True:
-                self.info.site = self.return_site[:]
+            if not self.skill_list[n - 1]:
+                new_skill = self.releaseEntitySkill(SKILLRETURN)
+                self.skill_list[n - 1].append(new_skill)
             else:
-                self.return_site = self.info.site[:]
-            self.return_released = not self.return_released
+                self.info.site = self.skill_list[n - 1][0].init_site[:]
+                self.skill_list[n - 1][0].delflag = True
         elif skill_type in [SKILLBOMB, SKILLAIM]:
             if not self.skill_list[n - 1]:
                 new_skill = self.releaseEntitySkill(skill_type)
@@ -188,26 +188,40 @@ class Player():
         Et.Sk_info.append(new_skill_info)
         if skill_type==SKILLBALLSTRAIGHT:
             new_skill=Skill.SkillBallStraight(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type==SKILLBALLSINUS:
             new_skill=Skill.SkillBallSinus(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type==SKILLBALLCIRCLE:
             new_skill=Skill.SkillBallCircle(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
+        elif skill_type==SKILLRETURN:
+            new_skill=Skill.SkillReturn(new_skill_info)
         elif skill_type == SKILLBLACKHOLE:
             new_skill = Skill.SkillBlackHole(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type == SKILLHOOK:
             new_skill = Skill.SkillHook(new_skill_info)
         elif skill_type == SKILLBOMB:
             new_skill = Skill.SkillBomb(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type == SKILLAIM:
             new_skill = Skill.SkillAim(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type == SKILLKEKKAI:
             new_skill = Skill.SkillKekkai(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type == SKILLBALLRETURN:
             new_skill = Skill.SkillBallReturn(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         elif skill_type == SKILLPORTAL:
             new_skill = Skill.SkillPortal(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
+            new_skill.influence_list.append(self)
+            new_skill.ignore_list.append(self)
         elif skill_type == SKILLTRIANGLE:
             new_skill = Skill.SkillTriangle(new_skill_info)
+            new_skill.influence_list = self.game.enemy_list[:]
         new_skill.resource=Et.R_sk[skill_type]
         new_skill.game=self.game
         new_skill.init_site=self.info.site[:]
@@ -219,7 +233,6 @@ class Player():
         new_skill.damage=new_skill.resource.damage
         new_skill.velocity=new_skill.resource.velocity
         new_skill.duration=new_skill.resource.duration
-        new_skill.info.pic=new_skill.resource.pic
         self.game.skill_list.append(new_skill)
         return new_skill
 
