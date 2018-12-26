@@ -234,6 +234,7 @@ class Enemy():
                     tempinfo = Skill.SkillInfo()
                     Et.Sk_info.append(tempinfo)
                     new_skill=Skill.SkillBallStraight(tempinfo)
+                    new_skill.influence_list.append(self.game.player)
                     new_skill.resource=Et.R_sk[0]
                     new_skill.game=self.game
                     new_skill.init_site=self.info.site[:]

@@ -17,7 +17,6 @@ class SkillInfo():
         self.site = [0, 0]
         self.size = 0
         self.visible = True
-        #self.pic = ""
         self.draw_line = None
         self.kind = 0
 
@@ -34,39 +33,30 @@ class Skill():
         self.movex = []
         self.movey = []
         self.caster = None
+        self.influence_list = []
         self.damage = 0
         self.ignore_list = []
-        self.ignore_player = False
         self.init_site = [0, 0]
         self.resource = None
         self.load()
 
     def collisionJudge(self, collider):
-        if ((abs(collider.info.site[0] - self.info.site[0]) - (collider.info.size[0] + self.info.size[0]) / 2 < 0) &
+        if ((abs(collider.info.site[0] - self.info.site[0]) - (collider.info.size[0] + self.info.size[0]) / 2 < 0) and
                 (abs(collider.info.site[1] - self.info.site[1]) - (collider.info.size[1] + self.info.size[1]) / 2 < 0)):
             return True
         else:
             return False
 
     def defaultInfluence(self):
-        if self.caster == self.game.player:
-            for enemy in self.game.enemy_list:
-                if self.collisionJudge(enemy):
-                    if not enemy in self.ignore_list:
-                        enemy.info.life_value -= self.damage
-                        enemy.signal = ATTACKED
-                        self.ignore_list.append(enemy)
-                else:
-                    if enemy in self.ignore_list:
-                        self.ignore_list.remove(enemy)
-        else:
-            if self.collisionJudge(self.game.player):
-                if not self.ignore_player:
-                    self.game.player.info.life_value -= self.damage
-                    self.game.player.signal = ATTACKED
-                    self.ignore_player = True
+        for obj in self.influence_list:
+            if self.collisionJudge(obj):
+                if not obj in self.ignore_list:
+                    obj.info.life_value -= self.damage
+                    obj.signal = ATTACKED
+                    self.ignore_list.append(obj)
             else:
-                self.ignore_player = False
+                if obj in self.ignore_list:
+                    self.ignore_list.remove(obj)
 
     def load(self):
         self.movex = [self.velocity * x for x in movex]
@@ -157,46 +147,55 @@ class SkillBlackHole(Skill):
             self.delflag = True
 
     def influence(self):
-        for enemy in self.game.enemy_list:
+        for obj in self.influence_list:
             distance = math.sqrt(
-                (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+                (self.info.site[0] - obj.info.site[0]) ** 2 + (self.info.site[1] - obj.info.site[1]) ** 2)
             if distance < self.effect_radius and distance > 0:
                 if distance > self.displacement:
-                    enemy_move_vector = [(self.info.site[0] - enemy.info.site[0]) / distance * self.displacement,
-                        (self.info.site[1] - enemy.info.site[1]) / distance * self.displacement]
+                    obj_move_vector = [(self.info.site[0] - obj.info.site[0]) / distance * self.displacement,
+                        (self.info.site[1] - obj.info.site[1]) / distance * self.displacement]
                 else:
-                    enemy_move_vector = [self.info.site[0] - enemy.info.site[0],
-                                         self.info.site[1] - enemy.info.site[1]]
-                enemy.passiveMove(enemy_move_vector)
+                    obj_move_vector = [self.info.site[0] - obj.info.site[0],
+                                         self.info.site[1] - obj.info.site[1]]
+                obj.passiveMove(obj_move_vector)
 
 
 class SkillHook(Skill):
     def __init__(self, info):
         Skill.__init__(self, info)
         self.info.kind = SKILLHOOK
-        self.find_obstacle = False
         self.attach = None
 
     def update(self):
         if (Et.fresh_time - self.init_time) > self.duration:
             self.delflag = True
-        elif not self.find_obstacle:
+        elif not self.delflag:
             self.info.site[0] = self.info.site[0] + self.movex[self.direction]
             self.info.site[1] = self.info.site[1] + self.movey[self.direction]
             for obstacle in self.game.obstacle_list:
                 if self.collisionJudge(obstacle):
                     self.attach = obstacle
-                    self.find_obstacle = True
+                    self.casterMove()
         self.info.draw_line = [self.info.site, self.caster.info.site]
 
     def influence(self):
-        if self.find_obstacle:
-            temp_v = [self.info.site[0]-self.caster.info.site[0],self.info.site[1]-self.caster.info.site[1]]
-            k0 = self.caster.info.size[0] / (2*temp_v[0]+0.1)
-            k1 = self.caster.info.size[1] / (2*temp_v[1]+0.1)
-            self.caster.info.site = [self.info.site[0]-int(min(abs(k0),abs(k1))*temp_v[0]),
-                                     self.info.site[1]-int(min(abs(k0),abs(k1))*temp_v[1])]
-            self.delflag = True
+        pass
+    
+    def casterMove(self):
+        self.caster.info.site=self.info.site[:]
+        lborder=self.attach.info.site[0]-(self.caster.info.size[0]+self.attach.info.size[0])/2
+        rborder=self.attach.info.site[0]+(self.caster.info.size[0]+self.attach.info.size[0])/2
+        uborder=self.attach.info.site[1]-(self.caster.info.size[1]+self.attach.info.size[1])/2
+        dborder=self.attach.info.site[1]+(self.caster.info.size[1]+self.attach.info.size[1])/2
+        if self.caster.info.site[0]>lborder-10 and self.caster.info.site[0]<lborder+50:
+            self.caster.info.site[0]=lborder-10
+        elif self.caster.info.site[0]<rborder+10 and self.caster.info.site[0]>rborder-50:
+            self.caster.info.site[0]=rborder+10
+        if self.caster.info.site[1]>uborder-10 and self.caster.info.site[1]<uborder+50:
+            self.caster.info.site[1]=uborder-10
+        elif self.caster.info.site[1]<dborder+10 and self.caster.info.site[1]>dborder-50:
+            self.caster.info.site[1]=dborder+10
+        self.delflag = True
 
 
 class SkillBomb(Skill):
@@ -215,12 +214,12 @@ class SkillBomb(Skill):
 
     def setOff(self):
         if not self.delflag:
-            for enemy in self.game.enemy_list:
+            for obj in self.influence_list:
                 distance = math.sqrt(
-                    (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+                    (self.info.site[0] - obj.info.site[0]) ** 2 + (self.info.site[1] - obj.info.site[1]) ** 2)
                 if distance < self.explosion_radius:
-                    enemy.info.life_value -= self.damage
-                    enemy.signal = ATTACKED
+                    obj.info.life_value -= self.damage
+                    obj.signal = ATTACKED
             exploding_info = SkillInfo()
             Et.Sk_info.append(exploding_info)
             exploding = SkillBombExploding(exploding_info)
@@ -275,12 +274,12 @@ class SkillAim(Skill):
 
     def setOff(self):
         if not self.delflag:
-            for enemy in self.game.enemy_list:
+            for obj in self.influence_list:
                 distance = math.sqrt(
-                    (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+                    (self.info.site[0] - obj.info.site[0]) ** 2 + (self.info.site[1] - obj.info.site[1]) ** 2)
                 if distance < self.fire_range:
-                    enemy.info.life_value -= self.damage
-                    enemy.signal = ATTACKED
+                    obj.info.life_value -= self.damage
+                    obj.signal = ATTACKED
             fired_info = SkillInfo()
             Et.Sk_info.append(fired_info)
             fired = SkillAimFired(fired_info)
@@ -323,18 +322,18 @@ class SkillKekkai(Skill):
             self.delflag = True
 
     def influence(self):
-        for enemy in self.game.enemy_list:
+        for obj in self.influence_list:
             distance = math.sqrt(
-                (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
-            enemy_radius = (enemy.info.size[0] + enemy.info.size[1]) / 4
-            if abs(distance - self.radius) < enemy_radius:
-                if not enemy in self.ignore_list:
-                    enemy.info.life_value -= self.damage
-                    enemy.signal = ATTACKED
-                    self.ignore_list.append(enemy)
+                (self.info.site[0] - obj.info.site[0]) ** 2 + (self.info.site[1] - obj.info.site[1]) ** 2)
+            obj_radius = (obj.info.size[0] + obj.info.size[1]) / 4
+            if abs(distance - self.radius) < obj_radius:
+                if not obj in self.ignore_list:
+                    obj.info.life_value -= self.damage
+                    obj.signal = ATTACKED
+                    self.ignore_list.append(obj)
             else:
-                if enemy in self.ignore_list:
-                    self.ignore_list.remove(enemy)
+                if obj in self.ignore_list:
+                    self.ignore_list.remove(obj)
 
 
 class SkillBallReturn(Skill):
@@ -381,33 +380,20 @@ class SkillPortal(Skill):
 
     def influence(self):
         if self.pair != None:
-            for enemy in self.game.enemy_list:
+            for obj in self.influence_list:
                 distance = math.sqrt(
-                    (self.info.site[0] - enemy.info.site[0]) ** 2 + (self.info.site[1] - enemy.info.site[1]) ** 2)
+                    (self.info.site[0] - obj.info.site[0]) ** 2 + (self.info.site[1] - obj.info.site[1]) ** 2)
                 pair_distance = math.sqrt(
-                    (self.pair.info.site[0] - enemy.info.site[0]) ** 2 + (self.pair.info.site[1] - enemy.info.site[1]) ** 2)
+                    (self.pair.info.site[0] - obj.info.site[0]) ** 2 + (self.pair.info.site[1] - obj.info.site[1]) ** 2)
                 if distance < self.effect_radius:
-                    if not enemy in self.ignore_list and not enemy in self.pair.ignore_list:
-                        enemy.info.site = self.pair.info.site[:]
-                        self.ignore_list.append(enemy)
-                        self.pair.ignore_list.append(enemy)
+                    if not obj in self.ignore_list and not obj in self.pair.ignore_list:
+                        obj.info.site = self.pair.info.site[:]
+                        self.ignore_list.append(obj)
+                        self.pair.ignore_list.append(obj)
                 elif pair_distance >= self.pair.effect_radius:
-                    if enemy in self.ignore_list or enemy in self.pair.ignore_list:
-                        self.ignore_list.remove(enemy)
-                        self.pair.ignore_list.remove(enemy)
-            distance = math.sqrt(
-                (self.info.site[0] - self.game.player.info.site[0]) ** 2 + (self.info.site[1] - self.game.player.info.site[1]) ** 2)
-            pair_distance = math.sqrt(
-                (self.pair.info.site[0] - self.game.player.info.site[0]) ** 2 + (self.pair.info.site[1] - self.game.player.info.site[1]) ** 2)
-            if distance < self.effect_radius:
-                if not self.ignore_player and not self.pair.ignore_player:
-                    self.game.player.info.site = self.pair.info.site[:]
-                    self.ignore_player = True
-                    self.pair.ignore_player = True
-            elif pair_distance >= self.pair.effect_radius:
-                if self.ignore_player or self.pair.ignore_player:
-                    self.ignore_player = False
-                    self.pair.ignore_player = False
+                    if obj in self.ignore_list or obj in self.pair.ignore_list:
+                        self.ignore_list.remove(obj)
+                        self.pair.ignore_list.remove(obj)
                     
                     
 class SkillTriangle(Skill):
@@ -436,15 +422,15 @@ class SkillTriangle(Skill):
         if self.effective:
             [x1,y1] = self.info.site[:]
             [x2,y2] = self.next.info.site[:]
-            for enemy in self.game.enemy_list:
-                [x,y] = enemy.info.site[:]
-                distance = abs(((y2-y1)*x-(x2-x1)*y-x1*y2+x2*y1))/math.sqrt((y2-y2)**2+(x2-x1)**2)
-                enemy_radius = (enemy.info.size[0]+enemy.info.size[1])/4
-                if distance < enemy_radius and (x-x1)*(x2-x1)+(y-y1)*(y2-y1) >= 0 and (x-x2)*(x1-x2)+(y-y2)*(y1-y2) >= 0:
-                    if not enemy in self.ignore_list:
-                        enemy.info.life_value -= self.damage
-                        enemy.signal = ATTACKED
-                        self.ignore_list.append(enemy)
+            for obj in self.influence_list:
+                [x,y] = obj.info.site[:]
+                distance = abs(((y2-y1)*x-(x2-x1)*y-x1*y2+x2*y1))/math.sqrt((y2-y1)**2+(x2-x1)**2)
+                obj_radius = (obj.info.size[0]+obj.info.size[1])/4
+                if distance < obj_radius and (x-x1)*(x2-x1)+(y-y1)*(y2-y1) >= 0 and (x-x2)*(x1-x2)+(y-y2)*(y1-y2) >= 0:
+                    if not obj in self.ignore_list:
+                        obj.info.life_value -= self.damage
+                        obj.signal = ATTACKED
+                        self.ignore_list.append(obj)
                 else:
-                    if enemy in self.ignore_list:
-                        self.ignore_list.remove(enemy)
+                    if obj in self.ignore_list:
+                        self.ignore_list.remove(obj)

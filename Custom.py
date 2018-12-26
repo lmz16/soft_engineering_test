@@ -214,7 +214,19 @@ class CustomG():
             pygame.transform.smoothscale(
                 pygame.image.load("Resource/item/ob1.png").convert_alpha(),
                 (30, 30)
-            )
+            ),
+            pygame.transform.smoothscale(
+                pygame.image.load("Resource/item/ob2.jpg").convert_alpha(),
+                (30, 30)
+            ),
+            pygame.transform.smoothscale(
+                pygame.image.load("Resource/item/ob3.jpg").convert_alpha(),
+                (30, 30)
+            ),
+            pygame.transform.smoothscale(
+                pygame.image.load("Resource/item/ob4.jpg").convert_alpha(),
+                (30, 30)
+            ),
         ]
         self.enemy_list = []
         self.obstacle_list = []

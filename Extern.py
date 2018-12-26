@@ -36,6 +36,8 @@ R_em = None
 R_ob = None
 #   技能资源
 R_sk = [None]*SKILLMAXINDEX
+#   网络版本的资源
+R_og = None
 
 #   人物选择结果
 player_choice = 0
@@ -72,3 +74,6 @@ online_over = False
 
 #   用于游戏结束状态的计数变量
 over_count = 0
+
+#   玩家id
+fake_ip = 0

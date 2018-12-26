@@ -142,3 +142,21 @@ SKILLMAXINDEX=14
 #   移动序列
 movex = [0,0,-1,1,-1,1,-1,1]
 movey = [-1,1,0,0,-1,-1,1,1]
+
+
+skill_file = [
+    "Resource/json/sk0",
+    "Resource/json/sk1",
+    "Resource/json/sk2",
+    "Resource/json/sk3",
+    "Resource/json/sk4",
+    "Resource/json/sk5",
+    "Resource/json/sk6",
+    "Resource/json/sk7",
+    "Resource/json/sk8",
+    "Resource/json/sk9",
+    "Resource/json/sk10",
+    "Resource/json/sk11",
+    "Resource/json/sk12",
+    "Resource/json/sk13",
+]
