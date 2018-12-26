@@ -30,7 +30,7 @@ class Enemy():
         self.target= [0, 0]                         # 目标的坐标
         self.attack_range = 100                     # 攻击范围
         self.skill_time = 0                        # 技能上一次发出的时间
-        self.skill_cd = 1                          # 技能冷却时间
+        self.skill_cd = 4                          # 技能冷却时间
         self.skill_direction = []                   # 技能方向
         self.freezetime = 0                         # 被攻击冻结时间
         self.origin_site = []                       # 出生位置，用于巡逻
@@ -84,6 +84,11 @@ class Enemy():
                 judge = True
                 self.skill_direction = MOVEDOWN
             return judge   
+        if self.info.kind == 2:
+            if abs(self.target[0] - self.info.site[0]) < self.attack_range or abs(self.target[1] - self.info.site[1]) < self.attack_range:
+                judge = True
+                self.skill_direction = MOVELEFT
+            return judge 
 
     def judge_direction(self):
         if self.movable[0] == False and self.direction == 2:
@@ -285,6 +290,23 @@ class Enemy():
                         new_skill.duration=new_skill.resource.duration
                         self.game.skill_list.append(new_skill)
                         self.info.count = self.info.count + 1
+                    if self.info.kind == 2:
+                        tempinfo = Skill.SkillInfo()
+                        Et.Sk_info.append(tempinfo)
+                        new_skill=Skill.SkillBallCircle(tempinfo)
+                        new_skill.influence_list.append(self.game.player)
+                        new_skill.resource=Et.R_sk[0]
+                        new_skill.game=self.game
+                        new_skill.init_site=self.info.site[:]
+                        new_skill.init_time=Et.fresh_time
+                        new_skill.caster=self
+                        new_skill.direction=self.skill_direction
+                        new_skill.info.site=self.info.site[:]
+                        new_skill.info.size=new_skill.resource.size
+                        new_skill.damage=new_skill.resource.damage
+                        new_skill.duration=new_skill.resource.duration
+                        self.game.skill_list.append(new_skill)
+                        self.info.count = self.info.count + 1
                 elif self.info.count==10:
                     self.info.count=0
                     self.info.state=ENEMYMOVE
@@ -298,7 +320,8 @@ class Enemy():
                 elif self.info.life_value<0:
                     self.info.state=ENEMYDEAD
                     self.info.count=0
-                elif self.enemy_attack_judge == False:
+                #elif self.enemy_attack_judge == False:
+                else:
                     self.info.state = ENEMYMOVE
                     self.info.count = 0
 
