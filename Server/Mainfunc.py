@@ -17,7 +17,9 @@ def pinfoInit():
         "count":0,
         "pic_direction":RIGHT,
         "visable":True,
-        "size":[30,30]
+        "size":[30,30],
+        "ip":0,
+        "kind":0,
     }
     return pinfo
 
@@ -76,6 +78,7 @@ def sendBack():
     sdata = [{
         "p":Et.Pr_info,
         "s":Et.Sk_info,
+        "state":Et.game_state,
     }]
     return sdata
 
@@ -93,15 +96,15 @@ def RSkillInit():
 
 def skillAllInit():
     skill_file = [
+        "Resource/json/sk0",
         "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
-        "Resource/json/sk1",
+        "Resource/json/sk2",
+        "Resource/json/sk3",
+        "Resource/json/sk4",
+        "Resource/json/sk5",
+        "Resource/json/sk6",
+        "Resource/json/sk7",
+        "Resource/json/sk8",
     ]
     for s in range(0,len(Et.R_skill)):
         Et.R_skill[s] = RSkillInit()

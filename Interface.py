@@ -75,21 +75,6 @@ obstacle_file = [
     "Resource/json/ob1",
 ]
 
-skill_file = [
-    "Resource/json/sk0",
-    "Resource/json/sk1",
-    "Resource/json/sk2",
-    "Resource/json/sk3",
-    "Resource/json/sk4",
-    "Resource/json/sk5",
-    "Resource/json/sk6",
-    "Resource/json/sk7",
-    "Resource/json/sk8",
-    "Resource/json/sk9",
-    "Resource/json/sk10",  #这是凯丰的传送门
-    "Resource/json/sk11",  #加载我的backfire
-]
-
 def update(event):
     if Et.game_state == GAMEINIT:
         Et.R_if.screen.blit(Et.R_if.main_bk_pic,(0,0))
@@ -119,7 +104,7 @@ def update(event):
         Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_em = Rs.REnemy(enemy_file[Et.game_choice])
         Et.R_ob = Rs.RObstacle(obstacle_file[Et.game_choice])
-        for i in range(0,11):
+        for i in range(0,SKILLMAXINDEX):
             Et.R_sk[i] = Rs.RSkill(skill_file[i])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
         Et.game_state = GAMELOAD
@@ -137,7 +122,8 @@ def update(event):
         Et.R_gc = Rs.RChoose(game_file[0])
         Et.R_pl = Rs.RCharacter(Et.R_gc.character_file[Et.player_choice])
         Et.R_sg = Rs.RSingle(game_file[1][Et.game_choice])
-        for i in range(0,11):
+        Et.R_og = Rs.ROnline()
+        for i in range(0,SKILLMAXINDEX):
             Et.R_sk[i] = Rs.RSkill(skill_file[i])
         Et.game_state = GAMEONLINEINIT2
         Et.Pr_info = []
@@ -306,6 +292,8 @@ def gameBlit():
         obstacleBlit(ob)
     for sk in Et.Sk_info:
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[sk.kind].pic, sk.site)
+        if sk.draw_line != None:
+            pygame.draw.line(Et.R_sg.bg_pic_temp, (0,0,0), sk.draw_line[0], sk.draw_line[1], 5)
     playerBlit(Et.Pr_info[0])
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, blitPoint())
     Et.R_if.screen.blit(Et.R_if.single_frame_pic, (0, 0))
@@ -313,8 +301,8 @@ def gameBlit():
     centerBlit(Et.R_if.screen, Et.R_if.single_hp_pic, (
     single_site["hp"][0] + ((Et.Pr_info[0].life_value - Et.R_pl.max_life) * single_game_hp_size[0] / Et.R_pl.max_life),
     single_site["hp"][1]))
-    for i in range(0, 2):
-        centerBlit(Et.R_if.screen, Et.R_sk[i].single_game_skill,
+    for i in range(0, 3):
+        centerBlit(Et.R_if.screen, Et.R_sk[Et.R_pl.skill[i]].single_game_skill,
             (single_site["skill"][0] + i * single_site["step"], single_site["skill"][1]))
     centerBlit(Et.R_if.screen, Et.R_sg.small_map_pic, single_site["smallmap"])
     centerBlit(Et.R_if.screen, Et.R_if.single_game_smallplayer_pic, (
@@ -330,7 +318,7 @@ def gameBlit():
 def onlineBlit():
     Et.R_sg.bg_pic_temp = Et.R_sg.bg_pic.copy()
     for p in Et.Pr_info:
-        playerBlit(p)
+        onlinePlayerBlit(p)
     for sk in Et.Sk_info:
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_sk[sk.kind].pic, sk.site)
     Et.R_if.screen.blit(Et.R_sg.bg_pic_temp, (0, 0))
@@ -356,8 +344,8 @@ def enemyBlit(einfo):
         centerBlit(Et.R_sg.bg_pic_temp, Et.R_em.pic_attacked[int(einfo.count / 4)][einfo.pic_direction], einfo.site)
 
 def obstacleBlit(oinfo):
-    if oinfo.kind == 0:
-        centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic, oinfo.site)
+    if oinfo.kind != 0:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_ob.pic[oinfo.kind-1], oinfo.site)
 
 def blitPoint():
     x,y = 0,0
@@ -372,9 +360,9 @@ def blitPoint():
 
 def customGShow1():
     Et.R_if.screen.blit(Et.C_G.back, (-1,-1))
-    Et.R_if.screen.blit(Et.C_G.pic, (10,10))
+    Et.R_if.screen.blit(Et.C_G.pic, (30,100))
     for i in range(0,8):
-        Et.R_if.screen.blit(Et.C_G.button, (800, 10+50*i))
+        Et.R_if.screen.blit(Et.C_G.button, (800, 110+50*i))
     for site in Et.C_G.enemy_list:
         Et.R_if.screen.blit(Et.C_G.enemy_pic[0], site)
     for site in Et.C_G.obstacle_list:
@@ -382,10 +370,10 @@ def customGShow1():
 
 def mouseResponseCustomG(event):
     for i in range(0,8):
-        if Ip.regionMonitor(event,[850,25+50*i],[100,30]):
+        if Ip.regionMonitor(event,[850,125+50*i],[100,30]):
             Et.C_G.choose = i
-    if Ip.regionMonitor(event,[366,205],[712,400]):
-        if Et.C_G.choose in [0,1,2,3]:
+    if Ip.regionMonitor(event,[386,280],[700,380]):
+        if Et.C_G.choose in [0,1,2]:
             Et.C_G.enemy_list.append(pygame.mouse.get_pos())
         else:
             Et.C_G.obstacle_list.append(pygame.mouse.get_pos())
@@ -394,3 +382,14 @@ def mouseResponseCustomG(event):
 def mydel():
     Et.R_sg = None
     Et.R_pl = [None]*2
+
+
+def onlinePlayerBlit(pinfo):
+    if pinfo.state == PLAYERSTATIC:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_og.r_player[pinfo.kind].pic_static[int(pinfo.count / 4)][pinfo.pic_direction], pinfo.site)
+    elif pinfo.state == PLAYERMOVE:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_og.r_player[pinfo.kind].pic_move[int(pinfo.count / 4)][pinfo.pic_direction], pinfo.site)
+    elif pinfo.state in [PLAYERATTACK,PLAYERSKILL1,PLAYERSKILL2,PLAYERSKILL3]:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_og.r_player[pinfo.kind].pic_attack[int(pinfo.count / 4)][pinfo.pic_direction], pinfo.site)
+    elif pinfo.state == PLAYERATTACKED:
+        centerBlit(Et.R_sg.bg_pic_temp, Et.R_og.r_player[pinfo.kind].pic_attacked[int(pinfo.count / 4)][pinfo.pic_direction], pinfo.site)

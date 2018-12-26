@@ -130,11 +130,33 @@ SKILLRETURN=3
 SKILLBLACKHOLE=4
 SKILLHOOK=5
 SKILLBOMB=6
-SKILLAIM=7
-SKILLKEKKAI=8
-SKILLBALLRETURN=9
-SKILLBACKFIRE=11  #新技能
+SKILLBOMBEXPLODING=7
+SKILLAIM=8
+SKILLAIMFIRED=9
+SKILLKEKKAI=10
+SKILLBALLRETURN=11
+SKILLPORTAL=12
+SKILLTRIANGLE=13
+SKILLMAXINDEX=14
 
 #   移动序列
 movex = [0,0,-1,1,-1,1,-1,1]
 movey = [-1,1,0,0,-1,-1,1,1]
+
+
+skill_file = [
+    "Resource/json/sk0",
+    "Resource/json/sk1",
+    "Resource/json/sk2",
+    "Resource/json/sk3",
+    "Resource/json/sk4",
+    "Resource/json/sk5",
+    "Resource/json/sk6",
+    "Resource/json/sk7",
+    "Resource/json/sk8",
+    "Resource/json/sk9",
+    "Resource/json/sk10",
+    "Resource/json/sk11",
+    "Resource/json/sk12",
+    "Resource/json/sk13",
+]

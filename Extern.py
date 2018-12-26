@@ -2,6 +2,8 @@
 #   全局变量模块
 #
 
+from Define import *
+
 #   游戏刷新时间
 fresh_time = 0
 #   初始化时间
@@ -33,7 +35,9 @@ R_em = None
 #   障碍物资源
 R_ob = None
 #   技能资源
-R_sk = [None]*12
+R_sk = [None]*SKILLMAXINDEX
+#   网络版本的资源
+R_og = None
 
 #   人物选择结果
 player_choice = 0
@@ -70,3 +74,6 @@ online_over = False
 
 #   用于游戏结束状态的计数变量
 over_count = 0
+
+#   玩家id
+fake_ip = 0

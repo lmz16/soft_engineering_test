@@ -289,9 +289,11 @@ class RObstacle():
     def __init__(self,loadfile):
         with open(loadfile, 'r') as ROfile:
             data = json.load(ROfile)
-            self.pic = pygame.transform.smoothscale(
-                    pygame.image.load(data[0]["pic"]).convert_alpha(),
-                    data[0]["size"])
+            self.pic = []
+            for d in range(0,len(data)):
+                self.pic.append(pygame.transform.smoothscale(
+                    pygame.image.load(data[d]["pic"]).convert_alpha(),
+                    data[d]["size"]))
 
 
 class RSkill():
@@ -302,12 +304,14 @@ class RSkill():
             self.pic = pygame.transform.smoothscale(
                     pygame.image.load(data[0]["pic"]).convert_alpha(),
                     data[0]["size"])
-            self.size = data[0]["realsize"]
-            self.damage = data[0]["damage"]
-            self.velocity = data[0]["v"]
             self.single_game_skill = pygame.transform.smoothscale(
                 pygame.image.load(data[0]["pic"]).convert_alpha(),
                 single_game_skill_size)
+            self.size = data[0]["realsize"]
+            self.damage = data[0]["damage"]
+            self.velocity = data[0]["v"]
+            self.extra_param1 = data[0]["extra_param1"]
+            self.extra_param2 = data[0]["extra_param2"]
 
 
 class RCustom():
@@ -325,3 +329,15 @@ class RCustom():
     def __del__(self):
         for x in self.pic:
             del x
+
+
+class ROnline():
+    def __init__(self):
+        p_file = [
+            "Resource/json/character1",
+            "Resource/json/character2",
+            "Resource/json/character3",
+                  ]
+        self.r_player = []
+        for p in p_file:
+            self.r_player.append(RCharacter(p))

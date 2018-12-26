@@ -168,12 +168,10 @@ class Player():
     def move(self):
         for i in range(0,4):
             if self.movable[i]&(self.game.ctr[self.id][direct_list[i]] == True):
-                print (self.game.ctr[self.id])
                 self.info["site"] = [
                     self.info["site"][0] + ((i == 3) - (i == 2)) * self.velocity[0],
                     self.info["site"][1] + ((i == 1) - (i == 0)) * self.velocity[1],
                 ]
-                print (self.info["site"])
                 if i == 2:
                     self.info["pic_direction"] = LEFT
                 elif i == 3:
@@ -190,8 +188,6 @@ class Player():
 
 
     def configSkill(self,skill,type):
-        print(skill)
-        print(type)
         skill.damage = Et.R_skill[type]["damage"]
         skill.velocity = Et.R_skill[type]["velocity"]
         skill.duration = Et.R_skill[type]["duration"]

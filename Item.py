@@ -174,7 +174,7 @@ class Enemy():
         if not flag:
             self.info.site = temp
 
-    '''
+
     # 针对move的移动方向判定
     def move_direction(self):
         self.direction = MOVELEFT
@@ -194,9 +194,11 @@ class Enemy():
             self.direction = MOVEDOWNLEFT
         elif(self.target[0] < self.info.site[0]) and (self.target[1] < self.info.site[1]):
             self.direction = MOVEUPLEFT
-    '''
+
     # 敌人类的状态更新
     def update(self):
+        #print(self.signal)
+        #print(self.info.state)
         self.target=self.game.player.info.site
         if self.info.life_value<0:
             self.info.state=ENEMYDEAD
@@ -234,6 +236,7 @@ class Enemy():
                     tempinfo = Skill.SkillInfo()
                     Et.Sk_info.append(tempinfo)
                     new_skill=Skill.SkillBallStraight(tempinfo)
+                    new_skill.influence_list.append(self.game.player)
                     new_skill.resource=Et.R_sk[0]
                     new_skill.game=self.game
                     new_skill.init_site=self.info.site[:]

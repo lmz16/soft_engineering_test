@@ -106,6 +106,7 @@ class SingleGame():
                 self.deskill(skill)
             for enemy in self.enemy_list:
                 enemy.update()
+                enemy.signal= None
                 self.deenemy(enemy)
             self.player.update()
             if len(self.enemy_list) == 0:

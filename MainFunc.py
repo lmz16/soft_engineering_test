@@ -17,6 +17,7 @@ import Player as Pl
 import Skill
 import threading
 from Define import *
+import random
 
 HOST, PORT = "localhost", 20000
 
@@ -28,6 +29,7 @@ def init():
     Et.R_if = Rs.RInterface("Resource/json/interface") #加载界面资源
     Et.I_ctr = Ip.Control()     #初始化键盘控制
     Et.t_net = threading.Thread(target = host,args = ())
+    Et.fake_ip = random.randint(0,100)
 
 
 #   游戏退出函数
@@ -96,6 +98,7 @@ def client(message):
             temp.state = p["state"]
             temp.count = p["count"]
             temp.pic_direction = p["pic_direction"]
+            temp.kind = p["kind"]
             Et.Pr_info.append(temp)
         Et.Sk_info = []
         for s in jresp[0]["s"]:
@@ -111,5 +114,6 @@ def client(message):
 def pack():
     msg = [Et.I_ctr.p1_key]
     msg[0]["player_kind"] = 0
+    msg[0]["ip"] = Et.fake_ip
     jmsg = json.dumps(msg)
     return jmsg

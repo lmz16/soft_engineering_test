@@ -30,6 +30,7 @@ class Online():
         tempplayer = Pl.Player(Et.Pr_info[len(Et.Pr_info)-1])
         tempplayer.id = len(Et.Pr_info) - 1
         tempplayer.game = self
+        tempplayer.info["ip"] = Et.num_ip[tempplayer.id]
         self.loadPlayer(tempplayer,Et.data["player_kind"])
         if len(self.player1)>len(self.player2):
             self.player2.append(tempplayer)
@@ -37,8 +38,6 @@ class Online():
         else:
             self.player1.append(tempplayer)
             tempplayer.camp = 0
-        print("player "+str(len(self.ctr)-1))
-        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
 #   信号发送
     def controlSignal(self):
@@ -73,6 +72,7 @@ class Online():
             player.info["life"] = jdata["life_value"]
             player.velocity = jdata["v"]
             player.skill_type = jdata["skill"]
+            player.info["kind"] = kind
 
 
     def update(self):

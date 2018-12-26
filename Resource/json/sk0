@@ -1,1 +1,1 @@
-[{"pic": "Resource/item/hand_sword.png", "realsize": [50, 50], "size": [50, 50], "damage": 150, "v": [40, 40], "life": 4}]
+[{"pic": "Resource/item/hand_sword.png", "realsize": [30, 30], "size": [30, 30], "damage": 50, "v": 10, "life": 5, "extra_param1": 0, "extra_param2": 0}]
