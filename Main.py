@@ -14,13 +14,15 @@ import os
 import time
 
 MF.init()	#pygame初始化
-
+pygame.mixer.init()
+pygame.mixer.music.load("Musictest.mp3")
 #	主循环
 while True:
+    if pygame.mixer.music.get_busy() == False:
+        pygame.mixer.music.play()
 #	退出机制
     for event in pygame.event.get():
         MF.gameQuit(event)
-
 #   时间刷新
     if MF.timeUpdate():
         IF.update(event)

@@ -21,6 +21,7 @@ class PlayerInfo():
         self.count = 0
         self.visible = True
         self.kind = 0
+        self.camp = 0
 
 class Player():
     def __init__(self,pinfo):
@@ -121,10 +122,10 @@ class Player():
             new_skill = self.releaseEntitySkill(skill_type)
             self.skill_list[n - 1].append(new_skill)
             if skill_type == SKILLBLACKHOLE:
-                new_skill.effect_radius = new_skill.resource.extra_param1
-                new_skill.displacement = new_skill.resource.extra_param2
+                new_skill.effect_radius = (new_skill.info.size[0] + new_skill.info.size[1]) / 4
+                new_skill.displacement = new_skill.resource.extra_param1
             elif skill_type == SKILLKEKKAI:
-                new_skill.radius = new_skill.resource.extra_param1
+                new_skill.radius = (new_skill.info.size[0] + new_skill.info.size[1]) / 4
         elif skill_type == SKILLRETURN:
             if not self.skill_list[n - 1]:
                 new_skill = self.releaseEntitySkill(SKILLRETURN)
@@ -136,9 +137,11 @@ class Player():
             if not self.skill_list[n - 1]:
                 new_skill = self.releaseEntitySkill(skill_type)
                 if skill_type == SKILLBOMB:
-                    new_skill.explosion_radius = new_skill.resource.extra_param1
+                    follow = Et.R_sk[SKILLBOMBEXPLODING]
+                    new_skill.explosion_radius = (follow.size[0] + follow.size[1]) / 4
                 elif skill_type == SKILLAIM:
-                    new_skill.fire_range = new_skill.resource.extra_param1
+                    follow = Et.R_sk[SKILLAIMFIRED]
+                    new_skill.fire_range = (follow.size[0] + follow.size[1]) / 4
                 self.skill_list[n - 1].append(new_skill)
             else:
                 self.skill_list[n - 1][0].setOff()
@@ -156,15 +159,15 @@ class Player():
         elif skill_type == SKILLPORTAL:
             if not self.skill_list[n - 1]:
                 new_skill = self.releaseEntitySkill(SKILLPORTAL)
-                new_skill.effect_radius = new_skill.resource.extra_param1
+                new_skill.effect_radius = (new_skill.info.size[0] + new_skill.info.size[1]) / 4
                 self.skill_list[n - 1].append(new_skill)
             elif len(self.skill_list[n - 1]) == 1:
                 new_skill = self.releaseEntitySkill(SKILLPORTAL)
-                new_skill.effect_radius = new_skill.resource.extra_param1
+                new_skill.effect_radius = (new_skill.info.size[0] + new_skill.info.size[1]) / 4
                 new_skill.pair = self.skill_list[n - 1][0]
                 self.skill_list[n - 1][0].pair = new_skill
-                new_skill.ignore_player = True
-                self.skill_list[n - 1][0].ignore_player = True
+                new_skill.ignore_list.append(self)
+                self.skill_list[n - 1][0].ignore_list.append(self)
                 self.skill_list[n - 1].append(new_skill)
             else:
                 self.skill_list[n - 1][0].delflag = True

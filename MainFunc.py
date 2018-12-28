@@ -15,6 +15,7 @@ import Input as Ip
 import Game as Gm
 import Player as Pl
 import Skill
+import Item
 import threading
 from Define import *
 import random
@@ -28,6 +29,9 @@ def init():
     Et.game_state = GAMEINIT #初始化游戏状态
     Et.R_if = Rs.RInterface("Resource/json/interface") #加载界面资源
     Et.I_ctr = Ip.Control()     #初始化键盘控制
+    netInit()
+
+def netInit():
     Et.t_net = threading.Thread(target = host,args = ())
     Et.fake_ip = random.randint(0,100)
 
@@ -60,10 +64,6 @@ def gameStateManager():
         Et.t_net.start()
     elif Et.game_state == GAMEONLINE:
         pass
-        # Et.I_ctr.update()
-        # for key,value in Et.I_ctr.p1_key.items():
-        #         if value:
-        #                 print(key)
 
 
 def onlineInit():
@@ -89,23 +89,42 @@ def client(message):
         response = sock.recv(1024)
         jresp = json.loads(response.decode('utf-8'))
         Et.Pr_info = []
-        for p in jresp[0]["p"]:
+        for p in jresp[1]:
             temp = Pl.PlayerInfo()
-            temp.site = p["site"]
-            temp.state = p["state"]
-            temp.life_value = p["life"]
-            temp.max_life = p["max_life"]
-            temp.state = p["state"]
-            temp.count = p["count"]
-            temp.pic_direction = p["pic_direction"]
-            temp.kind = p["kind"]
+            temp.site = p[0]
+            temp.state = p[3]
+            temp.life_value = p[2]
+            temp.max_life = p[1]
+            temp.count = p[4]
+            temp.pic_direction = p[5]
+            temp.kind = p[7]
+            if p[6] == Et.fake_ip:
+                Et.online_player_site = p[0]
+                Et.online_camp = p[8]
             Et.Pr_info.append(temp)
         Et.Sk_info = []
-        for s in jresp[0]["s"]:
+        for s in jresp[2]:
             temp = Skill.SkillInfo()
-            temp.kind = s["kind"]
-            temp.site = s["site"]
+            temp.draw_line = s[2]
+            temp.kind = s[1]
+            temp.site = s[0]
             Et.Sk_info.append(temp)
+        Et.Os_info = []
+        for o in jresp[3]:
+            temp = Item.ObstacleInfo()
+            temp.kind = o[1]
+            temp.site = o[0]
+            Et.Os_info.append(temp)
+        if jresp[0] == 3:
+            if Et.online_camp == 0:
+                Et.online_over = 2
+            else :
+                Et.online_over = 1
+        elif jresp[0] == 4:
+            if Et.online_camp == 1:
+                Et.online_over = 2
+            else :
+                Et.online_over = 1
 
 
     finally:
@@ -113,7 +132,7 @@ def client(message):
 
 def pack():
     msg = [Et.I_ctr.p1_key]
-    msg[0]["player_kind"] = 0
+    msg[0]["player_kind"] = Et.player_choice
     msg[0]["ip"] = Et.fake_ip
     jmsg = json.dumps(msg)
     return jmsg

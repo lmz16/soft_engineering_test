@@ -20,14 +20,12 @@ class Player():
         self.movable = [True, True, True, True]  # 上下左右方向是否可移动
         self.game = None  # 游戏指针
         self.skill_time = [0, 0, 0]  # 技能123的上次发动时间
-        self.skill_cd = [0, 0, 0]  # 技能123的冷却时间
+        self.skill_cd = [1, 1, 1]  # 技能123的冷却时间
         self.freeze_time = 0  # 被攻击后僵直时间
         self.signal = None
         self.direction = MOVERIGHT
         self.skill_type = [0, 0, 0]
         self.max_count = 12
-        self.return_site = [0, 0]
-        self.return_released = False
         self.skill_list = [[], [], []]
 
     def update(self):
@@ -78,7 +76,7 @@ class Player():
         elif self.info["state"] == PLAYERSKILL3:
             self.skillstate(3)
         elif self.info["state"] == PLAYERATTACKED:
-            if self.info["count"] == self.freeze_time:
+            if self.info["count"] == self.max_count-1:
                 self.switchState(PLAYERSTATIC)
             else:
                 self.info["count"] = self.info["count"] + 1
@@ -110,58 +108,104 @@ class Player():
     # 发起不同的技能，新技能在此添加
     def actSkill(self, n):
         skill_type = self.skill_type[n - 1]
-        if skill_type in[SKILLBALLSTRAIGHT,SKILLBALLSINUS,SKILLBALLCIRCLE,SKILLBLACKHOLE,SKILLHOOK]:
-            new_skill = self.releaseBall(skill_type)
+        if skill_type in[SKILLBALLSTRAIGHT,SKILLBALLSINUS,SKILLBALLCIRCLE,SKILLBLACKHOLE,SKILLHOOK,SKILLKEKKAI]:
+            new_skill = self.releaseEntitySkill(skill_type)
             self.skill_list[n - 1].append(new_skill)
-            self.game.skill_list.append(new_skill)
+            if skill_type == SKILLBLACKHOLE:
+                new_skill.effect_radius = (new_skill.info["size"][0] + new_skill.info["size"][1]) / 4
+                new_skill.displacement = new_skill.info["extra_param1"]
+            elif skill_type == SKILLKEKKAI:
+                new_skill.radius = (new_skill.info["size"][0] + new_skill.info["size"][1]) / 4
         elif skill_type == SKILLRETURN:
-            if self.return_released == True:
-                self.info["site"] = self.return_site[:]
+            if not self.skill_list[n - 1]:
+                new_skill = self.releaseEntitySkill(SKILLRETURN)
+                self.skill_list[n - 1].append(new_skill)
             else:
-                self.return_site = self.info["site"][:]
-            self.return_released = not self.return_released
+                self.info["site"] = self.skill_list[n - 1][0].init_site[:]
+                self.skill_list[n - 1][0].delflag = True
         elif skill_type in [SKILLBOMB, SKILLAIM]:
             if not self.skill_list[n - 1]:
-                new_skill = self.releaseBall(skill_type)
+                new_skill = self.releaseEntitySkill(skill_type)
+                if skill_type == SKILLBOMB:
+                    follow = Et.R_skill[SKILLBOMBEXPLODING]
+                    new_skill.explosion_radius = (follow["size"][0] + follow["size"][1]) / 4
+                elif skill_type == SKILLAIM:
+                    follow = Et.R_skill[SKILLAIMFIRED]
+                    new_skill.fire_range = (follow["size"][0] + follow["size"][1]) / 4
                 self.skill_list[n - 1].append(new_skill)
             else:
                 self.skill_list[n - 1][0].setOff()
-        # elif skill_type == SKILLBALLRETURN:
-        #     if not self.skill_list[n - 1]:
-        #         for direction in [MOVELEFT, MOVERIGHT, MOVEUP, MOVEDOWN, MOVEUPLEFT, MOVEUPRIGHT, MOVEDOWNLEFT,
-        #                           MOVEDOWNRIGHT]:
-        #             new_skill = self.releaseBall(SKILLBALLRETURN,n-1)
-        #             new_skill.direction = direction
-        #             self.skill_list[n - 1].append(new_skill)
-        #     else:
-        #         for ball in self.skill_list[n - 1]:
-        #             ball.returning = True
+        elif skill_type == SKILLBALLRETURN:
+            if not self.skill_list[n - 1]:
+                for direction in [MOVELEFT, MOVERIGHT, MOVEUP, MOVEDOWN, MOVEUPLEFT, MOVEUPRIGHT, MOVEDOWNLEFT,
+                                  MOVEDOWNRIGHT]:
+                    new_skill = self.releaseEntitySkill(SKILLBALLRETURN)
+                    new_skill.direction = direction
+                    new_skill.returning_velocity = new_skill.info["extra_param1"]
+                    self.skill_list[n - 1].append(new_skill)
+            else:
+                for ball in self.skill_list[n - 1]:
+                    ball.returning = True
+        elif skill_type == SKILLPORTAL:
+            if not self.skill_list[n - 1]:
+                new_skill = self.releaseEntitySkill(SKILLPORTAL)
+                new_skill.effect_radius = (new_skill.info["size"][0] + new_skill.info["size"][1]) / 4
+                self.skill_list[n - 1].append(new_skill)
+            elif len(self.skill_list[n - 1]) == 1:
+                new_skill = self.releaseEntitySkill(SKILLPORTAL)
+                new_skill.effect_radius = (new_skill.info["size"][0] + new_skill.info["size"][1]) / 4
+                new_skill.pair = self.skill_list[n - 1][0]
+                self.skill_list[n - 1][0].pair = new_skill
+                new_skill.ignore_list.append(self)
+                self.skill_list[n - 1][0].ignore_list.append(self)
+                self.skill_list[n - 1].append(new_skill)
+            else:
+                self.skill_list[n - 1][0].delflag = True
+                self.skill_list[n - 1][1].delflag = True
+        elif skill_type == SKILLTRIANGLE:
+            if len(self.skill_list[n - 1]) < 3:
+                new_skill = self.releaseEntitySkill(SKILLTRIANGLE)
+                if self.skill_list[n - 1]:
+                    self.skill_list[n - 1][-1].next = new_skill
+                    new_skill.next = self.skill_list[n - 1][0]
+                self.skill_list[n - 1].append(new_skill)
+                if len(self.skill_list[n - 1]) == 3:
+                    for vertex in self.skill_list[n - 1]:
+                        vertex.effective = True
 
 
     #专门用于扔出实体球的技能，n选择球轨迹
-    def releaseBall(self,skill_type):
+    def releaseEntitySkill(self,skill_type):
         new_skill = None
-        temp = Mf.sinfoInit()
-        Et.Sk_info.append(temp)
+        new_skill_info = Mf.sinfoInit()
+        Et.Sk_info.append(new_skill_info)
         if skill_type==SKILLBALLSTRAIGHT:
-            new_skill=Skill.SkillBallStraight(temp)
+            new_skill=Skill.SkillBallStraight(new_skill_info)
         elif skill_type==SKILLBALLSINUS:
-            new_skill=Skill.SkillBallSinus(temp)
+            new_skill=Skill.SkillBallSinus(new_skill_info)
         elif skill_type==SKILLBALLCIRCLE:
-            new_skill=Skill.SkillBallCircle(temp)
+            new_skill=Skill.SkillBallCircle(new_skill_info)
+        elif skill_type==SKILLRETURN:
+            new_skill=Skill.SkillReturn(new_skill_info)
         elif skill_type == SKILLBLACKHOLE:
-            new_skill = Skill.SkillBlackHole(temp)
+            new_skill = Skill.SkillBlackHole(new_skill_info)
         elif skill_type == SKILLHOOK:
-            new_skill = Skill.SkillHook(temp)
+            new_skill = Skill.SkillHook(new_skill_info)
         elif skill_type == SKILLBOMB:
-            new_skill = Skill.SkillBomb(temp)
+            new_skill = Skill.SkillBomb(new_skill_info)
         elif skill_type == SKILLAIM:
-            new_skill = Skill.SkillAim(temp)
+            new_skill = Skill.SkillAim(new_skill_info)
         elif skill_type == SKILLKEKKAI:
-            new_skill = Skill.SkillKekkai(temp)
+            new_skill = Skill.SkillKekkai(new_skill_info)
         elif skill_type == SKILLBALLRETURN:
-            new_skill = Skill.SkillBallReturn(temp)
-        self.configSkill(new_skill, skill_type)
+            new_skill = Skill.SkillBallReturn(new_skill_info)
+        elif skill_type == SKILLPORTAL:
+            new_skill = Skill.SkillPortal(new_skill_info)
+            new_skill.ignore_list.append(self)
+        elif skill_type == SKILLTRIANGLE:
+            new_skill = Skill.SkillTriangle(new_skill_info)
+        self.configSkill(new_skill,skill_type)
+        self.game.skill_list.append(new_skill)
         return new_skill
 
 
@@ -187,18 +231,26 @@ class Player():
 
 
 
-    def configSkill(self,skill,type):
-        skill.damage = Et.R_skill[type]["damage"]
-        skill.velocity = Et.R_skill[type]["velocity"]
-        skill.duration = Et.R_skill[type]["duration"]
-        skill.info["size"] = Et.R_skill[type]["size"]
+    def configSkill(self,skill,skill_type):
+        if self.camp == 0:
+            skill.enemy_list = self.game.player2
+            skill.ally_list = self.game.player1
+        else:
+            skill.enemy_list = self.game.player1
+            skill.ally_list = self.game.player2
+        skill.damage = Et.R_skill[skill_type]["damage"]
+        skill.velocity = Et.R_skill[skill_type]["velocity"]
+        skill.duration = Et.R_skill[skill_type]["duration"]
+        skill.info["size"] = Et.R_skill[skill_type]["size"]
         skill.init_time = Et.fresh_time
-        skill.info["kind"] = type
+        skill.info["kind"] = skill_type
         skill.caster = self
         skill.game = self.game
         skill.init_site=self.info["site"][:]
         skill.direction=self.direction
         skill.info["site"]=self.info["site"][:]
+        skill.info["extra_param1"] = Et.R_skill[skill_type]["extra_param1"]
+        skill.info["extra_param2"] = Et.R_skill[skill_type]["extra_param2"]
         skill.load()
 
 
@@ -210,4 +262,4 @@ class Player():
                 flag = True
                 break
         if not flag:
-            self.info.site = temp
+            self.info["site"] = temp[:]

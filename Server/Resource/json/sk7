@@ -1,1 +1,1 @@
-[{"pic": "Resource/item/aim.png", "realsize": [50, 50], "size": [50, 50], "damage": 200, "v": [30, 30], "life": 5}]
+[{"pic": "Resource/item/explosion.png", "realsize": [320, 400], "size": [320, 400], "damage": 0, "v": [0,0], "life": 0.5, "extra_param1": 0, "extra_param2": 0}]

@@ -62,6 +62,7 @@ class SingleGame():
             Et.Em_info.append(
                 temp
             )
+            temp.kind = enemy["kind"]
             tempe = It.Enemy(temp,self)
             tempe.origin_site = enemy["site"]
             self.enemy_list.append(
@@ -106,7 +107,7 @@ class SingleGame():
                 self.deskill(skill)
             for enemy in self.enemy_list:
                 enemy.update()
-                enemy.signal= None
+                enemy.signal = None
                 self.deenemy(enemy)
             self.player.update()
             if len(self.enemy_list) == 0:

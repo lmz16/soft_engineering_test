@@ -7,6 +7,7 @@ import Extern as Et
 import Game
 import time
 import json
+import sys
 
 def pinfoInit():
     pinfo = {
@@ -20,6 +21,7 @@ def pinfoInit():
         "size":[30,30],
         "ip":0,
         "kind":0,
+        "camp":0,
     }
     return pinfo
 
@@ -29,11 +31,23 @@ def sinfoInit():
         "site":[0,0],
         "size": [0, 0],
         "visable":True,
-        "kind":0
+        "kind":0,
+        "draw_line":None,
+        "extra_param1":0,
+        "extra_param2":0,
     }
     return sinfo
 
+def oinfoInit():
+    oinfo = {
+        "site":[0,0],
+        "kind":0,
+        "size":[0,0],
+    }
+    return oinfo
+
 def gameInit():
+    Et.online_game = None
     Et.online_game = Game.Online()
     skillAllInit()
 
@@ -53,6 +67,17 @@ def gameFSM():
         elif Et.game_state == GAMESTART:    #游戏运行
             messageUnpack()
             Et.online_game.update()
+        elif Et.game_state in [GAMEWIN0,GAMEWIN1]:
+            Et.Pr_info = []
+            Et.Sk_info = []
+            Et.Ob_info = []
+            Et.num_ip = []
+            Et.data = None
+            if Et.count == 0:
+                Et.game_state = GAMEWAIT
+                #Et.count = 0
+            else:
+                Et.count -= 1
 
 #   用于在游戏里添加玩家
 def joinRespond():
@@ -75,11 +100,34 @@ def messageUnpack():
         }
 
 def sendBack():
-    sdata = [{
-        "p":Et.Pr_info,
-        "s":Et.Sk_info,
-        "state":Et.game_state,
-    }]
+    tempp = []
+    for p in Et.Pr_info:
+        tempp.append([
+            p["site"],
+            p["max_life"],
+            p["life"],
+            p["state"],
+            p["count"],
+            p["pic_direction"],
+            p["ip"],
+            p["kind"],
+            p["camp"],
+        ])
+    temps = []
+    for s in Et.Sk_info:
+        temps.append([
+            s["site"],
+            s["kind"],
+            s["draw_line"],
+        ])
+    tempo = []
+    for o in Et.Ob_info:
+        tempo.append([
+            o["site"],
+            o["kind"],
+        ])
+    sdata = [Et.game_state,tempp,temps,tempo]
+    print(Et.game_state)
     return sdata
 
 
@@ -105,6 +153,11 @@ def skillAllInit():
         "Resource/json/sk6",
         "Resource/json/sk7",
         "Resource/json/sk8",
+        "Resource/json/sk9",
+        "Resource/json/sk10",
+        "Resource/json/sk11",
+        "Resource/json/sk12",
+        "Resource/json/sk13",
     ]
     for s in range(0,len(Et.R_skill)):
         Et.R_skill[s] = RSkillInit()
@@ -114,3 +167,5 @@ def skillAllInit():
             Et.R_skill[s]["size"] = temp[0]["realsize"]
             Et.R_skill[s]["duration"] = temp[0]["life"]
             Et.R_skill[s]["velocity"] = temp[0]["v"]
+            Et.R_skill[s]["extra_param1"] = temp[0]["extra_param1"]
+            Et.R_skill[s]["extra_param2"] = temp[0]["extra_param2"]

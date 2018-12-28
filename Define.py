@@ -10,19 +10,28 @@ help_text_size=(500,400)    #帮助文档和设置文档尺寸
 #   单人模式选择界面缩略图尺寸
 single_choose_b_size=(300,200)
 single_choose_bc_size=(330,225)
-single_choose_p_size=(130,130)
+single_choose_p_size=(130,140)
 single_choose_pc_size=(150,150)
 #   单人模式游戏界面尺寸
-single_game_portrait_size=(50,50)
-single_game_skill_size=(30,30)
-single_game_hp_size=(120,20)
-single_game_map_size=(180,80)
-single_game_p_size=(7,7)
+#谢福生12月26日修改
+single_game_portrait_size=(80,80)
+single_game_skill_size=(45,45)
+single_game_hp_size=(170,40)
+single_game_map_size=(260,140)
+single_game_p_size=(8,8)
+single_game_state_size=(240,200)
+#   敌人血条
+enemy_hp_size=(80,10)
+
 #   游戏帧率
 fps = 25
 #   自定义模式缩略图大小
 custom_thumbnail_size=(60,100)
-custom_pic_choose_size=(500,500)
+custom_pic_choose_size=(540,340)
+custom_button_size=(130,50)#自定义人物模式按钮尺寸
+custom_G_face_size=(590,290)
+
+online_arrow_size=(25,25)
 
 #   碰撞检测阈值
 COLLISIONTHRESHOLD = 6
@@ -46,12 +55,16 @@ GAMESINGLECHOOSE=5
 GAMESETTING=10
 #   联机开始状态1
 GAMEONLINEINIT1=15
+#   联机选择人物状态
+GAMEONLINECHOOSE=155
 #   联机开始状态2
 GAMEONLINEINIT2=16
 #   联机游戏进行状态
 GAMEONLINE=17
 #   自定义模式选择状态
 GAMECUSTOMCHOOSE=20
+#   自定义模式载入状态
+GAMECUSTOMCLOAD=201
 #   自定义人物模式
 GAMECUSTOMC=21
 GAMECUSTOMC2=212

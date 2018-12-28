@@ -1,29 +1,32 @@
 import json
-
+import os
 data = [{
-    "main_bk_pic":"Resource/interface/start_interface.jpg",
+    "main_bk_pic":"Resource/interface/start_interface.png",
     "cursor_pic":"Resource/interface/cursor.png",
-    "single_button":"Resource/interface/start_button_single.png",
-    "setting_button":"Resource/interface/start_button_setting.png",
-    "online_button":"Resource/interface/start_button_online.png",
-    "help_button":"Resource/interface/start_button_help.png",
-    "custom_button":"Resource/interface/start_button_custom.png",
     "help_text":"Resource/interface/help_text.png",
     "setting_text":"Resource/interface/setting_text.png",
     "setting_choose":"Resource/interface/setting_choose.png",
-    "single_frame_pic":"Resource/interface/gameinterface.png",
-    "single_hp":"Resource/interface/single_game_hp.png",
-    "single_game_smallplayer":"Resource/interface/single_game_smallplayer.png",
-    "custom_choose":"Resource/interface/custom_choose.png",
-    "custom_choose_bk":"Resource/interface/custom_choose_bk.png",
-    "pic_choose_bk":"Resource/interface/pic_choose_bk.png",
-    "custom_frame":"Resource/interface/frame.png",
-    "custom_choose_choose":"Resource/interface/custom_choose_choose.png",
+    #谢福生12月26日修改
+    "single_frame_pic":'Resource/interface/gameinterface.png',
+    "single_hp":'Resource/interface/single_game_hp.png',
+    "single_hp_bk":'Resource/interface/single_game_hp_bk.png',
+    "single_game_smallplayer":'Resource/interface/single_game_smallplayer.png',
+    "custom_choose":'Resource/interface/custom_choose.png',
+    "custom_choose_bk":'Resource/interface/custom_choose_bk.png',
+    "pic_choose_bk":'Resource/interface/pic_choose_bk.png',
+    "custom_frame":'Resource/interface/frame.png',
+    "custom_frame2":'Resource/interface/frame2.png',
+    "custom_choose_choose":'Resource/interface/custom_choose_choose.png',
+    "tick":'Resource/interface/setting_choose.png',
+    "back_button":'Resource/interface/single_choose_back.png',
+    "online_arrow":'Resource/interface/online_character_arrow.png',
+    "online_choose_bk":'Resource/interface/online_choose_bk.png',
+#谢福生12月26日修改
 }]
 
 with open("Resource/json/interface","w") as f:
     json.dump(data,f)
-
+'''
 data = [{
     "bottom_pic":'Resource/interface/single_choose_background.jpg',
     "single_choose_frame":'Resource/interface/single_choose_frame.png',
@@ -97,7 +100,10 @@ data = [{
         "Resource/character/lmz/attacked.png",
     ],
     "v":[5,5],
-    "skill":[0,5,2]
+    "skill":[0,5,2],
+    #谢福生12月26日修改
+    "skillCD":[1,2,3],
+    #谢福生12月26日修改
 }]
 
 with open("Resource/json/character1","w") as f:
@@ -350,3 +356,14 @@ data =[{
 
 with open("Resource/json/sk13","w") as f:
     json.dump(data,f)
+'''
+#12月26日谢福生修改
+pic=[]
+for x in os.listdir('Resource/custom'):
+    pic.append(x)
+
+info=[pic]
+
+with open('Resource/json/custom','w') as custom:
+    json.dump(info,custom)
+#12月26日谢福生修改

@@ -20,26 +20,6 @@ class RInterface():
                 pygame.image.load(data[0]["cursor_pic"]).convert_alpha(),
                 cursor_size
             )
-            self.start_single_pic = pygame.transform.smoothscale(
-                pygame.image.load(data[0]["single_button"]).convert_alpha(),
-                start_button_size
-            )
-            self.start_setting_pic = pygame.transform.smoothscale(
-                pygame.image.load(data[0]["setting_button"]).convert_alpha(),
-                start_button_size
-            )
-            self.start_online_pic = pygame.transform.smoothscale(
-                pygame.image.load(data[0]["online_button"]).convert_alpha(),
-                start_button_size
-            )
-            self.start_help_pic = pygame.transform.smoothscale(
-                pygame.image.load(data[0]["help_button"]).convert_alpha(),
-                start_button_size
-            )
-            self.start_custom_pic = pygame.transform.smoothscale(
-                pygame.image.load(data[0]["custom_button"]).convert_alpha(),
-                start_button_size
-            )
             self.help_text_pic = pygame.transform.smoothscale(
                 pygame.image.load(data[0]["help_text"]).convert_alpha(),
                 help_text_size
@@ -92,17 +72,40 @@ class RInterface():
                 pygame.image.load("Resource/interface/lose.png").convert_alpha(),
                 (300, 70)
             )
-
+            self.custom_frame2_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["custom_frame2"]).convert_alpha(),
+                custom_thumbnail_size
+            )
+            self.custom_frame_place = []
+            self.custom_choose_choose_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["custom_choose_choose"]).convert_alpha(),
+                (mainwindow_size)
+            )
+            self.tick_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["tick"]).convert_alpha(),
+                custom_button_size
+            )
+            self.enemy_hp_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["single_hp"]).convert_alpha(),
+                enemy_hp_size
+            )
+            self.single_hp_bk_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["single_hp_bk"]).convert_alpha(),
+                single_game_state_size
+            )
+            self.online_arrow_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["online_arrow"]).convert_alpha(),
+                online_arrow_size
+            )
+            self.online_choose_bk_pic = pygame.transform.smoothscale(
+                pygame.image.load(data[0]["online_choose_bk"]).convert_alpha(),
+                mainwindow_size
+            )
 
     
     def __del__(self):
         del self.main_bk_pic
         del self.cursor_pic
-        del self.start_single_pic
-        del self.start_setting_pic
-        del self.start_online_pic
-        del self.start_help_pic
-        del self.start_custom_pic
         del self.help_text_pic
         del self.setting_text_pic
         del self.setting_choose_pic
@@ -114,12 +117,17 @@ class RInterface():
         del self.custom_choose_bk_pic
         del self.pic_choose_bk_pic
         del self.custom_frame_pic
+        del self.custom_frame2_pic
+        del self.custom_frame_place
         del self.custom_choose_choose_pic
-
+        del self.tick_pic
+        del self.single_hp_bk_pic
+        del self.online_arrow_pic
+        del self.online_choose_bk_pic
 
 
 class RChoose():
-    def __init__(self,loadfile):
+    def __init__(self,loadfile,loadfile1):
         with open (loadfile,'r') as RCfile:
             data=json.load(RCfile)
             self.bottom_pic = pygame.transform.smoothscale(
@@ -138,10 +146,6 @@ class RChoose():
                 )
             self.single_choose_p = []
             self.character_file = []
-            self.single_choose_play = pygame.transform.smoothscale(
-                pygame.image.load(data[0]["single_choose_play"]).convert_alpha(),
-                start_button_size
-            )
             self.single_choose_bc = pygame.transform.smoothscale(
                 pygame.image.load(data[0]["single_choose_choose"]).convert_alpha(),
                 single_choose_bc_size
@@ -150,7 +154,7 @@ class RChoose():
                 pygame.image.load(data[0]["single_choose_choose"]).convert_alpha(),
                 single_choose_pc_size
             )
-        with open ("Resource/json/player_choose",'r') as RCfile:
+        with open (loadfile1,'r') as RCfile:
             data = json.load(RCfile)
             for i in range(0,len(data[0]["data"])):
                 self.single_choose_p.append(pygame.transform.smoothscale(
@@ -189,6 +193,11 @@ class RCharacter():
         with open(loadfile, 'r') as RCfile:
             data = json.load(RCfile)
             self.max_life = data[0]["life_value"]
+            #谢福生12月26日修改
+            self.skillCD=[]
+            for i in range(3):
+                self.skillCD.append(data[0]["skillCD"][i])
+             #谢福生12月26日修改
             self.pic_static = []
             self.pic_move = []
             self.pic_attack = []
@@ -240,49 +249,57 @@ class RCharacter():
             del p
 
 
+class A():
+    def __init__(self):
+        pass
+
 class REnemy():
     def __init__(self,loadfile):
         with open(loadfile, 'r') as REfile:
             data = json.load(REfile)
-            self.max_life = data[0]["life_value"]
-            self.pic_static = []
-            self.pic_move = []
-            self.pic_attack = []
-            self.pic_attacked = []
-            self.size = data[0]["realsize"]
-            for p in data[0]["static"]:
-                temp = pygame.transform.smoothscale(
-                    pygame.image.load(p).convert_alpha(),
-                    data[0]["size"])
-                tempf = pygame.transform.flip(temp, True, False)
-                self.pic_static.append(
-                    [temp, tempf]
-                )
-            for p in data[0]["move"]:
-                temp = pygame.transform.smoothscale(
+            self.enemy = []
+            for c in range(0,len(data)):
+                a = A()
+                a.max_life = data[c]["life_value"]
+                a.pic_static = []
+                a.pic_move = []
+                a.pic_attack = []
+                a.pic_attacked = []
+                a.size = data[c]["realsize"]
+                for p in data[c]["static"]:
+                    temp = pygame.transform.smoothscale(
                         pygame.image.load(p).convert_alpha(),
-                        data[0]["size"])
-                tempf = pygame.transform.flip(temp,True,False)
-                self.pic_move.append(
-                    [temp,tempf]
-                )
-            for p in data[0]["attack"]:
-                temp = pygame.transform.smoothscale(
-                    pygame.image.load(p).convert_alpha(),
-                    data[0]["size"])
-                tempf = pygame.transform.flip(temp, True, False)
-                self.pic_attack.append(
-                    [temp, tempf]
-                )
-            for p in data[0]["attacked"]:
-                temp = pygame.transform.smoothscale(
-                    pygame.image.load(p).convert_alpha(),
-                    data[0]["size"])
-                tempf = pygame.transform.flip(temp, True, False)
-                self.pic_attacked.append(
-                    [temp, tempf]
-                )
-            self.velocity = data[0]["v"]
+                        data[c]["size"])
+                    tempf = pygame.transform.flip(temp, True, False)
+                    a.pic_static.append(
+                        [temp, tempf]
+                    )
+                for p in data[c]["move"]:
+                    temp = pygame.transform.smoothscale(
+                            pygame.image.load(p).convert_alpha(),
+                            data[c]["size"])
+                    tempf = pygame.transform.flip(temp,True,False)
+                    a.pic_move.append(
+                        [temp,tempf]
+                    )
+                for p in data[c]["attack"]:
+                    temp = pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        data[c]["size"])
+                    tempf = pygame.transform.flip(temp, True, False)
+                    a.pic_attack.append(
+                        [temp, tempf]
+                    )
+                for p in data[c]["attacked"]:
+                    temp = pygame.transform.smoothscale(
+                        pygame.image.load(p).convert_alpha(),
+                        data[c]["size"])
+                    tempf = pygame.transform.flip(temp, True, False)
+                    a.pic_attacked.append(
+                        [temp, tempf]
+                    )
+                a.velocity = data[c]["v"]
+                self.enemy.append(a)
 
 
 class RObstacle():
@@ -325,7 +342,14 @@ class RCustom():
                     pygame.transform.smoothscale(
                         pygame.image.load('Resource/custom/'+picpath).convert_alpha(),custom_thumbnail_size)
                 )
-
+        self.custom_skill = []
+        for i in range(len(skill_file)):
+            with open(skill_file[i],'r') as Rcusskill:
+                cusskillinfo=json.load(Rcusskill)
+                self.custom_skill.append(
+                pygame.transform.smoothscale(
+                    pygame.image.load(cusskillinfo[0]["pic"]).convert_alpha(),custom_thumbnail_size)
+                )
     def __del__(self):
         for x in self.pic:
             del x

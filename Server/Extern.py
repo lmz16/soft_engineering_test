@@ -15,6 +15,7 @@ game_state = GAMEWAIT
 #   信息列表
 Pr_info = []
 Sk_info = []
+Ob_info = []
 
 #   在线游戏
 online_game = None
@@ -26,4 +27,7 @@ num_ip = []
 data = None
 
 #   技能配置资源
-R_skill = [None]*9
+R_skill = [None]*SKILLMAXINDEX
+
+#	
+count = 0

@@ -148,9 +148,10 @@ class SkillBlackHole(Skill):
 
     def influence(self):
         for obj in self.influence_list:
+            obj_radius = (obj.info.size[0] + obj.info.size[1]) / 4
             distance = math.sqrt(
                 (self.info.site[0] - obj.info.site[0]) ** 2 + (self.info.site[1] - obj.info.site[1]) ** 2)
-            if distance < self.effect_radius and distance > 0:
+            if distance < (self.effect_radius + obj_radius) and distance > 0:
                 if distance > self.displacement:
                     obj_move_vector = [(self.info.site[0] - obj.info.site[0]) / distance * self.displacement,
                         (self.info.site[1] - obj.info.site[1]) / distance * self.displacement]

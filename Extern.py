@@ -70,10 +70,15 @@ P2_choice = 0
 t_net = None
 
 #   网络游戏结束标志
-online_over = False
+online_over = 0
 
 #   用于游戏结束状态的计数变量
 over_count = 0
 
 #   玩家id
 fake_ip = 0
+
+#   联机控制人物的坐标
+online_player_site = [0,0]
+#   
+online_camp = 0

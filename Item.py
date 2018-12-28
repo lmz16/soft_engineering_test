@@ -17,7 +17,7 @@ class EnemyInfo():
         self.pic_direction = RIGHT
         self.size = [0,0]
         self.count = 0
-        self.kind = 1    # 敌人类型
+        self.kind = 0
 
 class Enemy():
     def __init__(self, einfo, game):
@@ -45,10 +45,10 @@ class Enemy():
         self.movey = [self.velocity[1]*y for y in movey]
     
     def load(self):
-        self.info.size = Et.R_em.size
+        self.info.size = Et.R_em.enemy[self.info.kind].size
         self.size = self.info.size
-        self.info.max_life = Et.R_em.max_life
-        self.info.life_value = Et.R_em.max_life
+        self.info.max_life = Et.R_em.enemy[self.info.kind].max_life
+        self.info.life_value = Et.R_em.enemy[self.info.kind].max_life
         self.info.state = ENEMYPATROL
         self.info.count = 0
         self.info.pic_direction = RIGHT
@@ -219,9 +219,6 @@ class Enemy():
     # 敌人类的状态更新
     def update(self):
         #print(self.signal)
-        print(self.info.state)
-        print(self.movable)
-        print(self.direction)
         self.target=self.game.player.info.site
         if self.info.life_value<0:
             self.info.state=ENEMYDEAD
@@ -340,4 +337,3 @@ class Obstacle():
     # 障碍物类的初始化函数
     def load(self):
         pass
-

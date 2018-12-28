@@ -21,8 +21,7 @@ def client(ip, port, message):
         sock.close()
 
 if __name__ == "__main__":
-    # Port 0 means to select an arbitrary unused port
-    HOST, PORT = "localhost", 20000
+    #Port 0 means to select an arbitrary unused port
     fresh_time = time.time()
     count = 0
     test_case = St.HostTest()
