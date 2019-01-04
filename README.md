@@ -4,4 +4,5 @@
 
 ### ——————全员加急组
 
-  可执行程序在Main.zip压缩包（https://cloud.tsinghua.edu.cn/f/7068c478c445454d99ae/?dl=1）中，解压缩，运行Main即可，但服务器需要运行Server文件夹中的Server.py，而且要改源代码文件中的ip。
+  可执行程序在Main.zip压缩包（https://cloud.tsinghua.edu.cn/f/7068c478c445454d99ae/?dl=1）  
+  解压缩并运行Main即可。若要测试网络功能，需要更改Server/Server.py与MainFunc.py文件中的ip，并用命令行运行Server/Server.py(服务器脚本)与Main.py（客户端脚本）
